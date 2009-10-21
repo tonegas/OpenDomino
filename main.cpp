@@ -76,6 +76,7 @@ void prova(void *p) {
 }
 
 int main(int argc, char** argv) {
+    Stato = PARTITA;
 
     eventi pp(prova, (void*) "inizio", 2000);
     heap_eventi.push_back(pp);
@@ -85,7 +86,15 @@ int main(int argc, char** argv) {
     push_heap(heap_eventi.begin(), heap_eventi.end(), eventi::comp);
 
 
-    SDL_Init(SDL_INIT_EVERYTHING);
+    if ((SDL_Init(SDL_INIT_EVERYTHING)==-1))
+    {
+       printf("Could not initialize SDL: %s.\n",
+      SDL_GetError()); /* stampa dell’errore */
+       exit(-1);
+    }
+
+    SDL_Surface *screen = NULL;
+    screen = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE);
 
     SDL_Thread *input = SDL_CreateThread(inputThread, NULL);
     SDL_Thread *video = SDL_CreateThread(videoThread, NULL);
@@ -95,6 +104,11 @@ int main(int argc, char** argv) {
     SDL_WaitThread(video, NULL);
     SDL_WaitThread(input, NULL);
     SDL_WaitThread(stato, NULL);
+
+//    SDL_Flip(screen);
+
+    SDL_Quit();
+
     return (EXIT_SUCCESS);
 }
 
@@ -132,8 +146,8 @@ int videoThread(void *p) {
         inizio = SDL_GetTicks();
 
 
-        SDL_Delay(10000);
-        eventi pp6(prova, (void*) "video", SDL_GetTicks() + 1000);
+        SDL_Delay(1000);
+        eventi pp6(prova, (void*) "video", SDL_GetTicks());
         heap_eventi.push_back(pp6);
         push_heap(heap_eventi.begin(), heap_eventi.end(), eventi::comp);
         SDL_CondSignal(nuovo_evento_cond);
@@ -152,7 +166,7 @@ void statusPartita(SDL_Event *evento) {
         case SDL_KEYDOWN:
               SDL_KeyboardEvent *ke;
               ke = (SDL_KeyboardEvent*)evento;
-              if(SDLK_RETURN == ke->keysym.sym){
+              if(SDLK_SPACE == ke->keysym.sym){
                     eventi pp6(prova, (void*) "tasto", SDL_GetTicks());
                     heap_eventi.push_back(pp6);
                     push_heap(heap_eventi.begin(), heap_eventi.end(), eventi::comp);
@@ -165,19 +179,18 @@ void statusPartita(SDL_Event *evento) {
 }
 
 int inputThread(void *p) {
-    SDL_Event *evento;
-    while (SDL_WaitEvent(evento)) {
-        cout << "cazzo" << flush;
+    SDL_Event evento;
+    while (SDL_WaitEvent(&evento)) {
         switch (Stato) {
             case MENU:
                 break;
             case PARTITA:
-                statusPartita(evento);
+                statusPartita(&evento);
                 break;
             case EDITOR:
                 break;
         }
-        free(evento);
+        //free(evento);
     }
     return 1;
 }
