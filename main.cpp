@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <algorithm>
+#include <math.h>
 #include <vector>
 using namespace std;
 
@@ -27,7 +28,9 @@ using namespace std;
 GLfloat rx = 0;
 GLfloat ry = 0;
 GLfloat rz = 0;
-float jump = 0.0;
+GLfloat startx = 0;
+GLfloat starty = 0;
+GLfloat jump = 0;
 
 enum Stato_t {
     MENU,
@@ -39,28 +42,42 @@ int statoThread(void *p);
 int videoThread(void *p);
 int inputThread(void *p);
 
-class eventi {
+class Evento {
     void (*fn)(void*);
     void *param;
+    bool rip;
     Uint32 quando;
+    Uint32 intervallo;
+
 public:
 
-    eventi() {
+    Evento() {
     }
 
-    eventi(void (*fn_aux)(void*), void *param_aux, Uint32 quando_aux) {
+    Evento(void (*fn_aux)(void*), void *param_aux, Uint32 quando_aux) {
         fn = fn_aux;
         param = param_aux;
         quando = quando_aux;
+        rip = 0;
     }
 
-    eventi(const eventi &evento_aux) {
+    Evento(void (*fn_aux)(void*), void *param_aux, Uint32 intervallo_aux, bool rip_aux) {
+        fn = fn_aux;
+        param = param_aux;
+        intervallo = intervallo_aux;
+        quando = SDL_GetTicks() + intervallo_aux;
+        rip = rip_aux;
+    }
+
+    Evento(const Evento &evento_aux) {
         fn = evento_aux.fn;
         param = evento_aux.param;
         quando = evento_aux.quando;
+        intervallo = evento_aux.intervallo;
+        rip = evento_aux.rip;
     }
 
-    static bool comp(const eventi &elem1, const eventi &elem2) {
+    static bool comp(const Evento &elem1, const Evento &elem2) {
         if (elem1.quando > elem2.quando) {
             return true;
         } else {
@@ -68,8 +85,20 @@ public:
         }
     }
 
+    bool getRip() {
+        return rip;
+    }
+
+    Uint32 getIntervallo() {
+        return intervallo;
+    }
+
     Uint32 getQuando() {
         return quando;
+    }
+
+    void setQuando(Uint32 quando_aux) {
+        quando = quando_aux;
     }
 
     void esegui() {
@@ -77,25 +106,82 @@ public:
     }
 };
 
-vector<eventi> heap_eventi;
-SDL_cond *nuovo_evento_cond;
-SDL_mutex *nuovo_evento_mutex;
+class Heap_eventi {
+    vector<Evento> Heap;
+    SDL_cond *nuovo_evento_cond;
+    SDL_mutex *nuovo_evento_mutex;
+
+public:
+
+    Heap_eventi() {
+        nuovo_evento_cond = SDL_CreateCond();
+        nuovo_evento_mutex = SDL_CreateMutex();
+    }
+
+    void inserisciEvento(void (*fn_aux)(void*), void *param_aux, Uint32 quando_aux) {
+        Evento aux(fn_aux, param_aux, quando_aux);
+        SDL_mutexP(nuovo_evento_mutex);
+        Heap.push_back(aux);
+        push_heap(Heap.begin(), Heap.end(), Evento::comp);
+        SDL_CondSignal(nuovo_evento_cond);
+        SDL_mutexV(nuovo_evento_mutex);
+    }
+
+    void inserisciEventoPeriodico(void (*fn_aux)(void*), void *param_aux, Uint32 intervallo_aux, bool rip_aux) {
+        Evento aux(fn_aux, param_aux, intervallo_aux, rip_aux);
+        SDL_mutexP(nuovo_evento_mutex);
+        Heap.push_back(aux);
+        push_heap(Heap.begin(), Heap.end(), Evento::comp);
+        SDL_CondSignal(nuovo_evento_cond);
+        SDL_mutexV(nuovo_evento_mutex);
+    }
+
+    Evento estraiEvento() {
+        SDL_mutexP(nuovo_evento_mutex);
+        if (Heap.empty()) {
+            SDL_CondWait(nuovo_evento_cond, nuovo_evento_mutex);
+        }
+        Evento evento = Heap.front();
+        pop_heap(Heap.begin(), Heap.end(), Evento::comp);
+        Heap.pop_back();
+        if (evento.getRip() == 1) {
+            evento.setQuando(SDL_GetTicks() + evento.getIntervallo());
+            Heap.push_back(evento);
+            push_heap(Heap.begin(), Heap.end(), Evento::comp);
+            SDL_CondSignal(nuovo_evento_cond);
+        }
+        SDL_mutexV(nuovo_evento_mutex);
+        return evento;
+    }
+
+    bool empty() {
+        return Heap.empty();
+    }
+
+
+
+};
+
+Heap_eventi Heap;
+
+bool Alive;
+
 
 SDL_Thread *input;
 SDL_Thread *video;
 SDL_Thread *stato;
 
-SDL_Surface *screen;
-
 void prova(void *p) {
-    cout << "prova vai " << (char *) p << '\n' << flush;
+    cout << "EVENTO: " << (char *) p << '\n' << flush;
     //exit(1);
 }
 
+void gira(void *p) {
+    jump += 1;
+}
+
 void gameExit() {
-    SDL_KillThread(video);
-    SDL_KillThread(input);
-    SDL_KillThread(stato);
+    Alive = false;
 }
 
 const GLfloat cavalier[] = {
@@ -109,27 +195,17 @@ void stampaPezzo();
 
 int main(int argc, char** argv) {
     Stato = PARTITA;
+    Alive = true;
 
-    eventi pp(prova, (void*) "inizio", 2000);
-    heap_eventi.push_back(pp);
-    push_heap(heap_eventi.begin(), heap_eventi.end(), eventi::comp);
-    eventi pp1(prova, (void*) "inizio_2", 1000);
-    heap_eventi.push_back(pp1);
-    push_heap(heap_eventi.begin(), heap_eventi.end(), eventi::comp);
-
+    Heap.inserisciEvento(prova, (void*) "start", 0);
+    //Heap.inserisciEvento(gira, (void*) 50, 10000);
+    Heap.inserisciEventoPeriodico(gira, NULL, 1, 1);
 
     if ((SDL_Init(SDL_INIT_EVERYTHING) == -1)) {
         printf("Could not initialize SDL: %s.\n",
                 SDL_GetError()); /* stampa dell’errore */
         exit(-1);
     }
-
-    nuovo_evento_cond = SDL_CreateCond();
-    nuovo_evento_mutex = SDL_CreateMutex();
-
-
-//    stampaPezzo();
-
 
     input = SDL_CreateThread(inputThread, NULL);
     video = SDL_CreateThread(videoThread, NULL);
@@ -147,33 +223,20 @@ int main(int argc, char** argv) {
 int statoThread(void *p) {
     Uint32 tempo;
     int aspetto;
-    eventi evento;
-    SDL_mutexP(nuovo_evento_mutex);
-    while (true) {
-        if (!heap_eventi.empty()) {
-            evento = heap_eventi.front();
-            pop_heap(heap_eventi.begin(), heap_eventi.end(), eventi::comp);
-            heap_eventi.pop_back();
-
-            /*   inserire elemento
-             *   v.push_back(99); push_heap (v.begin(),v.end());
-             */
-
-            tempo = SDL_GetTicks();
-            aspetto = evento.getQuando() - tempo;
-            if (aspetto > 0)
-                SDL_Delay(aspetto);
-            evento.esegui();
-        } else {
-            SDL_CondWait(nuovo_evento_cond, nuovo_evento_mutex);
-        }
+    Evento evento;
+    while (Alive) {
+        evento = Heap.estraiEvento(); //bloccante fin che non c'è un evento attende dentro la funzione
+        tempo = SDL_GetTicks();
+        aspetto = evento.getQuando() - tempo;
+        if (aspetto > 0)
+            SDL_Delay(aspetto);
+        evento.esegui();
     }
     return 1;
 }
 
-void stampaPezzo() {
+void stampaPezzo(GLfloat ang) {
     /* clear screen */
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glPushMatrix();
 
@@ -206,7 +269,7 @@ void stampaPezzo() {
 
     /* wire cube */
     glPushMatrix();
-    glRotatef(-2 * jump, 0.0, 0.0, 1.0);
+    glRotatef(jump + ang, 0.0, 0.0, 1.0);
     glColor3f(1.0f, 1.0f, 1.0f);
     glLineWidth(1.5);
     glBegin(GL_LINE_STRIP);
@@ -265,13 +328,13 @@ void stampaPezzo() {
     glPopMatrix();
 
     glPopMatrix();
-    SDL_GL_SwapBuffers();
     /* double buffering! */
 }
 
 int videoThread(void *p) {
 
-    screen = SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_GL_DOUBLEBUFFER);
+    SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_GL_DOUBLEBUFFER);
+
 
     //SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
     //SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1 );
@@ -303,16 +366,13 @@ int videoThread(void *p) {
 
     Uint32 inizio, fine;
     int durata, aspetto;
-    while (true) {
+    while (Alive) {
         inizio = SDL_GetTicks();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        SDL_Delay(5000);
-        eventi pp6(prova, (void*) "video", SDL_GetTicks());
-        heap_eventi.push_back(pp6);
-        push_heap(heap_eventi.begin(), heap_eventi.end(), eventi::comp);
-        SDL_CondSignal(nuovo_evento_cond);
-        stampaPezzo();
+        for (int i = 0; i < 90; i++)stampaPezzo(i * 2);
 
+        SDL_GL_SwapBuffers();
         fine = SDL_GetTicks();
         durata = fine - inizio;
         aspetto = FRAMEMS - durata;
@@ -325,13 +385,43 @@ int videoThread(void *p) {
 void statusPartita(SDL_Event *evento) {
     switch (evento->type) {
         case SDL_KEYDOWN:
-            SDL_KeyboardEvent *ke;
-            ke = (SDL_KeyboardEvent*) evento;
-            if (SDLK_SPACE == ke->keysym.sym) {
-                eventi pp6(prova, (void*) "tasto", SDL_GetTicks());
-                heap_eventi.push_back(pp6);
-                push_heap(heap_eventi.begin(), heap_eventi.end(), eventi::comp);
-                SDL_CondSignal(nuovo_evento_cond);
+            SDL_KeyboardEvent *aux_t;
+            aux_t = (SDL_KeyboardEvent*) evento;
+            Heap.inserisciEvento(prova, (void*) "tasto premuto", SDL_GetTicks());
+            switch (aux_t->keysym.sym) {
+                case SDLK_q:
+                    rx++;
+                    break;
+                case SDLK_a:
+                    rx--;
+                    break;
+                case SDLK_w:
+                    ry++;
+                    break;
+                case SDLK_s:
+                    ry--;
+                    break;
+                case SDLK_e:
+                    rz++;
+                    break;
+                case SDLK_d:
+                    rz--;
+                    break;
+                default:
+                    break;
+
+            }
+            break;
+        case SDL_MOUSEBUTTONDOWN: case SDL_MOUSEMOTION:
+            SDL_MouseButtonEvent *aux_m;
+            aux_m = (SDL_MouseButtonEvent*) evento;
+            Heap.inserisciEvento(prova, (void*) "mouse premuto", SDL_GetTicks());
+
+            if (aux_m->button == SDL_BUTTON_LEFT) {
+                ry = ry + (aux_m->x - startx);
+                rx = rx + (aux_m->y - starty);
+                startx = aux_m->x;
+                starty = aux_m->y;
             }
             break;
         default:
@@ -341,7 +431,7 @@ void statusPartita(SDL_Event *evento) {
 
 int inputThread(void *p) {
     SDL_Event evento;
-    while (SDL_WaitEvent(&evento)) {
+    while (Alive && SDL_WaitEvent(&evento)) {
         if (evento.type == SDL_QUIT) {
             gameExit();
         }
