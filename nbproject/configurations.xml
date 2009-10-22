@@ -37,7 +37,7 @@
         <linkerTool>
           <linkerLibItems>
           </linkerLibItems>
-          <commandLine>`pkg-config --libs sdl`</commandLine>
+          <commandLine>`pkg-config --libs sdl` -lGL -lGLU</commandLine>
         </linkerTool>
       </compileType>
     </conf>
