@@ -172,7 +172,6 @@ bool Alive;
 
 
 SDL_Thread *input;
-SDL_Thread *video;
 SDL_Thread *stato;
 
 void prova(void *p) {
@@ -207,19 +206,19 @@ int main(int argc, char** argv) {
         exit(-1);
     }
 
+    SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_GL_DOUBLEBUFFER);
+
     Heap.inserisciEvento(prova, (void*) "start", 0);
     Heap.inserisciEvento(gira, (void*) 90, 10000);
-    Heap.inserisciEventoPeriodico(gira, (void*) 1, 10, 1);
+    Heap.inserisciEventoPeriodico(gira, (void*) 1, 100, 1);
 
-    video = SDL_CreateThread(videoThread, NULL);
-    SDL_Delay(1000);
     input = SDL_CreateThread(inputThread, NULL);
     stato = SDL_CreateThread(statoThread, NULL);
 
+    videoThread(NULL);
     //    SDL_Flip(screen);
 
     SDL_WaitThread(input, NULL);
-    SDL_WaitThread(video, NULL);
     SDL_WaitThread(stato, NULL);
     SDL_Quit();
     return (EXIT_SUCCESS);
@@ -338,9 +337,6 @@ void stampaPezzo(GLfloat ang) {
 
 int videoThread(void *p) {
 
-    SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_GL_DOUBLEBUFFER);
-
-
     //SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
     //SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1 );
 
@@ -371,6 +367,7 @@ int videoThread(void *p) {
 
     Uint32 inizio, fine;
     int durata, aspetto;
+
     while (Alive) {
         inizio = SDL_GetTicks();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -384,6 +381,7 @@ int videoThread(void *p) {
         if (aspetto > 0)
             SDL_Delay(aspetto);
     }
+    
     return 1;
 }
 
