@@ -154,6 +154,10 @@ public:
         return evento;
     }
 
+    void controlloHeap() {
+        for (unsigned i = 0; i < Heap.size(); i++) cout << " " << Heap[i].getQuando() << flush;
+    }
+
     bool empty() {
         return Heap.empty();
     }
@@ -177,7 +181,7 @@ void prova(void *p) {
 }
 
 void gira(void *p) {
-    jump += 1;
+    jump += (int) p;
 }
 
 void gameExit() {
@@ -197,24 +201,25 @@ int main(int argc, char** argv) {
     Stato = PARTITA;
     Alive = true;
 
-    Heap.inserisciEvento(prova, (void*) "start", 0);
-    //Heap.inserisciEvento(gira, (void*) 50, 10000);
-    Heap.inserisciEventoPeriodico(gira, NULL, 1, 1);
-
     if ((SDL_Init(SDL_INIT_EVERYTHING) == -1)) {
         printf("Could not initialize SDL: %s.\n",
                 SDL_GetError()); /* stampa dell’errore */
         exit(-1);
     }
 
-    input = SDL_CreateThread(inputThread, NULL);
+    Heap.inserisciEvento(prova, (void*) "start", 0);
+    Heap.inserisciEvento(gira, (void*) 90, 10000);
+    Heap.inserisciEventoPeriodico(gira, (void*) 1, 10, 1);
+
     video = SDL_CreateThread(videoThread, NULL);
+    SDL_Delay(1000);
+    input = SDL_CreateThread(inputThread, NULL);
     stato = SDL_CreateThread(statoThread, NULL);
 
     //    SDL_Flip(screen);
 
-    SDL_WaitThread(video, NULL);
     SDL_WaitThread(input, NULL);
+    SDL_WaitThread(video, NULL);
     SDL_WaitThread(stato, NULL);
     SDL_Quit();
     return (EXIT_SUCCESS);
@@ -416,7 +421,6 @@ void statusPartita(SDL_Event *evento) {
             SDL_MouseButtonEvent *aux_m;
             aux_m = (SDL_MouseButtonEvent*) evento;
             Heap.inserisciEvento(prova, (void*) "mouse premuto", SDL_GetTicks());
-
             if (aux_m->button == SDL_BUTTON_LEFT) {
                 ry = ry + (aux_m->x - startx);
                 rx = rx + (aux_m->y - starty);
@@ -444,7 +448,6 @@ int inputThread(void *p) {
             case EDITOR:
                 break;
         }
-        //free(evento);
     }
     return 1;
 }
