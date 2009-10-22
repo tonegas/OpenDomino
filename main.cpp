@@ -9,11 +9,8 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_opengl.h>
 #include <stdlib.h>
+#include <iostream>
 #include <math.h>
-
-#include "include/appoggio/Evento.h"
-#include "include/appoggio/Heap_Eventi.h"
-
 
 using namespace std;
 
@@ -41,28 +38,11 @@ enum Stato_t {
     EDITOR
 } Stato;
 
-int statoThread(void *p);
-int videoThread(void *p);
-int inputThread(void *p);
-
-
-Heap_Eventi Heap;
+int stato();
+int video();
+int input(SDL_Event *evento);
 
 bool Alive;
-
-
-SDL_Thread *input;
-SDL_Thread *stato;
-
-void prova(void *p) {
-    cout << "EVENTO: " << (char *) p << '\n' << flush;
-    //exit(1);
-}
-
-void gira(void *p) {
-    double a=(int)p;
-    jump += a/2;
-}
 
 void gameExit() {
     Alive = false;
@@ -80,6 +60,7 @@ void stampaPezzo();
 int main(int argc, char** argv) {
     Stato = PARTITA;
     Alive = true;
+    SDL_Event evento;
 
     if ((SDL_Init(SDL_INIT_EVERYTHING) == -1)) {
         printf("Could not initialize SDL: %s.\n",
@@ -88,35 +69,57 @@ int main(int argc, char** argv) {
     }
 
     SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_DOUBLEBUF | SDL_RESIZABLE);
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
 
-    Heap.inserisciEvento(prova, (void*) "start", 0);
-    Heap.inserisciEvento(gira, (void*) 90, 10000);
-    Heap.inserisciEventoPeriodico(gira, (void*)1, 10, 1);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, 30, 0, 30, -30, 60);
+    glMultMatrixf(cavalier);
 
-    input = SDL_CreateThread(inputThread, NULL);
-    stato = SDL_CreateThread(statoThread, NULL);
+    //   gluPerspective
+    //   (
+    // 		 40.0,  /* field of view in degree */
+    // 		 1.0,   /* aspect ratio */
+    // 		 20.0, /* Z near */
+    // 		100.0 /* Z far */
+    //   );
 
-    videoThread(NULL);
-    //    SDL_Flip(screen);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(
+            0.0, 0.0, 30.0, /* eye  */
+            0.0, 0.0, 0.0, /* center  */
+            0.0, 1.0, 0.0); /* up is in positive Y direction */
 
-    SDL_WaitThread(input, NULL);
-    SDL_WaitThread(stato, NULL);
+
+    Uint32 inizio, fine;
+    int durata, aspetto;
+    while (Alive) {
+        inizio = SDL_GetTicks();
+
+        input(&evento);
+        stato();
+        video();
+        //    SDL_Flip(screen);
+
+        fine = SDL_GetTicks();
+        durata = fine - inizio;
+        aspetto = FRAMEMS - durata;
+        if (aspetto > 0)
+            SDL_Delay(aspetto);
+        else
+            cout<<"H"<<flush;
+
+    }
     SDL_Quit();
     return (EXIT_SUCCESS);
 }
 
-int statoThread(void *p) {
-    Uint32 tempo;
-    int aspetto;
-    Evento evento;
-    while (Alive) {
-        evento = Heap.estraiEvento(); //bloccante fin che non c'è un evento attende dentro la funzione
-        tempo = SDL_GetTicks();
-        aspetto = evento.getQuando() - tempo;
-        if (aspetto > 0)
-            SDL_Delay(aspetto);
-        evento.esegui();
-    }
+int stato() {
+    rx++;
     return 1;
 }
 
@@ -216,54 +219,20 @@ void stampaPezzo(GLfloat ang) {
     /* double buffering! */
 }
 
-int videoThread(void *p) {
+int video() {
 
     //SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
     //SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1 );
 
-    glEnable(GL_LINE_SMOOTH);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, 30, 0, 30, -30, 60);
-    glMultMatrixf(cavalier);
+    for (int i = 0; i < 10000; i++)stampaPezzo(i * 2);
+    //stampaPezzo(0);
 
-    //   gluPerspective
-    //   (
-    // 		 40.0,  /* field of view in degree */
-    // 		 1.0,   /* aspect ratio */
-    // 		 20.0, /* Z near */
-    // 		100.0 /* Z far */
-    //   );
+    SDL_GL_SwapBuffers();
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    gluLookAt(
-            0.0, 0.0, 30.0, /* eye  */
-            0.0, 0.0, 0.0, /* center  */
-            0.0, 1.0, 0.0); /* up is in positive Y direction */
 
-    Uint32 inizio, fine;
-    int durata, aspetto;
 
-    while (Alive) {
-        inizio = SDL_GetTicks();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        //for (int i = 0; i < 90; i++)stampaPezzo(i * 2);
-        stampaPezzo(0);
-
-        SDL_GL_SwapBuffers();
-        fine = SDL_GetTicks();
-        durata = fine - inizio;
-        aspetto = FRAMEMS - durata;
-        if (aspetto > 0)
-            SDL_Delay(aspetto);
-    }
-    
     return 1;
 }
 
@@ -272,7 +241,6 @@ void statusPartita(SDL_Event *evento) {
         case SDL_KEYDOWN:
             SDL_KeyboardEvent *aux_t;
             aux_t = (SDL_KeyboardEvent*) evento;
-            Heap.inserisciEvento(prova, (void*) "tasto premuto", SDL_GetTicks());
             switch (aux_t->keysym.sym) {
                 case SDLK_q:
                     break;
@@ -296,10 +264,11 @@ void statusPartita(SDL_Event *evento) {
 
             }
             break;
-        case SDL_MOUSEBUTTONDOWN: case SDL_MOUSEMOTION:
+        case SDL_MOUSEMOTION:
+
+        case SDL_MOUSEBUTTONDOWN:
             SDL_MouseButtonEvent *aux_m;
             aux_m = (SDL_MouseButtonEvent*) evento;
-            Heap.inserisciEvento(prova, (void*) "mouse premuto", SDL_GetTicks());
             if (aux_m->button == SDL_BUTTON_LEFT) {
                 ry = ry + (aux_m->x - startx);
                 rx = rx + (aux_m->y - starty);
@@ -312,17 +281,17 @@ void statusPartita(SDL_Event *evento) {
     }
 }
 
-int inputThread(void *p) {
-    SDL_Event evento;
-    while (Alive && SDL_WaitEvent(&evento)) {
-        if (evento.type == SDL_QUIT) {
+int input(SDL_Event *evento) {
+    SDL_PumpEvents();
+    while (SDL_PollEvent(evento)) {
+        if (evento->type == SDL_QUIT) {
             gameExit();
         }
         switch (Stato) {
             case MENU:
                 break;
             case PARTITA:
-                statusPartita(&evento);
+                statusPartita(evento);
                 break;
             case EDITOR:
                 break;
