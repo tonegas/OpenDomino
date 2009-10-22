@@ -5,13 +5,16 @@
  * Created on 19 ottobre 2009, 22.41
  */
 
+
 #include <SDL/SDL.h>
 #include <SDL/SDL_opengl.h>
 #include <stdlib.h>
-#include <iostream>
-#include <algorithm>
 #include <math.h>
-#include <vector>
+
+#include "include/appoggio/Evento.h"
+#include "include/appoggio/Heap_Eventi.h"
+
+
 using namespace std;
 
 
@@ -42,131 +45,8 @@ int statoThread(void *p);
 int videoThread(void *p);
 int inputThread(void *p);
 
-class Evento {
-    void (*fn)(void*);
-    void *param;
-    bool rip;
-    Uint32 quando;
-    Uint32 intervallo;
 
-public:
-
-    Evento() {
-    }
-
-    Evento(void (*fn_aux)(void*), void *param_aux, Uint32 quando_aux) {
-        fn = fn_aux;
-        param = param_aux;
-        quando = quando_aux;
-        rip = 0;
-    }
-
-    Evento(void (*fn_aux)(void*), void *param_aux, Uint32 intervallo_aux, bool rip_aux) {
-        fn = fn_aux;
-        param = param_aux;
-        intervallo = intervallo_aux;
-        quando = SDL_GetTicks() + intervallo_aux;
-        rip = rip_aux;
-    }
-
-    Evento(const Evento &evento_aux) {
-        fn = evento_aux.fn;
-        param = evento_aux.param;
-        quando = evento_aux.quando;
-        intervallo = evento_aux.intervallo;
-        rip = evento_aux.rip;
-    }
-
-    static bool comp(const Evento &elem1, const Evento &elem2) {
-        if (elem1.quando > elem2.quando) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    bool getRip() {
-        return rip;
-    }
-
-    Uint32 getIntervallo() {
-        return intervallo;
-    }
-
-    Uint32 getQuando() {
-        return quando;
-    }
-
-    void setQuando(Uint32 quando_aux) {
-        quando = quando_aux;
-    }
-
-    void esegui() {
-        fn(param);
-    }
-};
-
-class Heap_eventi {
-    vector<Evento> Heap;
-    SDL_cond *nuovo_evento_cond;
-    SDL_mutex *nuovo_evento_mutex;
-
-public:
-
-    Heap_eventi() {
-        nuovo_evento_cond = SDL_CreateCond();
-        nuovo_evento_mutex = SDL_CreateMutex();
-    }
-
-    void inserisciEvento(void (*fn_aux)(void*), void *param_aux, Uint32 quando_aux) {
-        Evento aux(fn_aux, param_aux, quando_aux);
-        SDL_mutexP(nuovo_evento_mutex);
-        Heap.push_back(aux);
-        push_heap(Heap.begin(), Heap.end(), Evento::comp);
-        SDL_CondSignal(nuovo_evento_cond);
-        SDL_mutexV(nuovo_evento_mutex);
-    }
-
-    void inserisciEventoPeriodico(void (*fn_aux)(void*), void *param_aux, Uint32 intervallo_aux, bool rip_aux) {
-        Evento aux(fn_aux, param_aux, intervallo_aux, rip_aux);
-        SDL_mutexP(nuovo_evento_mutex);
-        Heap.push_back(aux);
-        push_heap(Heap.begin(), Heap.end(), Evento::comp);
-        SDL_CondSignal(nuovo_evento_cond);
-        SDL_mutexV(nuovo_evento_mutex);
-    }
-
-    Evento estraiEvento() {
-        SDL_mutexP(nuovo_evento_mutex);
-        if (Heap.empty()) {
-            SDL_CondWait(nuovo_evento_cond, nuovo_evento_mutex);
-        }
-        Evento evento = Heap.front();
-        pop_heap(Heap.begin(), Heap.end(), Evento::comp);
-        Heap.pop_back();
-        if (evento.getRip() == 1) {
-            evento.setQuando(SDL_GetTicks() + evento.getIntervallo());
-            Heap.push_back(evento);
-            push_heap(Heap.begin(), Heap.end(), Evento::comp);
-            SDL_CondSignal(nuovo_evento_cond);
-        }
-        SDL_mutexV(nuovo_evento_mutex);
-        return evento;
-    }
-
-    void controlloHeap() {
-        for (unsigned i = 0; i < Heap.size(); i++) cout << " " << Heap[i].getQuando() << flush;
-    }
-
-    bool empty() {
-        return Heap.empty();
-    }
-
-
-
-};
-
-Heap_eventi Heap;
+Heap_Eventi Heap;
 
 bool Alive;
 
@@ -180,7 +60,8 @@ void prova(void *p) {
 }
 
 void gira(void *p) {
-    jump += (int) p;
+    double a=(int)p;
+    jump += a/2;
 }
 
 void gameExit() {
@@ -206,11 +87,11 @@ int main(int argc, char** argv) {
         exit(-1);
     }
 
-    SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_GL_DOUBLEBUFFER);
+    SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_DOUBLEBUF | SDL_RESIZABLE);
 
     Heap.inserisciEvento(prova, (void*) "start", 0);
     Heap.inserisciEvento(gira, (void*) 90, 10000);
-    Heap.inserisciEventoPeriodico(gira, (void*) 1, 100, 1);
+    Heap.inserisciEventoPeriodico(gira, (void*)1, 10, 1);
 
     input = SDL_CreateThread(inputThread, NULL);
     stato = SDL_CreateThread(statoThread, NULL);
@@ -372,7 +253,8 @@ int videoThread(void *p) {
         inizio = SDL_GetTicks();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        for (int i = 0; i < 90; i++)stampaPezzo(i * 2);
+        //for (int i = 0; i < 90; i++)stampaPezzo(i * 2);
+        stampaPezzo(0);
 
         SDL_GL_SwapBuffers();
         fine = SDL_GetTicks();
@@ -393,7 +275,6 @@ void statusPartita(SDL_Event *evento) {
             Heap.inserisciEvento(prova, (void*) "tasto premuto", SDL_GetTicks());
             switch (aux_t->keysym.sym) {
                 case SDLK_q:
-                    rx++;
                     break;
                 case SDLK_a:
                     rx--;
