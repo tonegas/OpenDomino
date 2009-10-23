@@ -60,8 +60,8 @@ void prova(void *p) {
 }
 
 void gira(void *p) {
-    double a=(int)p;
-    jump += a/2;
+    double a = (int) p;
+    rx += a / 2;
 }
 
 void gameExit() {
@@ -81,17 +81,21 @@ int main(int argc, char** argv) {
     Stato = PARTITA;
     Alive = true;
 
+    SDL_Delay(10000);
+
     if ((SDL_Init(SDL_INIT_EVERYTHING) == -1)) {
         printf("Could not initialize SDL: %s.\n",
                 SDL_GetError()); /* stampa dell’errore */
         exit(-1);
     }
 
+    
+
     SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_DOUBLEBUF | SDL_RESIZABLE);
 
     Heap.inserisciEvento(prova, (void*) "start", 0);
     Heap.inserisciEvento(gira, (void*) 90, 10000);
-    Heap.inserisciEventoPeriodico(gira, (void*)1, 10, 1);
+    Heap.inserisciEventoPeriodico(gira, (void*) 1, 10, 1);
 
     input = SDL_CreateThread(inputThread, NULL);
     stato = SDL_CreateThread(statoThread, NULL);
@@ -246,33 +250,51 @@ int videoThread(void *p) {
             0.0, 0.0, 0.0, /* center  */
             0.0, 1.0, 0.0); /* up is in positive Y direction */
 
-    Uint32 inizio, fine;
-    int durata, aspetto;
+    //    Uint32 inizio, fine;
+    //    int durata, aspetto;
+    //
+    //    while (Alive) {
+    //        inizio = SDL_GetTicks();
+    //        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //
+    //        //for (int i = 0; i < 90; i++)stampaPezzo(i * 2);
+    //        stampaPezzo(0);
+    //
+    //        SDL_GL_SwapBuffers();
+    //        fine = SDL_GetTicks();
+    //        durata = fine - inizio;
+    //        aspetto = FRAMEMS - durata;
+    //        if (aspetto > 0)
+    //            SDL_Delay(aspetto);
+    //    }
+
+    Uint32 tempo = 0;
+    int frame = 0;
 
     while (Alive) {
-        inizio = SDL_GetTicks();
+        if (SDL_GetTicks() - tempo > 1000) {
+            tempo = SDL_GetTicks();
+            cout<<frame<<' '<<flush;
+            frame=0;
+        }
+        frame++;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //for (int i = 0; i < 90; i++)stampaPezzo(i * 2);
-        stampaPezzo(0);
+        for (int i = 0; i < 10000; i++)stampaPezzo(i * 2);
+        //stampaPezzo(0);
 
         SDL_GL_SwapBuffers();
-        fine = SDL_GetTicks();
-        durata = fine - inizio;
-        aspetto = FRAMEMS - durata;
-        if (aspetto > 0)
-            SDL_Delay(aspetto);
     }
-    
+
     return 1;
 }
 
-void statusPartita(SDL_Event *evento) {
+void statusPartita(SDL_Event * evento) {
     switch (evento->type) {
         case SDL_KEYDOWN:
             SDL_KeyboardEvent *aux_t;
             aux_t = (SDL_KeyboardEvent*) evento;
-            Heap.inserisciEvento(prova, (void*) "tasto premuto", SDL_GetTicks());
+            //Heap.inserisciEvento(prova, (void*) "tasto premuto", SDL_GetTicks());
             switch (aux_t->keysym.sym) {
                 case SDLK_q:
                     break;
@@ -299,7 +321,7 @@ void statusPartita(SDL_Event *evento) {
         case SDL_MOUSEBUTTONDOWN: case SDL_MOUSEMOTION:
             SDL_MouseButtonEvent *aux_m;
             aux_m = (SDL_MouseButtonEvent*) evento;
-            Heap.inserisciEvento(prova, (void*) "mouse premuto", SDL_GetTicks());
+            //Heap.inserisciEvento(prova, (void*) "mouse premuto", SDL_GetTicks());
             if (aux_m->button == SDL_BUTTON_LEFT) {
                 ry = ry + (aux_m->x - startx);
                 rx = rx + (aux_m->y - starty);
