@@ -95,24 +95,35 @@ int main(int argc, char** argv) {
             0.0, 1.0, 0.0); /* up is in positive Y direction */
 
 
-    Uint32 inizio, fine;
-    int durata, aspetto;
+    Uint32 tempo=0;
+    int frame=0;
+//    Uint32 inizio,fine;
+//    int durata, aspetto;
     while (Alive) {
-        inizio = SDL_GetTicks();
+//        inizio = SDL_GetTicks();
+//
+//        input(&evento);
+//        stato();
+//        video();
+//        //    SDL_Flip(screen);
+//
+//        fine = SDL_GetTicks();
+//        durata = fine - inizio;
+//        aspetto = FRAMEMS - durata;
+//        if (aspetto > 0)
+//            SDL_Delay(aspetto);
+//        else
+//            cout<<"H"<<flush;
 
+        if(SDL_GetTicks() - tempo > 1000){
+            tempo = SDL_GetTicks();
+            cout<<frame<<' '<<flush;
+            frame=0;
+        }
+        frame++;
         input(&evento);
         stato();
         video();
-        //    SDL_Flip(screen);
-
-        fine = SDL_GetTicks();
-        durata = fine - inizio;
-        aspetto = FRAMEMS - durata;
-        if (aspetto > 0)
-            SDL_Delay(aspetto);
-        else
-            cout<<"H"<<flush;
-
     }
     SDL_Quit();
     return (EXIT_SUCCESS);
