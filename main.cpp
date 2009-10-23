@@ -75,13 +75,17 @@ const GLfloat cavalier[] = {
     0, 0, 0, 1
 };
 
+int larghezza_screen = 640;
+int altezza_screen = 480;
+bool cambio_video = false;
+
+SDL_Surface *screen;
+
 void stampaPezzo();
 
 int main(int argc, char** argv) {
     Stato = PARTITA;
     Alive = true;
-
-    SDL_Delay(10000);
 
     if ((SDL_Init(SDL_INIT_EVERYTHING) == -1)) {
         printf("Could not initialize SDL: %s.\n",
@@ -89,9 +93,9 @@ int main(int argc, char** argv) {
         exit(-1);
     }
 
-    
 
-    SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_DOUBLEBUF | SDL_RESIZABLE);
+
+    screen=SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_DOUBLEBUF | SDL_RESIZABLE);
 
     Heap.inserisciEvento(prova, (void*) "start", 0);
     Heap.inserisciEvento(gira, (void*) 90, 10000);
@@ -159,6 +163,7 @@ void stampaPezzo(GLfloat ang) {
     /* wire cube */
     glPushMatrix();
     glRotatef(jump + ang, 0.0, 0.0, 1.0);
+    glTranslatef(0, 0, ang);
     glColor3f(1.0f, 1.0f, 1.0f);
     glLineWidth(1.5);
     glBegin(GL_LINE_STRIP);
@@ -232,7 +237,7 @@ int videoThread(void *p) {
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0, 30, 0, 30, -30, 60);
+    glOrtho(-50, 50, -50, 50, -50, 60);
     glMultMatrixf(cavalier);
 
     //   gluPerspective
@@ -274,13 +279,43 @@ int videoThread(void *p) {
     while (Alive) {
         if (SDL_GetTicks() - tempo > 1000) {
             tempo = SDL_GetTicks();
-            cout<<frame<<' '<<flush;
-            frame=0;
+            cout << frame << ' ' << flush;
+            frame = 0;
         }
         frame++;
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        for (int i = 0; i < 10000; i++)stampaPezzo(i * 2);
+        if (cambio_video == true) {
+            screen=SDL_SetVideoMode(larghezza_screen, altezza_screen, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_DOUBLEBUF | SDL_RESIZABLE);
+            glEnable(GL_LINE_SMOOTH);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            glOrtho(-50, 50, -50, 50, -50, 60);
+            glMultMatrixf(cavalier);
+
+            //   gluPerspective
+            //   (
+            // 		 40.0,  /* field of view in degree */
+            // 		 1.0,   /* aspect ratio */
+            // 		 20.0, /* Z near */
+            // 		100.0 /* Z far */
+            //   );
+
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+            gluLookAt(
+                    0.0, 0.0, 30.0, /* eye  */
+                    0.0, 0.0, 0.0, /* center  */
+                    0.0, 1.0, 0.0); /* up is in positive Y direction */
+            cambio_video = false;
+        }
+
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        for (int i = 0; i < 10000; i++)stampaPezzo(i);
         //stampaPezzo(0);
 
         SDL_GL_SwapBuffers();
@@ -292,10 +327,8 @@ int videoThread(void *p) {
 void statusPartita(SDL_Event * evento) {
     switch (evento->type) {
         case SDL_KEYDOWN:
-            SDL_KeyboardEvent *aux_t;
-            aux_t = (SDL_KeyboardEvent*) evento;
             //Heap.inserisciEvento(prova, (void*) "tasto premuto", SDL_GetTicks());
-            switch (aux_t->keysym.sym) {
+            switch (evento->key.keysym.sym) {
                 case SDLK_q:
                     break;
                 case SDLK_a:
@@ -319,15 +352,19 @@ void statusPartita(SDL_Event * evento) {
             }
             break;
         case SDL_MOUSEBUTTONDOWN: case SDL_MOUSEMOTION:
-            SDL_MouseButtonEvent *aux_m;
-            aux_m = (SDL_MouseButtonEvent*) evento;
             //Heap.inserisciEvento(prova, (void*) "mouse premuto", SDL_GetTicks());
-            if (aux_m->button == SDL_BUTTON_LEFT) {
-                ry = ry + (aux_m->x - startx);
-                rx = rx + (aux_m->y - starty);
-                startx = aux_m->x;
-                starty = aux_m->y;
+            if (evento->button.button == SDL_BUTTON_LEFT) {
+                ry = ry + (evento->button.x - startx);
+                rx = rx + (evento->button.y - starty);
+                startx = evento->button.x;
+                starty = evento->button.y;
             }
+            break;
+        case SDL_VIDEORESIZE: //Screen resized
+            cout << "video" << flush;
+            larghezza_screen = evento->resize.w;
+            altezza_screen = evento->resize.h;
+            cambio_video = true;
             break;
         default:
             break;
