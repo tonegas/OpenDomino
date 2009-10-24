@@ -5,48 +5,43 @@
  * Created on 19 ottobre 2009, 22.41
  */
 
-
 #include <SDL/SDL.h>
 #include <SDL/SDL_opengl.h>
 #include <stdlib.h>
-#include <iostream>
+//#include <iostream>
 #include <math.h>
 
 using namespace std;
 
-
-#define GAMERATE    60                  //aggiornamenti dello stato al secondo
-#define GAMEMS      1000/GAMERATE       //millisecondi per aggiornare stato
 #define FRAMERATE   50                  //frame per secondo massimi
 #define FRAMEMS     1000/FRAMERATE      //millisecondi per frame
+
+#define LARGHEZZA_FIN 1000
+#define ALTEZZA_FIN  1000
+#define BPP_FIN       32
+
+#define GRIGLIA_EDITOR_Y 20
+#define GRIGLIA_EDITOR_X 25
 
 
 #define LARGHEZZA 4
 #define ALTEZZA 8
 #define SPESSORE 2
 
-GLfloat rx = 0;
-GLfloat ry = 0;
-GLfloat rz = 0;
-GLfloat startx = 0;
-GLfloat starty = 0;
-GLfloat jump = 0;
+//
+//GLfloat rx = 0;
+//GLfloat ry = 0;
+//GLfloat rz = 0;
+//GLfloat startx = 0;
+//GLfloat starty = 0;
+//GLfloat jump = 0;
 
-enum Stato_t {
+enum Stato {
     MENU,
     PARTITA,
-    EDITOR
-} Stato;
-
-int stato();
-int video();
-int input(SDL_Event *evento);
-
-bool Alive;
-
-void gameExit() {
-    Alive = false;
-}
+    EDITOR_COSTRUISCI,
+    EDITOR_TEST
+};
 
 const GLfloat cavalier[] = {
     1, 0, 0, 0,
@@ -55,191 +50,330 @@ const GLfloat cavalier[] = {
     0, 0, 0, 1
 };
 
-void stampaPezzo();
+//quando passa a false il gioco si chiude
+bool alive;
 
-int _FRAMEMS = FRAMEMS;
+void gameExit() {
+    alive = false;
+}
+
+class Gioco;
+
+
+class PosOri {
+public:
+    GLfloat x;
+    GLfloat y;
+    GLfloat z;
+    GLfloat rx;
+    GLfloat ry;
+    GLfloat rz;
+
+    PosOri(GLfloat x_aux = 0, GLfloat y_aux = 0, GLfloat z_aux = 0, GLfloat rx_aux = 0, GLfloat ry_aux = 0, GLfloat rz_aux = 0) {
+        x = x_aux;
+        y = y_aux;
+        z = z_aux;
+        rx = rx_aux;
+        ry = ry_aux;
+        rz = rz_aux;
+    }
+
+};
+
+class Livello {
+    PosOri Telecamera;
+    int num_righe;
+    int num_colonne;
+    //Posto matrice_posti[NUM_RIGHE][NUM_COLONNE];
+public:
+
+    Livello(int num_righe_aux, int num_colonne_aux, GLfloat posizione_x_telecamera, GLfloat posizione_y_telecamera, GLfloat altezza_telecamera) {
+        num_righe = num_righe_aux;
+        num_colonne = num_colonne_aux;
+        Telecamera.x = posizione_x_telecamera;
+        Telecamera.y = posizione_y_telecamera;
+        Telecamera.z = altezza_telecamera;
+    }
+
+    PosOri getTelecamera() {
+        return Telecamera;
+    }
+};
+
+class Editor {
+
+    Livello livello_editor;
+    int num_righe;
+    int num_colonne;
+
+public:
+
+    Editor(int num_righe_aux = GRIGLIA_EDITOR_Y, int num_colonne_aux = GRIGLIA_EDITOR_X) : livello_editor(num_righe_aux, num_colonne_aux, (num_colonne_aux * ALTEZZA) / 2, (num_righe_aux * ALTEZZA) / 2, 400) {
+        num_righe = num_righe_aux;
+        num_colonne = num_colonne_aux;
+    }
+
+    void inizializzaLivello() {
+                //glViewport(0,0,LARGHEZZA_FIN,ALTEZZA_FIN);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        //gluPerspective(45,LARGHEZZA_FIN/ALTEZZA_FIN,0.1,100);
+        glOrtho(0, ((GLfloat)num_colonne * ALTEZZA), 0, ((GLfloat)num_righe * ALTEZZA), 100, 200);//misure rispetto alla posizione dell'occhio
+
+        glMultMatrixf(cavalier);
+
+//           gluPerspective
+//           (
+//         		 40.0,  /* field of view in degree */
+//         		 1.0,   /* aspect ratio */
+//         		 20.0, /* Z near */
+//         		100.0 /* Z far */
+//           );
+
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        gluLookAt(
+                0, 0, 150, /* eye  */
+                0, 0, 0.0, /* center  */
+                0.0, 1.0, 0.0); /* up is in positive Y direction */
+    }
+
+    int stato(Gioco& gioco);
+    int video(Gioco& gioco);
+    int input(Gioco& gioco);
+
+    void stampaSuperficeBase();
+    void stampaPezzo(int x,int y);
+
+};
+
+class Gioco {
+    //parametri finestra
+    int larghezza;
+    int altezza;
+    int bpp;
+
+    //superfice della finestra
+    SDL_Surface *screen;
+
+    //stato del gioco
+    Stato stato;
+
+    //variabile per la modifica della velocità di gioco
+    int frame_ms;
+
+    //giocatore
+    //Giocatore giocatore;
+
+    //Oggetto editor per la gestione della grafica della partita
+    Editor domino_editor;
+
+public:
+
+    Gioco(){
+
+        larghezza = LARGHEZZA_FIN;
+        altezza = ALTEZZA_FIN;
+        bpp = BPP_FIN;
+
+        stato = EDITOR_COSTRUISCI;
+        alive = true;
+        frame_ms = FRAMEMS;
+
+        if ((SDL_Init(SDL_INIT_EVERYTHING) == -1)) {
+            printf("ERRORE di inizializzazione SDL: %s.\n", SDL_GetError());
+            exit(-1);
+        }
+
+        screen = SDL_SetVideoMode(larghezza, altezza, bpp, SDL_HWSURFACE | SDL_OPENGL | SDL_DOUBLEBUF);
+        if (screen == NULL) {
+            printf("ERRORE di creazione video SDL: %s.\n", SDL_GetError());
+            exit(-1);
+        }
+
+        glEnable(GL_LINE_SMOOTH);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+
+        domino_editor.inizializzaLivello();
+    }
+
+    void loop() {
+        Uint32 inizio, fine;
+        int durata, aspetto;
+        while (alive) {
+            inizio = SDL_GetTicks();
+
+            domino_editor.input((*this));
+            domino_editor.stato((*this));
+            domino_editor.video((*this));
+            //    SDL_Flip(screen);
+
+            fine = SDL_GetTicks();
+            durata = fine - inizio;
+            aspetto = frame_ms - durata;
+            if (aspetto > 0)
+                SDL_Delay(aspetto);
+            //            else
+            //                cout << "H" << flush;
+
+            //        if(SDL_GetTicks() - tempo > 1000){
+            //            tempo = SDL_GetTicks();
+            //            cout<<frame<<' '<<flush;
+            //            frame=0;
+            //        }
+            //        frame++;
+            //        input(&evento);
+            //        stato();
+            //        video();
+        }
+    }
+
+    void setFrames(GLfloat frame_aux) {
+        frame_ms = frame_aux;
+    }
+};
 
 int main(int argc, char** argv) {
-    Stato = PARTITA;
-    Alive = true;
-    SDL_Event evento;
-
-    if ((SDL_Init(SDL_INIT_EVERYTHING) == -1)) {
-        printf("Could not initialize SDL: %s.\n",
-                SDL_GetError()); /* stampa dell’errore */
-        exit(-1);
-    }
-
-    SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_DOUBLEBUF | SDL_RESIZABLE);
-    glEnable(GL_LINE_SMOOTH);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, 30, 0, 30, -30, 60);
-    glMultMatrixf(cavalier);
-
-    //   gluPerspective
-    //   (
-    // 		 40.0,  /* field of view in degree */
-    // 		 1.0,   /* aspect ratio */
-    // 		 20.0, /* Z near */
-    // 		100.0 /* Z far */
-    //   );
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    gluLookAt(
-            0.0, 0.0, 30.0, /* eye  */
-            0.0, 0.0, 0.0, /* center  */
-            0.0, 1.0, 0.0); /* up is in positive Y direction */
-
-
-    Uint32 tempo = 0;
-    //    int frame=0;
-    Uint32 inizio, fine;
-    int durata, aspetto;
-    while (Alive) {
-        inizio = SDL_GetTicks();
-
-        input(&evento);
-        stato();
-        video();
-        //    SDL_Flip(screen);
-
-        fine = SDL_GetTicks();
-        durata = fine - inizio;
-        aspetto = _FRAMEMS - durata;
-        if (aspetto > 0)
-            SDL_Delay(aspetto);
-        else
-            cout << "H" << flush;
-
-        //        if(SDL_GetTicks() - tempo > 1000){
-        //            tempo = SDL_GetTicks();
-        //            cout<<frame<<' '<<flush;
-        //            frame=0;
-        //        }
-        //        frame++;
-        //        input(&evento);
-        //        stato();
-        //        video();
-    }
+    Gioco domino;
+    domino.loop();
     SDL_Quit();
     return (EXIT_SUCCESS);
 }
 
-int stato() {
-    rx++;
+int Editor::stato(Gioco& gioco) {
     return 1;
 }
 
-void stampaPezzo(GLfloat ang) {
-    /* clear screen */
-
+void Editor::stampaSuperficeBase() {
     glPushMatrix();
 
-    /* affine transformations */
-    glRotatef(rx, 1.0, 0.0, 0.0);
-    glRotatef(ry, 0.0, 1.0, 0.0);
-    glRotatef(rz, 0.0, 0.0, 1.0);
-
-    /* orientation vectors */
-    glBegin(GL_LINES);
-    glColor3f(1, 0, 0);
+    glColor3f(1.0f, 0.2f, 0.2f);
+    glBegin(GL_QUADS);
     glVertex3f(0, 0, 0);
-    glVertex3f(1, 0, 0);
-    glColor3f(0, 1, 0);
-    glVertex3f(0, 0, 0);
-    glVertex3f(0, 1, 0);
-    glColor3f(0, 0, 1);
-    glVertex3f(0, 0, 0);
-    glVertex3f(0, 0, 1);
+    glVertex3f(num_colonne*ALTEZZA, 0, 0);
+    glVertex3f(num_colonne*ALTEZZA, num_righe*ALTEZZA, 0);
+    glVertex3f(0, num_righe*ALTEZZA, 0);
     glEnd();
 
-    /* base quad */
-    // 		glColor3f(0.2f,0.2f,0.2f);
-    // 		glBegin(GL_QUADS );
-    // 			glVertex3f(-10,-5,-10);
-    // 			glVertex3f(+10,-5,-10);
-    // 			glVertex3f(+10,-5,+10);
-    // 			glVertex3f(-10,-5,+10);
-    // 		glEnd();
+    glPopMatrix();
+}
 
-    /* wire cube */
+void Editor::stampaPezzo(int x,int y) {
+    GLfloat xf=(GLfloat)x;
+    GLfloat yf=(GLfloat)y;
+
+    GLfloat sposto_x = ((GLfloat)ALTEZZA)*xf+((GLfloat)ALTEZZA/2.0)-((GLfloat)SPESSORE/2.0);
+    GLfloat sposto_y = ((GLfloat)ALTEZZA)*yf;
+//    /* clear screen */
+//
+//    glPushMatrix();
+//
+//    /* affine transformations */
+//    glRotatef(rx, 1.0, 0.0, 0.0);
+//    glRotatef(ry, 0.0, 1.0, 0.0);
+//    glRotatef(rz, 0.0, 0.0, 1.0);
+//
+//    /* orientation vectors */
+//    glBegin(GL_LINES);
+//    glColor3f(1, 0, 0);
+//    glVertex3f(0, 0, 0);
+//    glVertex3f(1, 0, 0);
+//    glColor3f(0, 1, 0);
+//    glVertex3f(0, 0, 0);
+//    glVertex3f(0, 1, 0);
+//    glColor3f(0, 0, 1);
+//    glVertex3f(0, 0, 0);
+//    glVertex3f(0, 0, 1);
+//    glEnd();
+//
+//    /* base quad */
+//    // 		glColor3f(0.2f,0.2f,0.2f);
+//    // 		glBegin(GL_QUADS );
+//    // 			glVertex3f(-10,-5,-10);
+//    // 			glVertex3f(+10,-5,-10);
+//    // 			glVertex3f(+10,-5,+10);
+//    // 			glVertex3f(-10,-5,+10);
+//    // 		glEnd();
+//
+//    /* wire cube */
     glPushMatrix();
-    glRotatef(jump + ang, 0.0, 0.0, 1.0);
+    glTranslatef(sposto_x, sposto_y, 0.0);
     glColor3f(1.0f, 1.0f, 1.0f);
     glLineWidth(1.5);
     glBegin(GL_LINE_STRIP);
     glVertex3f(0.0, 0.0, 0.0);
-    glVertex3f(-SPESSORE, 0.0, 0.0);
-    glVertex3f(-SPESSORE, ALTEZZA, 0.0);
+    glVertex3f(SPESSORE, 0.0, 0.0);
+    glVertex3f(SPESSORE, ALTEZZA, 0.0);
     glVertex3f(0.0, ALTEZZA, 0.0);
     glVertex3f(0.0, 0.0, 0.0);
     glEnd();
     glBegin(GL_LINE_STRIP);
     glVertex3f(0.0, 0.0, LARGHEZZA);
-    glVertex3f(-SPESSORE, 0.0, LARGHEZZA);
-    glVertex3f(-SPESSORE, ALTEZZA, LARGHEZZA);
+    glVertex3f(SPESSORE, 0.0, LARGHEZZA);
+    glVertex3f(SPESSORE, ALTEZZA, LARGHEZZA);
     glVertex3f(0.0, ALTEZZA, LARGHEZZA);
     glVertex3f(0.0, 0.0, LARGHEZZA);
     glEnd();
     glBegin(GL_LINE_STRIP);
     glVertex3f(0.0, 0.0, 0.0);
-    glVertex3f(-SPESSORE, 0.0, 0.0);
-    glVertex3f(-SPESSORE, 0.0, LARGHEZZA);
+    glVertex3f(SPESSORE, 0.0, 0.0);
+    glVertex3f(SPESSORE, 0.0, LARGHEZZA);
     glVertex3f(0.0, 0.0, LARGHEZZA);
     glVertex3f(0.0, 0.0, 0.0);
     glEnd();
     glBegin(GL_LINE_STRIP);
     glVertex3f(0.0, ALTEZZA, 0.0);
-    glVertex3f(-SPESSORE, ALTEZZA, 0.0);
-    glVertex3f(-SPESSORE, ALTEZZA, LARGHEZZA);
+    glVertex3f(SPESSORE, ALTEZZA, 0.0);
+    glVertex3f(SPESSORE, ALTEZZA, LARGHEZZA);
     glVertex3f(0.0, ALTEZZA, LARGHEZZA);
     glVertex3f(0.0, ALTEZZA, 0.0);
     glEnd();
-    // 			glColor3f(0.0f,1.0f,1.0f);
-    // 			glBegin(GL_QUADS );
-    // 				glVertex3f(0,-5,-5);
-    // 				glVertex3f(+1,-5,-5);
-    // 				glVertex3f(+1,-5,+5);
-    // 				glVertex3f(0,-5,+5);
-    // 			glEnd();
-    // 			glBegin(GL_QUADS );
-    // 				glVertex3f(+1,-5,-5);
-    // 				glVertex3f(+1,-5,+5);
-    // 				glVertex3f(+1,+5,+5);
-    // 				glVertex3f(+1,+5,-5);
-    // 			glEnd();
-    // 			glBegin(GL_QUADS );
-    // 				glVertex3f(+1,-5,+5);
-    // 				glVertex3f(+1,+5,+5);
-    // 				glVertex3f(0,+5,+5);
-    // 				glVertex3f(0,-5,+5);
-    // 			glEnd();
-    // 			glBegin(GL_QUADS );
-    // 				glVertex3f(+5,+5,+5);
-    // 				glVertex3f(-5,+5,+5);
-    // 				glVertex3f(-5,+5,-5);
-    // 				glVertex3f(+5,+5,-5);
-    // 			glEnd();
+//    // 			glColor3f(0.0f,1.0f,1.0f);
+//    // 			glBegin(GL_QUADS );
+//    // 				glVertex3f(0,-5,-5);
+//    // 				glVertex3f(+1,-5,-5);
+//    // 				glVertex3f(+1,-5,+5);
+//    // 				glVertex3f(0,-5,+5);
+//    // 			glEnd();
+//    // 			glBegin(GL_QUADS );
+//    // 				glVertex3f(+1,-5,-5);
+//    // 				glVertex3f(+1,-5,+5);
+//    // 				glVertex3f(+1,+5,+5);
+//    // 				glVertex3f(+1,+5,-5);
+//    // 			glEnd();
+//    // 			glBegin(GL_QUADS );
+//    // 				glVertex3f(+1,-5,+5);
+//    // 				glVertex3f(+1,+5,+5);
+//    // 				glVertex3f(0,+5,+5);
+//    // 				glVertex3f(0,-5,+5);
+//    // 			glEnd();
+//    // 			glBegin(GL_QUADS );
+//    // 				glVertex3f(+5,+5,+5);
+//    // 				glVertex3f(-5,+5,+5);
+//    // 				glVertex3f(-5,+5,-5);
+//    // 				glVertex3f(+5,+5,-5);
+//    // 			glEnd();
+//    glPopMatrix();
+//
     glPopMatrix();
-
-    glPopMatrix();
-    /* double buffering! */
+//    /* double buffering! */
 }
 
-int video() {
+int Editor::video(Gioco& gioco) {
 
     //SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
     //SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1 );
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    for (int i = 0; i < 90; i++)stampaPezzo(i * 2);
+
+    stampaSuperficeBase();
+    for(int i=0;i<num_colonne;i++)
+        for(int j=0;j<num_righe;j++)
+            stampaPezzo(i,j);
+    //for (int i = 0; i < 90; i++)stampaPezzo(i * 2);
     //stampaPezzo(0);
 
     SDL_GL_SwapBuffers();
@@ -249,69 +383,54 @@ int video() {
     return 1;
 }
 
-void statusPartita(SDL_Event *evento) {
-    switch (evento->type) {
-        case SDL_KEYDOWN:
-            SDL_KeyboardEvent *aux_t;
-            aux_t = (SDL_KeyboardEvent*) evento;
-            switch (aux_t->keysym.sym) {
-                case SDLK_q:
-                    _FRAMEMS+=1;
-                    break;
-                case SDLK_a:
-                    _FRAMEMS-=1;
-                    if(_FRAMEMS < 0)
-                        _FRAMEMS=0;
-                    break;
-                case SDLK_w:
-                    ry++;
-                    break;
-                case SDLK_s:
-                    ry--;
-                    break;
-                case SDLK_e:
-                    rz++;
-                    break;
-                case SDLK_d:
-                    rz--;
-                    break;
-                default:
-                    break;
-
-            }
-            break;
-        case SDL_MOUSEMOTION:
-
-        case SDL_MOUSEBUTTONDOWN:
-            SDL_MouseButtonEvent *aux_m;
-            aux_m = (SDL_MouseButtonEvent*) evento;
-            if (aux_m->button == SDL_BUTTON_LEFT) {
-                ry = ry + (aux_m->x - startx);
-                rx = rx + (aux_m->y - starty);
-                startx = aux_m->x;
-                starty = aux_m->y;
-            }
-            break;
-        default:
-            break;
-    }
-}
-
-int input(SDL_Event *evento) {
+int Editor::input(Gioco& gioco) {
+    SDL_Event evento;
     SDL_PumpEvents();
-    while (SDL_PollEvent(evento)) {
-        if (evento->type == SDL_QUIT) {
+    while (SDL_PollEvent(&evento)) {
+        if (evento.type == SDL_QUIT) {
             gameExit();
         }
-        switch (Stato) {
-            case MENU:
+        switch (evento.type) {
+            case SDL_KEYDOWN:
+                switch (evento.key.keysym.sym) {
+                    case SDLK_q:
+                        break;
+                    case SDLK_a:
+                        break;
+                    case SDLK_2:
+                        gioco.setFrames(FRAMEMS * 10);
+                        break;
+                    case SDLK_3:
+                        gioco.setFrames(FRAMEMS * 5);
+                        break;
+                    case SDLK_4:
+                        gioco.setFrames(FRAMEMS * 2);
+                        break;
+                    case SDLK_5:
+                        gioco.setFrames(FRAMEMS);
+                        break;
+                    case SDLK_6:
+                        gioco.setFrames(FRAMEMS / 5);
+                        break;
+                    case SDLK_7:
+                        gioco.setFrames(FRAMEMS / 10);
+                        break;
+                    default:
+                        break;
+
+                }
                 break;
-            case PARTITA:
-                statusPartita(evento);
+            case SDL_MOUSEMOTION:
+
+            case SDL_MOUSEBUTTONDOWN:
+                if (evento.button.button == SDL_BUTTON_LEFT) {
+
+                }
                 break;
-            case EDITOR:
+            default:
                 break;
         }
+
     }
     return 1;
 }
