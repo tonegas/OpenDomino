@@ -11,10 +11,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "include/appoggio/Evento.h"
-#include "include/appoggio/Heap_Eventi.h"
-
-
 using namespace std;
 
 
@@ -35,6 +31,8 @@ GLfloat startx = 0;
 GLfloat starty = 0;
 GLfloat jump = 0;
 
+GLfloat variazione = 1;
+
 enum Stato_t {
     MENU,
     PARTITA,
@@ -45,24 +43,10 @@ int statoThread(void *p);
 int videoThread(void *p);
 int inputThread(void *p);
 
-
-Heap_Eventi Heap;
-
 bool Alive;
-
 
 SDL_Thread *input;
 SDL_Thread *stato;
-
-void prova(void *p) {
-    cout << "EVENTO: " << (char *) p << '\n' << flush;
-    //exit(1);
-}
-
-void gira(void *p) {
-    double a = (int) p;
-    rx += a / 2;
-}
 
 void gameExit() {
     Alive = false;
@@ -75,13 +59,9 @@ const GLfloat cavalier[] = {
     0, 0, 0, 1
 };
 
-int larghezza_screen = 640;
-int altezza_screen = 480;
-bool cambio_video = false;
-
-SDL_Surface *screen;
-
 void stampaPezzo();
+
+int _GAMEMS = GAMEMS;
 
 int main(int argc, char** argv) {
     Stato = PARTITA;
@@ -95,11 +75,7 @@ int main(int argc, char** argv) {
 
 
 
-    screen=SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_DOUBLEBUF | SDL_RESIZABLE);
-
-    Heap.inserisciEvento(prova, (void*) "start", 0);
-    Heap.inserisciEvento(gira, (void*) 90, 10000);
-    Heap.inserisciEventoPeriodico(gira, (void*) 1, 10, 1);
+    SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_DOUBLEBUF | SDL_RESIZABLE);
 
     input = SDL_CreateThread(inputThread, NULL);
     stato = SDL_CreateThread(statoThread, NULL);
@@ -114,16 +90,18 @@ int main(int argc, char** argv) {
 }
 
 int statoThread(void *p) {
-    Uint32 tempo;
-    int aspetto;
-    Evento evento;
+    Uint32 inizio, fine;
+    int durata, aspetto;
     while (Alive) {
-        evento = Heap.estraiEvento(); //bloccante fin che non c'è un evento attende dentro la funzione
-        tempo = SDL_GetTicks();
-        aspetto = evento.getQuando() - tempo;
+        inizio = SDL_GetTicks();
+
+        rx++;
+
+        fine = SDL_GetTicks();
+        durata = fine - inizio;
+        aspetto = _GAMEMS - durata;
         if (aspetto > 0)
             SDL_Delay(aspetto);
-        evento.esegui();
     }
     return 1;
 }
@@ -237,7 +215,7 @@ int videoThread(void *p) {
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(-50, 50, -50, 50, -50, 60);
+    glOrtho(0, 30, 0, 30, -30, 60);
     glMultMatrixf(cavalier);
 
     //   gluPerspective
@@ -255,71 +233,41 @@ int videoThread(void *p) {
             0.0, 0.0, 0.0, /* center  */
             0.0, 1.0, 0.0); /* up is in positive Y direction */
 
-    //    Uint32 inizio, fine;
-    //    int durata, aspetto;
-    //
-    //    while (Alive) {
-    //        inizio = SDL_GetTicks();
-    //        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //
-    //        //for (int i = 0; i < 90; i++)stampaPezzo(i * 2);
-    //        stampaPezzo(0);
-    //
-    //        SDL_GL_SwapBuffers();
-    //        fine = SDL_GetTicks();
-    //        durata = fine - inizio;
-    //        aspetto = FRAMEMS - durata;
-    //        if (aspetto > 0)
-    //            SDL_Delay(aspetto);
-    //    }
-
-    Uint32 tempo = 0;
-    int frame = 0;
+    Uint32 inizio, fine;
+    int durata, aspetto;
 
     while (Alive) {
-        if (SDL_GetTicks() - tempo > 1000) {
-            tempo = SDL_GetTicks();
-            cout << frame << ' ' << flush;
-            frame = 0;
-        }
-        frame++;
-
-        if (cambio_video == true) {
-            screen=SDL_SetVideoMode(larghezza_screen, altezza_screen, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_DOUBLEBUF | SDL_RESIZABLE);
-            glEnable(GL_LINE_SMOOTH);
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
-
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            glOrtho(-50, 50, -50, 50, -50, 60);
-            glMultMatrixf(cavalier);
-
-            //   gluPerspective
-            //   (
-            // 		 40.0,  /* field of view in degree */
-            // 		 1.0,   /* aspect ratio */
-            // 		 20.0, /* Z near */
-            // 		100.0 /* Z far */
-            //   );
-
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
-            gluLookAt(
-                    0.0, 0.0, 30.0, /* eye  */
-                    0.0, 0.0, 0.0, /* center  */
-                    0.0, 1.0, 0.0); /* up is in positive Y direction */
-            cambio_video = false;
-        }
-
-
+        inizio = SDL_GetTicks();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        for (int i = 0; i < 10000; i++)stampaPezzo(i);
-        //stampaPezzo(0);
+
+        //for (int i = 0; i < 90; i++)stampaPezzo(i * 2);
+        stampaPezzo(0);
 
         SDL_GL_SwapBuffers();
+        fine = SDL_GetTicks();
+        durata = fine - inizio;
+        aspetto = FRAMEMS - durata;
+        if (aspetto > 0)
+            SDL_Delay(aspetto);
     }
+
+    //    Uint32 tempo = 0;
+    //    int frame = 0;
+    //
+    //    while (Alive) {
+    //        if (SDL_GetTicks() - tempo > 1000) {
+    //            tempo = SDL_GetTicks();
+    //            cout << frame << ' ' << flush;
+    //            frame = 0;
+    //        }
+    //        frame++;
+    //
+    //        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //        for (int i = 0; i < 10000; i++)stampaPezzo(i);
+    //        //stampaPezzo(0);
+    //
+    //        SDL_GL_SwapBuffers();
+    //    }
 
     return 1;
 }
@@ -330,9 +278,12 @@ void statusPartita(SDL_Event * evento) {
             //Heap.inserisciEvento(prova, (void*) "tasto premuto", SDL_GetTicks());
             switch (evento->key.keysym.sym) {
                 case SDLK_q:
+                    _GAMEMS += 1;
                     break;
                 case SDLK_a:
-                    rx--;
+                    _GAMEMS -= 1;
+                    if (_GAMEMS < 0)
+                        _GAMEMS = 0;
                     break;
                 case SDLK_w:
                     ry++;
@@ -360,11 +311,11 @@ void statusPartita(SDL_Event * evento) {
                 starty = evento->button.y;
             }
             break;
-        case SDL_VIDEORESIZE: //Screen resized
-            cout << "video" << flush;
-            larghezza_screen = evento->resize.w;
-            altezza_screen = evento->resize.h;
-            cambio_video = true;
+        case SDL_VIDEORESIZE: // da parecchi problemi con OpenGL
+            //            cout << "video" << flush;
+            //            larghezza_screen = evento->resize.w;
+            //            altezza_screen = evento->resize.h;
+            //            cambio_video = true;
             break;
         default:
             break;

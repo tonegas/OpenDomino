@@ -31,8 +31,6 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/appoggio/Evento.o \
-	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/appoggio/Heap_Eventi.o \
 	${OBJECTDIR}/main.o
 
 # C Compiler Flags
@@ -58,16 +56,6 @@ LDLIBSOPTIONS=
 dist/Debug/GNU-Linux-x86/opendomino: ${OBJECTFILES}
 	${MKDIR} -p dist/Debug/GNU-Linux-x86
 	${LINK.cc} `pkg-config --libs sdl` -lGL -lGLU -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/opendomino  ${OBJECTFILES} ${LDLIBSOPTIONS} 
-
-${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/appoggio/Evento.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/appoggio/Evento.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/appoggio
-	${RM} $@.d
-	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/appoggio/Evento.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/appoggio/Evento.cpp
-
-${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/appoggio/Heap_Eventi.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/appoggio/Heap_Eventi.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/appoggio
-	${RM} $@.d
-	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/appoggio/Heap_Eventi.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/appoggio/Heap_Eventi.cpp
 
 ${OBJECTDIR}/main.o: nbproject/Makefile-${CND_CONF}.mk main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
