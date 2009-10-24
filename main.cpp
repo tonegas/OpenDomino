@@ -57,6 +57,8 @@ const GLfloat cavalier[] = {
 
 void stampaPezzo();
 
+int _FRAMEMS = FRAMEMS;
+
 int main(int argc, char** argv) {
     Stato = PARTITA;
     Alive = true;
@@ -95,35 +97,35 @@ int main(int argc, char** argv) {
             0.0, 1.0, 0.0); /* up is in positive Y direction */
 
 
-    Uint32 tempo=0;
-    int frame=0;
-//    Uint32 inizio,fine;
-//    int durata, aspetto;
+    Uint32 tempo = 0;
+    //    int frame=0;
+    Uint32 inizio, fine;
+    int durata, aspetto;
     while (Alive) {
-//        inizio = SDL_GetTicks();
-//
-//        input(&evento);
-//        stato();
-//        video();
-//        //    SDL_Flip(screen);
-//
-//        fine = SDL_GetTicks();
-//        durata = fine - inizio;
-//        aspetto = FRAMEMS - durata;
-//        if (aspetto > 0)
-//            SDL_Delay(aspetto);
-//        else
-//            cout<<"H"<<flush;
+        inizio = SDL_GetTicks();
 
-        if(SDL_GetTicks() - tempo > 1000){
-            tempo = SDL_GetTicks();
-            cout<<frame<<' '<<flush;
-            frame=0;
-        }
-        frame++;
         input(&evento);
         stato();
         video();
+        //    SDL_Flip(screen);
+
+        fine = SDL_GetTicks();
+        durata = fine - inizio;
+        aspetto = _FRAMEMS - durata;
+        if (aspetto > 0)
+            SDL_Delay(aspetto);
+        else
+            cout << "H" << flush;
+
+        //        if(SDL_GetTicks() - tempo > 1000){
+        //            tempo = SDL_GetTicks();
+        //            cout<<frame<<' '<<flush;
+        //            frame=0;
+        //        }
+        //        frame++;
+        //        input(&evento);
+        //        stato();
+        //        video();
     }
     SDL_Quit();
     return (EXIT_SUCCESS);
@@ -237,7 +239,7 @@ int video() {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    for (int i = 0; i < 10000; i++)stampaPezzo(i * 2);
+    for (int i = 0; i < 90; i++)stampaPezzo(i * 2);
     //stampaPezzo(0);
 
     SDL_GL_SwapBuffers();
@@ -254,9 +256,12 @@ void statusPartita(SDL_Event *evento) {
             aux_t = (SDL_KeyboardEvent*) evento;
             switch (aux_t->keysym.sym) {
                 case SDLK_q:
+                    _FRAMEMS+=1;
                     break;
                 case SDLK_a:
-                    rx--;
+                    _FRAMEMS-=1;
+                    if(_FRAMEMS < 0)
+                        _FRAMEMS=0;
                     break;
                 case SDLK_w:
                     ry++;
