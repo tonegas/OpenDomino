@@ -8,7 +8,7 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_opengl.h>
 #include <stdlib.h>
-//#include <iostream>
+#include <iostream>
 #include <math.h>
 
 using namespace std;
@@ -16,8 +16,8 @@ using namespace std;
 #define FRAMERATE   50                  //frame per secondo massimi
 #define FRAMEMS     1000/FRAMERATE      //millisecondi per frame
 
-#define LARGHEZZA_FIN 1000
-#define ALTEZZA_FIN  1000
+#define LARGHEZZA_FIN 1200
+#define ALTEZZA_FIN  1024
 #define BPP_FIN       32
 
 #define GRIGLIA_EDITOR_Y 20
@@ -58,7 +58,6 @@ void gameExit() {
 }
 
 class Gioco;
-
 
 class PosOri {
 public:
@@ -101,34 +100,49 @@ public:
 };
 
 class Editor {
-
     Livello livello_editor;
     int num_righe;
     int num_colonne;
+
+    GLfloat start_tx, start_ty, final_tx, final_ty;
+    GLfloat tx, ty;
+
+    bool bottone_sinistro, bottone_destro;
+
+    bool cambio_zoom;
+    GLfloat zzz;
 
 public:
 
     Editor(int num_righe_aux = GRIGLIA_EDITOR_Y, int num_colonne_aux = GRIGLIA_EDITOR_X) : livello_editor(num_righe_aux, num_colonne_aux, (num_colonne_aux * ALTEZZA) / 2, (num_righe_aux * ALTEZZA) / 2, 400) {
         num_righe = num_righe_aux;
         num_colonne = num_colonne_aux;
+        tx = 0;
+        ty = 0;
+        bottone_destro = false;
+        bottone_sinistro = false;
+
+        cambio_zoom = false;
+        zzz = 150;
     }
 
     void inizializzaLivello() {
-                //glViewport(0,0,LARGHEZZA_FIN,ALTEZZA_FIN);
+        //glViewport(0,0,LARGHEZZA_FIN,ALTEZZA_FIN);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         //gluPerspective(45,LARGHEZZA_FIN/ALTEZZA_FIN,0.1,100);
-        glOrtho(0, ((GLfloat)num_colonne * ALTEZZA), 0, ((GLfloat)num_righe * ALTEZZA), 100, 200);//misure rispetto alla posizione dell'occhio
+        //        glOrtho(0, ((GLfloat) num_colonne * (GLfloat) ALTEZZA),
+        //                0, ((GLfloat) num_righe * (GLfloat) ALTEZZA) / ((GLfloat) LARGHEZZA_FIN / (GLfloat) ALTEZZA_FIN),
+        //                100, 200); //misure rispetto alla posizione dell'occhio
+        // glMultMatrixf(cavalier);
 
-        glMultMatrixf(cavalier);
-
-//           gluPerspective
-//           (
-//         		 40.0,  /* field of view in degree */
-//         		 1.0,   /* aspect ratio */
-//         		 20.0, /* Z near */
-//         		100.0 /* Z far */
-//           );
+        gluPerspective
+                (
+                40.0, /* field of view in degree */
+                1.0, /* aspect ratio */
+                5.0, /* Z near */
+                200.0 /* Z far */
+                );
 
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
@@ -143,7 +157,7 @@ public:
     int input(Gioco& gioco);
 
     void stampaSuperficeBase();
-    void stampaPezzo(int x,int y);
+    void stampaPezzo(int x, int y);
 
 };
 
@@ -170,7 +184,7 @@ class Gioco {
 
 public:
 
-    Gioco(){
+    Gioco() {
 
         larghezza = LARGHEZZA_FIN;
         altezza = ALTEZZA_FIN;
@@ -260,44 +274,44 @@ void Editor::stampaSuperficeBase() {
     glPopMatrix();
 }
 
-void Editor::stampaPezzo(int x,int y) {
-    GLfloat xf=(GLfloat)x;
-    GLfloat yf=(GLfloat)y;
+void Editor::stampaPezzo(int x, int y) {
+    GLfloat xf = (GLfloat) x;
+    GLfloat yf = (GLfloat) y;
 
-    GLfloat sposto_x = ((GLfloat)ALTEZZA)*xf+((GLfloat)ALTEZZA/2.0)-((GLfloat)SPESSORE/2.0);
-    GLfloat sposto_y = ((GLfloat)ALTEZZA)*yf;
-//    /* clear screen */
-//
-//    glPushMatrix();
-//
-//    /* affine transformations */
-//    glRotatef(rx, 1.0, 0.0, 0.0);
-//    glRotatef(ry, 0.0, 1.0, 0.0);
-//    glRotatef(rz, 0.0, 0.0, 1.0);
-//
-//    /* orientation vectors */
-//    glBegin(GL_LINES);
-//    glColor3f(1, 0, 0);
-//    glVertex3f(0, 0, 0);
-//    glVertex3f(1, 0, 0);
-//    glColor3f(0, 1, 0);
-//    glVertex3f(0, 0, 0);
-//    glVertex3f(0, 1, 0);
-//    glColor3f(0, 0, 1);
-//    glVertex3f(0, 0, 0);
-//    glVertex3f(0, 0, 1);
-//    glEnd();
-//
-//    /* base quad */
-//    // 		glColor3f(0.2f,0.2f,0.2f);
-//    // 		glBegin(GL_QUADS );
-//    // 			glVertex3f(-10,-5,-10);
-//    // 			glVertex3f(+10,-5,-10);
-//    // 			glVertex3f(+10,-5,+10);
-//    // 			glVertex3f(-10,-5,+10);
-//    // 		glEnd();
-//
-//    /* wire cube */
+    GLfloat sposto_x = ((GLfloat) ALTEZZA) * xf + ((GLfloat) ALTEZZA / 2.0)-((GLfloat) SPESSORE / 2.0);
+    GLfloat sposto_y = ((GLfloat) ALTEZZA) * yf;
+    //    /* clear screen */
+    //
+    //    glPushMatrix();
+    //
+    //    /* affine transformations */
+    //    glRotatef(rx, 1.0, 0.0, 0.0);
+    //    glRotatef(ry, 0.0, 1.0, 0.0);
+    //    glRotatef(rz, 0.0, 0.0, 1.0);
+    //
+    //    /* orientation vectors */
+    //    glBegin(GL_LINES);
+    //    glColor3f(1, 0, 0);
+    //    glVertex3f(0, 0, 0);
+    //    glVertex3f(1, 0, 0);
+    //    glColor3f(0, 1, 0);
+    //    glVertex3f(0, 0, 0);
+    //    glVertex3f(0, 1, 0);
+    //    glColor3f(0, 0, 1);
+    //    glVertex3f(0, 0, 0);
+    //    glVertex3f(0, 0, 1);
+    //    glEnd();
+    //
+    //    /* base quad */
+    //    // 		glColor3f(0.2f,0.2f,0.2f);
+    //    // 		glBegin(GL_QUADS );
+    //    // 			glVertex3f(-10,-5,-10);
+    //    // 			glVertex3f(+10,-5,-10);
+    //    // 			glVertex3f(+10,-5,+10);
+    //    // 			glVertex3f(-10,-5,+10);
+    //    // 		glEnd();
+    //
+    //    /* wire cube */
     glPushMatrix();
     glTranslatef(sposto_x, sposto_y, 0.0);
     glColor3f(1.0f, 1.0f, 1.0f);
@@ -330,52 +344,62 @@ void Editor::stampaPezzo(int x,int y) {
     glVertex3f(0.0, ALTEZZA, LARGHEZZA);
     glVertex3f(0.0, ALTEZZA, 0.0);
     glEnd();
-//    // 			glColor3f(0.0f,1.0f,1.0f);
-//    // 			glBegin(GL_QUADS );
-//    // 				glVertex3f(0,-5,-5);
-//    // 				glVertex3f(+1,-5,-5);
-//    // 				glVertex3f(+1,-5,+5);
-//    // 				glVertex3f(0,-5,+5);
-//    // 			glEnd();
-//    // 			glBegin(GL_QUADS );
-//    // 				glVertex3f(+1,-5,-5);
-//    // 				glVertex3f(+1,-5,+5);
-//    // 				glVertex3f(+1,+5,+5);
-//    // 				glVertex3f(+1,+5,-5);
-//    // 			glEnd();
-//    // 			glBegin(GL_QUADS );
-//    // 				glVertex3f(+1,-5,+5);
-//    // 				glVertex3f(+1,+5,+5);
-//    // 				glVertex3f(0,+5,+5);
-//    // 				glVertex3f(0,-5,+5);
-//    // 			glEnd();
-//    // 			glBegin(GL_QUADS );
-//    // 				glVertex3f(+5,+5,+5);
-//    // 				glVertex3f(-5,+5,+5);
-//    // 				glVertex3f(-5,+5,-5);
-//    // 				glVertex3f(+5,+5,-5);
-//    // 			glEnd();
-//    glPopMatrix();
-//
+    //    // 			glColor3f(0.0f,1.0f,1.0f);
+    //    // 			glBegin(GL_QUADS );
+    //    // 				glVertex3f(0,-5,-5);
+    //    // 				glVertex3f(+1,-5,-5);
+    //    // 				glVertex3f(+1,-5,+5);
+    //    // 				glVertex3f(0,-5,+5);
+    //    // 			glEnd();
+    //    // 			glBegin(GL_QUADS );
+    //    // 				glVertex3f(+1,-5,-5);
+    //    // 				glVertex3f(+1,-5,+5);
+    //    // 				glVertex3f(+1,+5,+5);
+    //    // 				glVertex3f(+1,+5,-5);
+    //    // 			glEnd();
+    //    // 			glBegin(GL_QUADS );
+    //    // 				glVertex3f(+1,-5,+5);
+    //    // 				glVertex3f(+1,+5,+5);
+    //    // 				glVertex3f(0,+5,+5);
+    //    // 				glVertex3f(0,-5,+5);
+    //    // 			glEnd();
+    //    // 			glBegin(GL_QUADS );
+    //    // 				glVertex3f(+5,+5,+5);
+    //    // 				glVertex3f(-5,+5,+5);
+    //    // 				glVertex3f(-5,+5,-5);
+    //    // 				glVertex3f(+5,+5,-5);
+    //    // 			glEnd();
+    //    glPopMatrix();
+    //
     glPopMatrix();
-//    /* double buffering! */
+    //    /* double buffering! */
 }
 
 int Editor::video(Gioco& gioco) {
 
     //SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
     //SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1 );
+    if (cambio_zoom) {
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        gluLookAt(
+                0, 0, zzz, /* eye  */
+                0, 0, 0.0, /* center  */
+                0.0, 1.0, 0.0); /* up is in positive Y direction */
+        cambio_zoom=false;
+    }
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
+    glPushMatrix();
+    glTranslatef(tx / 6.0, -ty / 7.5, 0); //questi valori sono perfetti con glOrto() ma non fanno bene in prospettiva
     stampaSuperficeBase();
-    for(int i=0;i<num_colonne;i++)
-        for(int j=0;j<num_righe;j++)
-            stampaPezzo(i,j);
+    for (int i = 0; i < num_colonne; i++)
+        for (int j = 0; j < num_righe; j++)
+            stampaPezzo(i, j);
     //for (int i = 0; i < 90; i++)stampaPezzo(i * 2);
     //stampaPezzo(0);
-
+    glPopMatrix();
     SDL_GL_SwapBuffers();
 
 
@@ -394,8 +418,10 @@ int Editor::input(Gioco& gioco) {
             case SDL_KEYDOWN:
                 switch (evento.key.keysym.sym) {
                     case SDLK_q:
+                        zzz++;
                         break;
                     case SDLK_a:
+                        zzz--;
                         break;
                     case SDLK_2:
                         gioco.setFrames(FRAMEMS * 10);
@@ -420,11 +446,34 @@ int Editor::input(Gioco& gioco) {
 
                 }
                 break;
-            case SDL_MOUSEMOTION:
-
             case SDL_MOUSEBUTTONDOWN:
-                if (evento.button.button == SDL_BUTTON_LEFT) {
-
+                if (evento.button.button == SDL_BUTTON_RIGHT) {
+                    start_tx = evento.button.x;
+                    start_ty = evento.button.y;
+                    bottone_destro = true;
+                }
+                if (evento.button.button == SDL_BUTTON_WHEELUP) {
+                    zzz+=10;
+                    cambio_zoom = true;
+                }
+                if (evento.button.button == SDL_BUTTON_WHEELDOWN) {
+                    zzz-=10;
+                    cambio_zoom = true;
+                }
+                break;
+            case SDL_MOUSEMOTION:
+                if (bottone_destro) {
+                    tx = final_tx + evento.button.x - start_tx;
+                    ty = final_ty + evento.button.y - start_ty;
+                }
+                break;
+            case SDL_MOUSEBUTTONUP:
+                if (evento.button.button == SDL_BUTTON_RIGHT) {
+                    final_tx = tx;
+                    final_ty = ty;
+                    start_tx = 0;
+                    start_ty = 0;
+                    bottone_destro = false;
                 }
                 break;
             default:
