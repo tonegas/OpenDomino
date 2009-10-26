@@ -16,8 +16,8 @@ using namespace std;
 #define FRAMERATE   50                  //frame per secondo massimi
 #define FRAMEMS     1000/FRAMERATE      //millisecondi per frame
 
-#define LARGHEZZA_FIN 1200
-#define ALTEZZA_FIN  1024
+#define LARGHEZZA_FIN 1000
+#define ALTEZZA_FIN  1000
 #define BPP_FIN       32
 
 #define GRIGLIA_EDITOR_Y 20
@@ -110,44 +110,66 @@ class Editor {
     bool bottone_sinistro, bottone_destro;
 
     bool cambio_zoom;
-    GLfloat zzz;
+
+    GLfloat da_2d_a_3d;
+    GLfloat fovy; //angolo y di visuale
+    GLfloat z_near; //angolo y di visuale
+    GLfloat z_far; //angolo y di visuale
+
+    //GLfloat h_finestra;
+    //GLfloat l_finestra;
+
+    GLfloat zoom;
 
 public:
 
-    Editor(int num_righe_aux = GRIGLIA_EDITOR_Y, int num_colonne_aux = GRIGLIA_EDITOR_X) : livello_editor(num_righe_aux, num_colonne_aux, (num_colonne_aux * ALTEZZA) / 2, (num_righe_aux * ALTEZZA) / 2, 400) {
+    Editor(int num_righe_aux = GRIGLIA_EDITOR_Y, int num_colonne_aux = GRIGLIA_EDITOR_X) : livello_editor(num_righe_aux, num_colonne_aux, (num_colonne_aux * ALTEZZA) / 2, (num_righe_aux * ALTEZZA) / 2, 150) {
         num_righe = num_righe_aux;
         num_colonne = num_colonne_aux;
         tx = 0;
         ty = 0;
+        final_tx = 0;
+        final_ty = 0;
+
         bottone_destro = false;
         bottone_sinistro = false;
 
         cambio_zoom = false;
-        zzz = 150;
+
+        fovy = 30.0; //angolo y di visuale
+        z_near = 5.0; //angolo y di visuale
+        z_far = 500.0; //angolo y di visuale
+
+        zoom = 1;
+
+        //h_finestra = 2.0*h_telecamera*tan(fovy/2.0/180.0*M_PI);
+        //l_finestra = ((GLfloat)ALTEZZA_FIN/(GLfloat)LARGHEZZA_FIN)*h_finestra;
+
+        da_2d_a_3d = 2.0 * livello_editor.getTelecamera().z * tan(fovy / 2.0 / 180.0 * M_PI) / (GLfloat) ALTEZZA_FIN;
     }
 
     void inizializzaLivello() {
         //glViewport(0,0,LARGHEZZA_FIN,ALTEZZA_FIN);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        //gluPerspective(45,LARGHEZZA_FIN/ALTEZZA_FIN,0.1,100);
-        //        glOrtho(0, ((GLfloat) num_colonne * (GLfloat) ALTEZZA),
-        //                0, ((GLfloat) num_righe * (GLfloat) ALTEZZA) / ((GLfloat) LARGHEZZA_FIN / (GLfloat) ALTEZZA_FIN),
-        //                100, 200); //misure rispetto alla posizione dell'occhio
-        // glMultMatrixf(cavalier);
+        //      gluPerspective(45,LARGHEZZA_FIN/ALTEZZA_FIN,0.1,100);
+        //                glOrtho(0, ((GLfloat) num_colonne * (GLfloat) ALTEZZA),
+        //                        0, ((GLfloat) num_righe * (GLfloat) ALTEZZA) / ((GLfloat) LARGHEZZA_FIN / (GLfloat) ALTEZZA_FIN),
+        //                        100, 200); //misure rispetto alla posizione dell'occhio
+        //         glMultMatrixf(cavalier);
 
         gluPerspective
                 (
-                40.0, /* field of view in degree */
-                1.0, /* aspect ratio */
-                5.0, /* Z near */
-                200.0 /* Z far */
+                fovy, /* field of view in degree */
+                LARGHEZZA_FIN / ALTEZZA_FIN, /* aspect ratio */
+                z_near, /* Z near */
+                z_far /* Z far */
                 );
 
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         gluLookAt(
-                0, 0, 150, /* eye  */
+                0, 0, livello_editor.getTelecamera().z, /* eye  */
                 0, 0, 0.0, /* center  */
                 0.0, 1.0, 0.0); /* up is in positive Y direction */
     }
@@ -379,20 +401,25 @@ int Editor::video(Gioco& gioco) {
 
     //SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
     //SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1 );
-    if (cambio_zoom) {
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        gluLookAt(
-                0, 0, zzz, /* eye  */
-                0, 0, 0.0, /* center  */
-                0.0, 1.0, 0.0); /* up is in positive Y direction */
-        cambio_zoom=false;
-    }
+    //    if (cambio_zoom) {
+    //        h_finestra = 2.0*h_telecamera*tan(fovy/2.0/180.0*M_PI);
+    //        l_finestra = ((GLfloat)ALTEZZA_FIN/(GLfloat)LARGHEZZA_FIN)*h_finestra;
+    //
+    //        da_2d_a_3d = 2.0*h_telecamera*tan(fovy/2.0/180.0*M_PI) / (GLfloat)ALTEZZA_FIN;
+    //        glMatrixMode(GL_MODELVIEW);
+    //        glLoadIdentity();
+    //        gluLookAt(
+    //                0, 0, h_telecamera, /* eye  */
+    //                0, 0, 0.0, /* center  */
+    //                0.0, 1.0, 0.0); /* up is in positive Y direction */
+    //        cambio_zoom=false;
+    //    }
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glPushMatrix();
-    glTranslatef(tx / 6.0, -ty / 7.5, 0); //questi valori sono perfetti con glOrto() ma non fanno bene in prospettiva
+    glScalef(zoom, zoom, zoom);
+    glTranslatef((tx * da_2d_a_3d), -(ty * da_2d_a_3d), 0); //questi valori sono perfetti con glOrto() ma non fanno bene in prospettiva
     stampaSuperficeBase();
     for (int i = 0; i < num_colonne; i++)
         for (int j = 0; j < num_righe; j++)
@@ -418,10 +445,8 @@ int Editor::input(Gioco& gioco) {
             case SDL_KEYDOWN:
                 switch (evento.key.keysym.sym) {
                     case SDLK_q:
-                        zzz++;
                         break;
                     case SDLK_a:
-                        zzz--;
                         break;
                     case SDLK_2:
                         gioco.setFrames(FRAMEMS * 10);
@@ -453,11 +478,25 @@ int Editor::input(Gioco& gioco) {
                     bottone_destro = true;
                 }
                 if (evento.button.button == SDL_BUTTON_WHEELUP) {
-                    zzz+=10;
+                    zoom += 0.1;
+                    //tx = final_tx - (evento.button.x - (GLfloat)LARGHEZZA_FIN)*2.0*10.0*tan(fovy/2.0/180.0*M_PI) / (GLfloat)ALTEZZA_FIN;
+                    //ty = final_tx - (evento.button.y - (GLfloat)ALTEZZA_FIN)*2.0*10.0*tan(fovy/2.0/180.0*M_PI) / (GLfloat)ALTEZZA_FIN;
+                    //final_tx = tx;
+                    //final_ty = ty;
                     cambio_zoom = true;
                 }
                 if (evento.button.button == SDL_BUTTON_WHEELDOWN) {
-                    zzz-=10;
+                    GLfloat mouse_x = ((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) - tx) * da_2d_a_3d;
+                    GLfloat mouse_y = ((GLfloat) ALTEZZA_FIN / 2 - evento.button.y + ty) * da_2d_a_3d;
+                    cout << (int) (mouse_x / (GLfloat) ALTEZZA) << ' ' << (int) (mouse_y / (GLfloat) ALTEZZA) << '\n' << flush;
+                    zoom -= 0.1;
+                    mouse_x = ((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) - tx) * da_2d_a_3d / zoom;
+                    mouse_y = ((GLfloat) ALTEZZA_FIN / 2 - evento.button.y + ty) * da_2d_a_3d / zoom;
+                    cout << (int) (mouse_x / (GLfloat) ALTEZZA) << ' ' << (int) (mouse_y / (GLfloat) ALTEZZA) << '\n' << flush;
+                    //tx = final_tx + (evento.button.x - (GLfloat)LARGHEZZA_FIN)*2.0*10.0*tan(fovy/2.0/180.0*M_PI) / (GLfloat)ALTEZZA_FIN;
+                    //ty = final_tx + (evento.button.y - (GLfloat)ALTEZZA_FIN)*2.0*10.0*tan(fovy/2.0/180.0*M_PI) / (GLfloat)ALTEZZA_FIN;
+                    //final_tx = tx;
+                    //final_ty = ty;
                     cambio_zoom = true;
                 }
                 break;
@@ -473,6 +512,7 @@ int Editor::input(Gioco& gioco) {
                     final_ty = ty;
                     start_tx = 0;
                     start_ty = 0;
+                    cout << tx << ' ' << ty << '\n' << flush;
                     bottone_destro = false;
                 }
                 break;
