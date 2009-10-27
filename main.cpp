@@ -128,6 +128,8 @@ class Editor {
 
     GLfloat zoom;
 
+    int prova_x,prova_y;
+
 public:
 
     Editor(int num_righe_aux = GRIGLIA_EDITOR_Y, int num_colonne_aux = GRIGLIA_EDITOR_X) : livello_editor(num_righe_aux, num_colonne_aux) {
@@ -186,6 +188,7 @@ public:
 
     void stampaSuperficeBase();
     void stampaPezzo(int x, int y);
+    void stampaQuadrato(int x, int y);
 
 };
 
@@ -403,6 +406,107 @@ void Editor::stampaPezzo(int x, int y) {
     //    /* double buffering! */
 }
 
+void Editor::stampaQuadrato(int x, int y) {
+    GLfloat xf = (GLfloat) x;
+    GLfloat yf = (GLfloat) y;
+
+    GLfloat sposto_x = ((GLfloat) ALTEZZA) * xf;
+    GLfloat sposto_y = ((GLfloat) ALTEZZA) * yf;
+    //    /* clear screen */
+    //
+    //    glPushMatrix();
+    //
+    //    /* affine transformations */
+    //    glRotatef(rx, 1.0, 0.0, 0.0);
+    //    glRotatef(ry, 0.0, 1.0, 0.0);
+    //    glRotatef(rz, 0.0, 0.0, 1.0);
+    //
+    //    /* orientation vectors */
+    //    glBegin(GL_LINES);
+    //    glColor3f(1, 0, 0);
+    //    glVertex3f(0, 0, 0);
+    //    glVertex3f(1, 0, 0);
+    //    glColor3f(0, 1, 0);
+    //    glVertex3f(0, 0, 0);
+    //    glVertex3f(0, 1, 0);
+    //    glColor3f(0, 0, 1);
+    //    glVertex3f(0, 0, 0);
+    //    glVertex3f(0, 0, 1);
+    //    glEnd();
+    //
+    //    /* base quad */
+    //    // 		glColor3f(0.2f,0.2f,0.2f);
+    //    // 		glBegin(GL_QUADS );
+    //    // 			glVertex3f(-10,-5,-10);
+    //    // 			glVertex3f(+10,-5,-10);
+    //    // 			glVertex3f(+10,-5,+10);
+    //    // 			glVertex3f(-10,-5,+10);
+    //    // 		glEnd();
+    //
+    //    /* wire cube */
+    glPushMatrix();
+    glTranslatef(sposto_x, sposto_y, 0.0);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glLineWidth(1.5);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(0.0, 0.0, 0.0);
+    glVertex3f(ALTEZZA, 0.0, 0.0);
+    glVertex3f(ALTEZZA, ALTEZZA, 0.0);
+    glVertex3f(0.0, ALTEZZA, 0.0);
+    glVertex3f(0.0, 0.0, 0.0);
+    glEnd();
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(0.0, 0.0, ALTEZZA);
+    glVertex3f(ALTEZZA, 0.0, ALTEZZA);
+    glVertex3f(ALTEZZA, ALTEZZA, ALTEZZA);
+    glVertex3f(0.0, ALTEZZA, ALTEZZA);
+    glVertex3f(0.0, 0.0, ALTEZZA);
+    glEnd();
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(0.0, 0.0, 0.0);
+    glVertex3f(ALTEZZA, 0.0, 0.0);
+    glVertex3f(ALTEZZA, 0.0, ALTEZZA);
+    glVertex3f(0.0, 0.0, ALTEZZA);
+    glVertex3f(0.0, 0.0, 0.0);
+    glEnd();
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(0.0, ALTEZZA, 0.0);
+    glVertex3f(ALTEZZA, ALTEZZA, 0.0);
+    glVertex3f(ALTEZZA, ALTEZZA, ALTEZZA);
+    glVertex3f(0.0, ALTEZZA, ALTEZZA);
+    glVertex3f(0.0, ALTEZZA, 0.0);
+    glEnd();
+    //    // 			glColor3f(0.0f,1.0f,1.0f);
+    //    // 			glBegin(GL_QUADS );
+    //    // 				glVertex3f(0,-5,-5);
+    //    // 				glVertex3f(+1,-5,-5);
+    //    // 				glVertex3f(+1,-5,+5);
+    //    // 				glVertex3f(0,-5,+5);
+    //    // 			glEnd();
+    //    // 			glBegin(GL_QUADS );
+    //    // 				glVertex3f(+1,-5,-5);
+    //    // 				glVertex3f(+1,-5,+5);
+    //    // 				glVertex3f(+1,+5,+5);
+    //    // 				glVertex3f(+1,+5,-5);
+    //    // 			glEnd();
+    //    // 			glBegin(GL_QUADS );
+    //    // 				glVertex3f(+1,-5,+5);
+    //    // 				glVertex3f(+1,+5,+5);
+    //    // 				glVertex3f(0,+5,+5);
+    //    // 				glVertex3f(0,-5,+5);
+    //    // 			glEnd();
+    //    // 			glBegin(GL_QUADS );
+    //    // 				glVertex3f(+5,+5,+5);
+    //    // 				glVertex3f(-5,+5,+5);
+    //    // 				glVertex3f(-5,+5,-5);
+    //    // 				glVertex3f(+5,+5,-5);
+    //    // 			glEnd();
+    //    glPopMatrix();
+    //
+    glPopMatrix();
+    //    /* double buffering! */
+}
+
 int Editor::video(Gioco& gioco) {
 
     //SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
@@ -430,7 +534,8 @@ int Editor::video(Gioco& gioco) {
     stampaSuperficeBase();
     for (int i = 0; i < num_colonne; i++)
         for (int j = 0; j < num_righe; j++)
-            stampaPezzo(i, j);
+            if(prova_x==i && prova_y==j)
+                stampaQuadrato(i, j);
     //for (int i = 0; i < 90; i++)stampaPezzo(i * 2);
     //stampaPezzo(0);
     glPopMatrix();
@@ -444,6 +549,7 @@ int Editor::video(Gioco& gioco) {
 int Editor::input(Gioco& gioco) {
     SDL_Event evento;
     SDL_PumpEvents();
+    GLfloat mouse_x,mouse_y;
     while (SDL_PollEvent(&evento)) {
         if (evento.type == SDL_QUIT) {
             gameExit();
@@ -480,9 +586,10 @@ int Editor::input(Gioco& gioco) {
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 if (evento.button.button == SDL_BUTTON_LEFT) {
-                    GLfloat mouse_x = ((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * da_2d_a_3d - livello_editor.getGriglia().x) / zoom;
-                    GLfloat mouse_y = (((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y) / zoom;
-                    cout << (int) (mouse_x / (GLfloat) ALTEZZA) << ' ' << (int) (mouse_y / (GLfloat) ALTEZZA) << '\n' << flush;
+                    mouse_x = ((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * da_2d_a_3d - livello_editor.getGriglia().x) / zoom;
+                    mouse_y = (((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y) / zoom;
+                    prova_x=(int) (mouse_x / (GLfloat) ALTEZZA);
+                    prova_y=(int) (mouse_y / (GLfloat) ALTEZZA);
                 }
                 if (evento.button.button == SDL_BUTTON_RIGHT) {
                     start_tx = evento.button.x;
@@ -517,6 +624,10 @@ int Editor::input(Gioco& gioco) {
                 }
                 break;
             case SDL_MOUSEMOTION:
+                    mouse_x = ((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * da_2d_a_3d - livello_editor.getGriglia().x) / zoom;
+                    mouse_y = (((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y) / zoom;
+                    prova_x=(int) (mouse_x / (GLfloat) ALTEZZA);
+                    prova_y=(int) (mouse_y / (GLfloat) ALTEZZA);
                 if (bottone_destro) {
                     tx = evento.button.x - start_tx;
                     ty = evento.button.y - start_ty;
