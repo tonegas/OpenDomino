@@ -16,12 +16,12 @@ using namespace std;
 #define FRAMERATE   50                  //frame per secondo massimi
 #define FRAMEMS     1000/FRAMERATE      //millisecondi per frame
 
-#define LARGHEZZA_FIN 1000
-#define ALTEZZA_FIN  1000
+#define LARGHEZZA_FIN 1200
+#define ALTEZZA_FIN  300
 #define BPP_FIN       32
 
-#define GRIGLIA_EDITOR_Y 20
-#define GRIGLIA_EDITOR_X 25
+#define GRIGLIA_EDITOR_Y 100
+#define GRIGLIA_EDITOR_X 200
 #define H_TELECAMERA 150
 
 #define LARGHEZZA 4
@@ -59,28 +59,31 @@ void gameExit() {
 
 class Gioco;
 
-class PosOri {
+class PosZoom {
 public:
+    //assolute
     GLfloat x;
     GLfloat y;
-    GLfloat z;
-    GLfloat rx;
-    GLfloat ry;
-    GLfloat rz;
+    GLfloat zoom;
 
-    PosOri(GLfloat x_aux = 0, GLfloat y_aux = 0, GLfloat z_aux = 0, GLfloat rx_aux = 0, GLfloat ry_aux = 0, GLfloat rz_aux = 0) {
+    //appoggio relative
+    GLfloat t_aux_x;
+    GLfloat t_aux_y;
+    GLfloat zoom_aux_x;
+    GLfloat zoom_aux_y;
+    GLfloat t_aux_zoom;
+
+    PosZoom(GLfloat x_aux = 0, GLfloat y_aux = 0, GLfloat zoom_aux = 0) {
         x = x_aux;
         y = y_aux;
-        z = z_aux;
-        rx = rx_aux;
-        ry = ry_aux;
-        rz = rz_aux;
+        zoom = zoom_aux;
+        t_aux_x = t_aux_y = zoom_aux_x = zoom_aux_y = t_aux_zoom = 0;
     }
 
 };
 
 class Livello {
-    PosOri griglia;
+    PosZoom griglia;
     int num_righe;
     int num_colonne;
     //Posto matrice_posti[NUM_RIGHE][NUM_COLONNE];
@@ -91,8 +94,18 @@ public:
         num_colonne = num_colonne_aux;
     }
 
-    PosOri getGriglia() {
+    PosZoom getGriglia() {
         return griglia;
+    }
+
+    void setGrigliaZoom(GLfloat zoom) {
+        griglia.zoom = zoom;
+    }
+
+    void setGrigliaAuxZoom(GLfloat aux_zoom,GLfloat aux_zoom_x=0,GLfloat aux_zoom_y=0) {
+        griglia.t_aux_zoom = aux_zoom;
+        griglia.zoom_aux_x = aux_zoom_x;
+        griglia.zoom_aux_y = aux_zoom_y;
     }
 
     void setGrigliaXY(GLfloat x, GLfloat y) {
@@ -100,9 +113,9 @@ public:
         griglia.y = y;
     }
 
-    void setGrigliaAuxXY(GLfloat x, GLfloat y) {
-        griglia.rx = x;
-        griglia.ry = y;
+    void setGrigliaAuxXY(GLfloat aux_x, GLfloat aux_y) {
+        griglia.t_aux_x = aux_x;
+        griglia.t_aux_y = aux_y;
     }
 };
 
@@ -116,19 +129,14 @@ class Editor {
 
     bool bottone_sinistro, bottone_destro;
 
-    bool cambio_zoom;
-
     GLfloat da_2d_a_3d;
     GLfloat fovy; //angolo y di visuale
     GLfloat z_near; //angolo y di visuale
     GLfloat z_far; //angolo y di visuale
 
-    //GLfloat h_finestra;
-    //GLfloat l_finestra;
-
-    GLfloat zoom;
-
     int prova_x,prova_y;
+
+    GLfloat delta_zoom;
 
 public:
 
@@ -142,13 +150,14 @@ public:
         bottone_destro = false;
         bottone_sinistro = false;
 
-        cambio_zoom = false;
-
         fovy = 30.0; //angolo y di visuale
         z_near = 5.0; //angolo y di visuale
         z_far = 500.0; //angolo y di visuale
 
-        zoom = 1;
+        delta_zoom=2;
+
+        livello_editor.setGrigliaZoom(1.0);
+        livello_editor.setGrigliaAuxZoom(1.0);
 
         //h_finestra = 2.0*h_telecamera*tan(fovy/2.0/180.0*M_PI);
         //l_finestra = ((GLfloat)ALTEZZA_FIN/(GLfloat)LARGHEZZA_FIN)*h_finestra;
@@ -230,7 +239,13 @@ public:
             exit(-1);
         }
 
-        screen = SDL_SetVideoMode(larghezza, altezza, bpp, SDL_HWSURFACE | SDL_OPENGL | SDL_DOUBLEBUF);
+        SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+        SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, 1);
+
+        screen = SDL_SetVideoMode(larghezza, altezza, bpp, SDL_HWSURFACE | SDL_OPENGL);
+
+
+
         if (screen == NULL) {
             printf("ERRORE di creazione video SDL: %s.\n", SDL_GetError());
             exit(-1);
@@ -288,6 +303,12 @@ int main(int argc, char** argv) {
 }
 
 int Editor::stato(Gioco& gioco) {
+    if(fabs(livello_editor.getGriglia().zoom - livello_editor.getGriglia().t_aux_zoom) >= 0.001 ){
+        cout<<livello_editor.getGriglia().zoom<<' '<<livello_editor.getGriglia().t_aux_zoom<<'\n'<<flush;
+        livello_editor.setGrigliaXY(livello_editor.getGriglia().x+((livello_editor.getGriglia().zoom_aux_x-livello_editor.getGriglia().x)/10),
+                livello_editor.getGriglia().y+((livello_editor.getGriglia().zoom_aux_y-livello_editor.getGriglia().y)/10));
+        livello_editor.setGrigliaZoom(livello_editor.getGriglia().zoom+(livello_editor.getGriglia().t_aux_zoom-livello_editor.getGriglia().zoom)/10);
+    }
     return 1;
 }
 
@@ -529,8 +550,8 @@ int Editor::video(Gioco& gioco) {
 
     glPushMatrix();
     glTranslatef(livello_editor.getGriglia().x, livello_editor.getGriglia().y, 0);
-    glScalef(zoom, zoom, zoom);
-    //glTranslatef((tx * da_2d_a_3d) / zoom, -(ty * da_2d_a_3d) / zoom, 0); //questi valori sono perfetti con glOrto() ma non fanno bene in prospettiva
+    glScalef(livello_editor.getGriglia().zoom, livello_editor.getGriglia().zoom, livello_editor.getGriglia().zoom);
+
     stampaSuperficeBase();
     for (int i = 0; i < num_colonne; i++)
         for (int j = 0; j < num_righe; j++)
@@ -586,8 +607,8 @@ int Editor::input(Gioco& gioco) {
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 if (evento.button.button == SDL_BUTTON_LEFT) {
-                    mouse_x = ((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * da_2d_a_3d - livello_editor.getGriglia().x) / zoom;
-                    mouse_y = (((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y) / zoom;
+                    mouse_x = ((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * da_2d_a_3d - livello_editor.getGriglia().x) / livello_editor.getGriglia().zoom;
+                    mouse_y = (((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y) / livello_editor.getGriglia().zoom;
                     prova_x=(int) (mouse_x / (GLfloat) ALTEZZA);
                     prova_y=(int) (mouse_y / (GLfloat) ALTEZZA);
                 }
@@ -598,40 +619,43 @@ int Editor::input(Gioco& gioco) {
                     bottone_destro = true;
                 }
                 if (evento.button.button == SDL_BUTTON_WHEELUP) {
-                    livello_editor.setGrigliaXY(livello_editor.getGriglia().x + (zoom+0.1)*((((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * da_2d_a_3d - livello_editor.getGriglia().x) / (zoom+0.1))-(((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * da_2d_a_3d - livello_editor.getGriglia().x) / zoom)),
-                            livello_editor.getGriglia().y +(zoom+0.1)*((((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y) / (zoom+0.1)-(((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y) / zoom));
-                    //tx = final_tx - (evento.button.x - (GLfloat)LARGHEZZA_FIN)*2.0*10.0*tan(fovy/2.0/180.0*M_PI) / (GLfloat)ALTEZZA_FIN;
-                    //ty = final_tx - (evento.button.y - (GLfloat)ALTEZZA_FIN)*2.0*10.0*tan(fovy/2.0/180.0*M_PI) / (GLfloat)ALTEZZA_FIN;
-                    //final_tx = tx;
-                    //final_ty = ty;
-                    //cambio_zoom = true;
-                    zoom += 0.1;
+
+                    GLfloat zoom = livello_editor.getGriglia().zoom;
+                    if(zoom * delta_zoom < 10){
+                    livello_editor.setGrigliaAuxZoom(zoom * delta_zoom,livello_editor.getGriglia().x + (1 - delta_zoom)*((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * da_2d_a_3d - livello_editor.getGriglia().x),
+                            livello_editor.getGriglia().y + (1- delta_zoom)*(((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y));
+                    }
                 }
                 if (evento.button.button == SDL_BUTTON_WHEELDOWN) {
-                    livello_editor.setGrigliaXY(livello_editor.getGriglia().x + (zoom-0.1)*((((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * da_2d_a_3d - livello_editor.getGriglia().x) / (zoom-0.1))-(((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * da_2d_a_3d - livello_editor.getGriglia().x) / zoom)),
-                            livello_editor.getGriglia().y +(zoom-0.1)*((((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y) / (zoom-0.1)-(((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y) / zoom));
-                    //livello_editor.setGrigliaXY(livello_editor.getGriglia().x + (((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * da_2d_a_3d - livello_editor.getGriglia().x)*0.1 / (zoom * zoom)),
-                      //      livello_editor.getGriglia().y + (((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y)*0.1 / (zoom * zoom));
-                    //                    GLfloat mouse_x = (evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * da_2d_a_3d - livello_editor.getGriglia().x ;
-                    //                    GLfloat mouse_y = ((GLfloat) ALTEZZA_FIN / 2 - evento.button.y + ty) * da_2d_a_3d;
-                    //                    cout << (int) (mouse_x / (GLfloat) ALTEZZA) << ' ' << (int) (mouse_y / (GLfloat) ALTEZZA) << '\n' << flush;
-                    zoom -= 0.1;
-                    //tx = final_tx + (evento.button.x - (GLfloat)LARGHEZZA_FIN)*2.0*10.0*tan(fovy/2.0/180.0*M_PI) / (GLfloat)ALTEZZA_FIN;
-                    //ty = final_tx + (evento.button.y - (GLfloat)ALTEZZA_FIN)*2.0*10.0*tan(fovy/2.0/180.0*M_PI) / (GLfloat)ALTEZZA_FIN;
-                    //final_tx = tx;
-                    //final_ty = ty;
-                    //cambio_zoom = true;
+
+                    //_mouseX_3d_zoomNuovo_[posizione del mouse riportata in uno spazio 3d ed eliminato il fattore di zoom] = (((_mouseX_[coordinate della finestra asse x verso destra asse y verso basso]-_LARGHEZZA_FIN/2_[perchè la telecamera punta in (zero[x],zero[y]) che qundi si trova a metà finestra])*
+                    //_da_2d_a_3d_[variabile che riporta la mia distanza sulla finestra in una distanza 3d vedi formula sopra] - _x_[posizione x assoluta della griglia])/ _zoomNuovo_[successivo livello di zoom])
+
+                    //_mouseY_3d_zoomNuovo_[posizione del mouse riportata in uno spazio 3d ed eliminato il fattore di zoom] = (((_ALTEZZA_FIN/2_[perchè la telecamera punta in (zero[x],zero[y]) che qundi si trova a metà finestra] - _mouseY_[coordinate della finestra asse x verso destra asse y verso basso])*
+                    //_da_2d_a_3d_[variabile che riporta la mia distanza sulla finestra in una distanza 3d vedi formula sopra] - _y_[posizione y assoluta della griglia])/ _zoomNuovo_[successivo livello di zoom])
+
+                    //formula per determinare il movimento della griglia quando essa viene zoommata (_x_+_zoomNuovo_*((_mouseX_3d_zoomNuovo_)-(_mouseX_3d_zoomVecchio_)))
+                    //(_y_+_zoomNuovo_*((_mouseY_3d_zoomNuovo_)-(_mouseY_3d_zoomVecchio_)))
+
+                    GLfloat zoom = livello_editor.getGriglia().zoom;
+                    if(zoom / delta_zoom > 0.1){
+                    //livello_editor.setGrigliaXY(livello_editor.getGriglia().x + (livello_editor.getGriglia().zoom-0.1)*((((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * da_2d_a_3d - livello_editor.getGriglia().x) / (livello_editor.getGriglia().zoom-0.1))-(((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * da_2d_a_3d - livello_editor.getGriglia().x) / livello_editor.getGriglia().zoom)),
+                    //        livello_editor.getGriglia().y +(livello_editor.getGriglia().zoom-0.1)*((((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y) / (livello_editor.getGriglia().zoom-0.1)-(((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y) / livello_editor.getGriglia().zoom));
+
+                    livello_editor.setGrigliaAuxZoom(zoom / delta_zoom,livello_editor.getGriglia().x + ((delta_zoom-1) / delta_zoom)*((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * da_2d_a_3d - livello_editor.getGriglia().x),
+                            livello_editor.getGriglia().y + ((delta_zoom-1) / delta_zoom)*(((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y));
+                    }
                 }
                 break;
             case SDL_MOUSEMOTION:
-                    mouse_x = ((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * da_2d_a_3d - livello_editor.getGriglia().x) / zoom;
-                    mouse_y = (((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y) / zoom;
+                    mouse_x = ((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * da_2d_a_3d - livello_editor.getGriglia().x) / livello_editor.getGriglia().zoom;
+                    mouse_y = (((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y) / livello_editor.getGriglia().zoom;
                     prova_x=(int) (mouse_x / (GLfloat) ALTEZZA);
                     prova_y=(int) (mouse_y / (GLfloat) ALTEZZA);
                 if (bottone_destro) {
                     tx = evento.button.x - start_tx;
                     ty = evento.button.y - start_ty;
-                    livello_editor.setGrigliaXY(livello_editor.getGriglia().rx + (tx * da_2d_a_3d), livello_editor.getGriglia().ry - (ty * da_2d_a_3d));
+                    livello_editor.setGrigliaXY(livello_editor.getGriglia().t_aux_x + (tx * da_2d_a_3d), livello_editor.getGriglia().t_aux_y - (ty * da_2d_a_3d));
                 }
                 break;
             case SDL_MOUSEBUTTONUP:
