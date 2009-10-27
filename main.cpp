@@ -665,6 +665,8 @@ void Editor::stampaQuadrato(int x, int y, GLfloat attivo) {
     glTranslatef(sposto_x, sposto_y, 0.0);
     glColor4f(1.0f, 0, 0, attivo);
     glLineWidth(2.5);
+    glScalef(0.98,0.98,0.98);
+    glTranslatef(ALTEZZA_PEZZO*0.01,ALTEZZA_PEZZO*0.01,ALTEZZA_PEZZO*0.01);
     glBegin(GL_LINE_STRIP);
     glVertex3f(0.0, 0.0, 0.0);
     glVertex3f(ALTEZZA_PEZZO, 0.0, 0.0);
