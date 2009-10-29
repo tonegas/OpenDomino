@@ -217,6 +217,13 @@ protected:
     MuoviGriglia muovi;
 
     bool bottone_sinistro, bottone_destro;
+
+    GLdouble matrice_model[16];
+    GLdouble matrice_proj[16];
+    GLint matrice_view[4];
+
+    GLdouble pos_x, pos_y, pos_z;
+
 public:
 
     Livello(int num_x_colonne_aux, int num_y_righe_aux) :
@@ -233,6 +240,13 @@ public:
     }
 
 };
+
+GLfloat coloryellow[] = {1.0f, 1.0f, 0.0f, 1.0f};
+GLfloat colorblue [] = {0.0f, 0.0f, 1.0f, 1.0f};
+GLfloat colorgreen [] = {0.0f, 1.0f, 0.0f, 1.0f};
+GLfloat colorwhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
+GLfloat lightpos[] = {0, 0, 0, 1};
+GLfloat lightpos_ambient[] = {0, 0, 100, 0};
 
 class Editor : public Livello {
     int num_x_colonne;
@@ -253,11 +267,10 @@ public:
         //glViewport(0,0,LARGHEZZA_FIN,ALTEZZA_FIN);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        //      gluPerspective(45,LARGHEZZA_FIN/ALTEZZA_FIN,0.1,100);
-        //                glOrtho(0, ((GLfloat) num_colonne * (GLfloat) ALTEZZA),
-        //                        0, ((GLfloat) num_righe * (GLfloat) ALTEZZA) / ((GLfloat) LARGHEZZA_FIN / (GLfloat) ALTEZZA_FIN),
-        //                        100, 200); //misure rispetto alla posizione dell'occhio
-        //         glMultMatrixf(cavalier);
+        //        glOrtho(0, ((GLfloat) num_x_colonne * (GLfloat) ALTEZZA_PEZZO),
+        //                0, ((GLfloat) num_y_righe * (GLfloat) ALTEZZA_PEZZO) / ((GLfloat) LARGHEZZA_FIN / (GLfloat) ALTEZZA_FIN),
+        //                100, 200); //misure rispetto alla posizione dell'occhio
+        //        glMultMatrixf(cavalier);
 
         gluPerspective
                 (
@@ -273,6 +286,17 @@ public:
                 0.0, 0.0, H_TELECAMERA, /* eye  */
                 0.0, 0.0, 0.0, /* center  */
                 0.0, 1.0, 0.0); /* up is in positive Y direction */
+
+        glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, colorwhite);
+        glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
+        glLightfv(GL_LIGHT1, GL_DIFFUSE, colorwhite);
+        glLightfv(GL_LIGHT1, GL_POSITION, lightpos_ambient);
+
+        glGetIntegerv(GL_VIEWPORT, matrice_view);
+        glGetDoublev(GL_MODELVIEW_MATRIX, matrice_model);
+        glGetDoublev(GL_PROJECTION_MATRIX, matrice_proj);
+
     }
 
     int stato(Gioco& gioco);
@@ -338,6 +362,10 @@ public:
         glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
         glEnable(GL_DEPTH_TEST); //questa andrà attivata
 
+        glEnable(GL_LIGHT0);
+        glEnable(GL_LIGHT1);
+        glEnable(GL_LIGHTING);
+        glEnable(GL_NORMALIZE);
 
         domino_editor.inizializzaEditor();
     }
@@ -395,9 +423,6 @@ int main(int argc, char** argv) {
 
 int Editor::stato(Gioco& gioco) {
     if (fabs(livello_editor.getGriglia().zoom - muovi.z_zoom) >= 0.01) {
-
-        //cout << livello_editor.getGriglia().zoom << ' ' << muovi.z_zoom << '\n' << flush;
-
         livello_editor.setGrigliaXY(livello_editor.getGriglia().x + ((muovi.z_x - livello_editor.getGriglia().x) / 10),
                 livello_editor.getGriglia().y + ((muovi.z_y - livello_editor.getGriglia().y) / 10));
 
@@ -409,117 +434,88 @@ int Editor::stato(Gioco& gioco) {
 void Editor::stampaSuperficeBase() {
     glPushMatrix();
 
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, colorblue);
     glTranslatef(0.0, 0.0, -0.001);
     glColor3f(1.0f, 1.0f, 0.0f);
     glBegin(GL_QUADS);
+    glNormal3f(0.0, 0.0, 1.0);
     glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-    glVertex3f(num_x_colonne*ALTEZZA_PEZZO+ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-    glVertex3f(num_x_colonne*ALTEZZA_PEZZO+ALTEZZA_PEZZO, num_y_righe*ALTEZZA_PEZZO+ALTEZZA_PEZZO, 0);
-    glVertex3f(-ALTEZZA_PEZZO, num_y_righe*ALTEZZA_PEZZO+ALTEZZA_PEZZO, 0);
+    glVertex3f(num_x_colonne * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+    glVertex3f(num_x_colonne * ALTEZZA_PEZZO + ALTEZZA_PEZZO, num_y_righe * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+    glVertex3f(-ALTEZZA_PEZZO, num_y_righe * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
     glEnd();
 
     glPopMatrix();
 }
 
 void Editor::stampaPezzo(int x, int y) {
+
     GLfloat xf = (GLfloat) x;
     GLfloat yf = (GLfloat) y;
 
     GLfloat sposto_x = ((GLfloat) ALTEZZA_PEZZO) * xf + ((GLfloat) ALTEZZA_PEZZO / 2.0)-((GLfloat) SPESSORE_PEZZO / 2.0);
     GLfloat sposto_y = ((GLfloat) ALTEZZA_PEZZO) * yf;
-    //    /* clear screen */
-    //
-    //    glPushMatrix();
-    //
-    //    /* affine transformations */
-    //    glRotatef(rx, 1.0, 0.0, 0.0);
-    //    glRotatef(ry, 0.0, 1.0, 0.0);
-    //    glRotatef(rz, 0.0, 0.0, 1.0);
-    //
-    //    /* orientation vectors */
-    //    glBegin(GL_LINES);
-    //    glColor3f(1, 0, 0);
-    //    glVertex3f(0, 0, 0);
-    //    glVertex3f(1, 0, 0);
-    //    glColor3f(0, 1, 0);
-    //    glVertex3f(0, 0, 0);
-    //    glVertex3f(0, 1, 0);
-    //    glColor3f(0, 0, 1);
-    //    glVertex3f(0, 0, 0);
-    //    glVertex3f(0, 0, 1);
-    //    glEnd();
-    //
-    //    /* base quad */
-    //    // 		glColor3f(0.2f,0.2f,0.2f);
-    //    // 		glBegin(GL_QUADS );
-    //    // 			glVertex3f(-10,-5,-10);
-    //    // 			glVertex3f(+10,-5,-10);
-    //    // 			glVertex3f(+10,-5,+10);
-    //    // 			glVertex3f(-10,-5,+10);
-    //    // 		glEnd();
-    //
-    //    /* wire cube */
+
     glPushMatrix();
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, coloryellow);
     glTranslatef(sposto_x, sposto_y, H_PEZZO);
     glColor3f(1.0f, 1.0f, 1.0f);
     glLineWidth(1.5);
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(0.0, 0.0, 0.0);
-    glVertex3f(SPESSORE_PEZZO, 0.0, 0.0);
-    glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, 0.0);
-    glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
-    glVertex3f(0.0, 0.0, 0.0);
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(0.0, 0.0, -1.0);
+        glVertex3f(0.0, 0.0, 0.0);
+        glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
+        glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, 0.0);
+        glVertex3f(SPESSORE_PEZZO, 0.0, 0.0);
+    }
     glEnd();
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(0.0, 0.0, LARGHEZZA_PEZZO);
-    glVertex3f(SPESSORE_PEZZO, 0.0, LARGHEZZA_PEZZO);
-    glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
-    glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
-    glVertex3f(0.0, 0.0, LARGHEZZA_PEZZO);
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(1.0, 0.0, 0.0);
+        glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, 0.0);
+        glVertex3f(SPESSORE_PEZZO, 0.0, 0.0);
+        glVertex3f(SPESSORE_PEZZO, 0.0, LARGHEZZA_PEZZO);
+        glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
+    }
     glEnd();
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(0.0, 0.0, 0.0);
-    glVertex3f(SPESSORE_PEZZO, 0.0, 0.0);
-    glVertex3f(SPESSORE_PEZZO, 0.0, LARGHEZZA_PEZZO);
-    glVertex3f(0.0, 0.0, LARGHEZZA_PEZZO);
-    glVertex3f(0.0, 0.0, 0.0);
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(0.0, 0.0, 1.0);
+        glVertex3f(SPESSORE_PEZZO, 0.0, LARGHEZZA_PEZZO);
+        glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
+        glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
+        glVertex3f(0.0, 0.0, LARGHEZZA_PEZZO);
+    }
     glEnd();
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
-    glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, 0.0);
-    glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
-    glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
-    glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(-1.0, 0.0, 0.0);
+        glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
+        glVertex3f(0.0, 0.0, LARGHEZZA_PEZZO);
+        glVertex3f(0.0, 0.0, 0.0);
+        glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
+    }
     glEnd();
-    //    // 			glColor3f(0.0f,1.0f,1.0f);
-    //    // 			glBegin(GL_QUADS );
-    //    // 				glVertex3f(0,-5,-5);
-    //    // 				glVertex3f(+1,-5,-5);
-    //    // 				glVertex3f(+1,-5,+5);
-    //    // 				glVertex3f(0,-5,+5);
-    //    // 			glEnd();
-    //    // 			glBegin(GL_QUADS );
-    //    // 				glVertex3f(+1,-5,-5);
-    //    // 				glVertex3f(+1,-5,+5);
-    //    // 				glVertex3f(+1,+5,+5);
-    //    // 				glVertex3f(+1,+5,-5);
-    //    // 			glEnd();
-    //    // 			glBegin(GL_QUADS );
-    //    // 				glVertex3f(+1,-5,+5);
-    //    // 				glVertex3f(+1,+5,+5);
-    //    // 				glVertex3f(0,+5,+5);
-    //    // 				glVertex3f(0,-5,+5);
-    //    // 			glEnd();
-    //    // 			glBegin(GL_QUADS );
-    //    // 				glVertex3f(+5,+5,+5);
-    //    // 				glVertex3f(-5,+5,+5);
-    //    // 				glVertex3f(-5,+5,-5);
-    //    // 				glVertex3f(+5,+5,-5);
-    //    // 			glEnd();
-    //    glPopMatrix();
-    //
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(0.0, 1.0, 0.0);
+        glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
+        glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
+        glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, 0.0);
+        glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
+    }
+    glEnd();
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(0.0, -1.0, 0.0);
+        glVertex3f(0.0, 0.0, 0.0);
+        glVertex3f(SPESSORE_PEZZO, 0.0, 0.0);
+        glVertex3f(SPESSORE_PEZZO, 0.0, LARGHEZZA_PEZZO);
+        glVertex3f(0.0, 0.0, LARGHEZZA_PEZZO);
+    }
+    glEnd();
     glPopMatrix();
-    //    /* double buffering! */
 }
 
 void Editor::stampaBasi(int x, int y) {
@@ -528,38 +524,7 @@ void Editor::stampaBasi(int x, int y) {
 
     GLfloat sposto_x = ((GLfloat) ALTEZZA_PEZZO) * xf;
     GLfloat sposto_y = ((GLfloat) ALTEZZA_PEZZO) * yf;
-    //    /* clear screen */
-    //
-    //    glPushMatrix();
-    //
-    //    /* affine transformations */
-    //    glRotatef(rx, 1.0, 0.0, 0.0);
-    //    glRotatef(ry, 0.0, 1.0, 0.0);
-    //    glRotatef(rz, 0.0, 0.0, 1.0);
-    //
-    //    /* orientation vectors */
-    //    glBegin(GL_LINES);
-    //    glColor3f(1, 0, 0);
-    //    glVertex3f(0, 0, 0);
-    //    glVertex3f(1, 0, 0);
-    //    glColor3f(0, 1, 0);
-    //    glVertex3f(0, 0, 0);
-    //    glVertex3f(0, 1, 0);
-    //    glColor3f(0, 0, 1);
-    //    glVertex3f(0, 0, 0);
-    //    glVertex3f(0, 0, 1);
-    //    glEnd();
-    //
-    //    /* base quad */
-    //    // 		glColor3f(0.2f,0.2f,0.2f);
-    //    // 		glBegin(GL_QUADS );
-    //    // 			glVertex3f(-10,-5,-10);
-    //    // 			glVertex3f(+10,-5,-10);
-    //    // 			glVertex3f(+10,-5,+10);
-    //    // 			glVertex3f(-10,-5,+10);
-    //    // 		glEnd();
-    //
-    //    /* wire cube */
+
     glPushMatrix();
     glTranslatef(sposto_x, sposto_y + ALTEZZA_PEZZO - ALTEZZA_BASE, 0.0);
     glColor3f(1.0f, 1.0f, 1.0f);
@@ -592,35 +557,8 @@ void Editor::stampaBasi(int x, int y) {
     glVertex3f(0.0, ALTEZZA_BASE, LARGHEZZA_BASE);
     glVertex3f(0.0, ALTEZZA_BASE, 0.0);
     glEnd();
-    //    // 			glColor3f(0.0f,1.0f,1.0f);
-    //    // 			glBegin(GL_QUADS );
-    //    // 				glVertex3f(0,-5,-5);
-    //    // 				glVertex3f(+1,-5,-5);
-    //    // 				glVertex3f(+1,-5,+5);
-    //    // 				glVertex3f(0,-5,+5);
-    //    // 			glEnd();
-    //    // 			glBegin(GL_QUADS );
-    //    // 				glVertex3f(+1,-5,-5);
-    //    // 				glVertex3f(+1,-5,+5);
-    //    // 				glVertex3f(+1,+5,+5);
-    //    // 				glVertex3f(+1,+5,-5);
-    //    // 			glEnd();
-    //    // 			glBegin(GL_QUADS );
-    //    // 				glVertex3f(+1,-5,+5);
-    //    // 				glVertex3f(+1,+5,+5);
-    //    // 				glVertex3f(0,+5,+5);
-    //    // 				glVertex3f(0,-5,+5);
-    //    // 			glEnd();
-    //    // 			glBegin(GL_QUADS );
-    //    // 				glVertex3f(+5,+5,+5);
-    //    // 				glVertex3f(-5,+5,+5);
-    //    // 				glVertex3f(-5,+5,-5);
-    //    // 				glVertex3f(+5,+5,-5);
-    //    // 			glEnd();
-    //    glPopMatrix();
-    //
+
     glPopMatrix();
-    //    /* double buffering! */
 }
 
 void Editor::stampaQuadrato(int x, int y, GLfloat attivo) {
@@ -629,97 +567,100 @@ void Editor::stampaQuadrato(int x, int y, GLfloat attivo) {
 
     GLfloat sposto_x = ((GLfloat) ALTEZZA_PEZZO) * xf;
     GLfloat sposto_y = ((GLfloat) ALTEZZA_PEZZO) * yf;
-    //    /* clear screen */
-    //
-    //    glPushMatrix();
-    //
-    //    /* affine transformations */
-    //    glRotatef(rx, 1.0, 0.0, 0.0);
-    //    glRotatef(ry, 0.0, 1.0, 0.0);
-    //    glRotatef(rz, 0.0, 0.0, 1.0);
-    //
-    //    /* orientation vectors */
-    //    glBegin(GL_LINES);
-    //    glColor3f(1, 0, 0);
-    //    glVertex3f(0, 0, 0);
-    //    glVertex3f(1, 0, 0);
-    //    glColor3f(0, 1, 0);
-    //    glVertex3f(0, 0, 0);
-    //    glVertex3f(0, 1, 0);
-    //    glColor3f(0, 0, 1);
-    //    glVertex3f(0, 0, 0);
-    //    glVertex3f(0, 0, 1);
-    //    glEnd();
-    //
-    //    /* base quad */
-    //    // 		glColor3f(0.2f,0.2f,0.2f);
-    //    // 		glBegin(GL_QUADS );
-    //    // 			glVertex3f(-10,-5,-10);
-    //    // 			glVertex3f(+10,-5,-10);
-    //    // 			glVertex3f(+10,-5,+10);
-    //    // 			glVertex3f(-10,-5,+10);
-    //    // 		glEnd();
-    //
-    //    /* wire cube */
+
     glPushMatrix();
+    glDisable(GL_LIGHTING);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, colorgreen);
     glTranslatef(sposto_x, sposto_y, 0.0);
-    glColor4f(1.0f, 0, 0, attivo);
+    glScalef(0.97, 0.97, 0.97);
+    glTranslatef(ALTEZZA_PEZZO * 0.015, ALTEZZA_PEZZO * 0.015, ALTEZZA_PEZZO * 0.015);
+    glColor4f(0.0f, 1.0f, 0.0f, attivo);
     glLineWidth(2.5);
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(0.0, 0.0, 0.0);
-    glVertex3f(ALTEZZA_PEZZO, 0.0, 0.0);
-    glVertex3f(ALTEZZA_PEZZO, ALTEZZA_PEZZO, 0.0);
-    glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
-    glVertex3f(0.0, 0.0, 0.0);
+    glBegin(GL_LINES);
+    {
+        glNormal3f(-1.0, 0.0, -1.0);
+        glVertex3f(0.0, 0.0, 0.0);
+        glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
+    }
     glEnd();
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(0.0, 0.0, ALTEZZA_PEZZO);
-    glVertex3f(ALTEZZA_PEZZO, 0.0, ALTEZZA_PEZZO);
-    glVertex3f(ALTEZZA_PEZZO, ALTEZZA_PEZZO, ALTEZZA_PEZZO);
-    glVertex3f(0.0, ALTEZZA_PEZZO, ALTEZZA_PEZZO);
-    glVertex3f(0.0, 0.0, ALTEZZA_PEZZO);
+    glBegin(GL_LINES);
+    {
+        glNormal3f(-1.0, -1.0, 0.0);
+        glVertex3f(0.0, 0.0, 0.0);
+        glVertex3f(0.0, 0.0, ALTEZZA_PEZZO);
+    }
     glEnd();
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(0.0, 0.0, 0.0);
-    glVertex3f(ALTEZZA_PEZZO, 0.0, 0.0);
-    glVertex3f(ALTEZZA_PEZZO, 0.0, ALTEZZA_PEZZO);
-    glVertex3f(0.0, 0.0, ALTEZZA_PEZZO);
-    glVertex3f(0.0, 0.0, 0.0);
+    glBegin(GL_LINES);
+    {
+        glNormal3f(0.0, -1.0, -1.0);
+        glVertex3f(0.0, 0.0, 0.0);
+        glVertex3f(ALTEZZA_PEZZO, 0.0, 0.0);
+    }
     glEnd();
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
-    glVertex3f(ALTEZZA_PEZZO, ALTEZZA_PEZZO, 0.0);
-    glVertex3f(ALTEZZA_PEZZO, ALTEZZA_PEZZO, ALTEZZA_PEZZO);
-    glVertex3f(0.0, ALTEZZA_PEZZO, ALTEZZA_PEZZO);
-    glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
+    glBegin(GL_LINES);
+    {
+        glNormal3f(1.0, 1.0, 0.0);
+        glVertex3f(ALTEZZA_PEZZO, ALTEZZA_PEZZO, 0.0);
+        glVertex3f(ALTEZZA_PEZZO, ALTEZZA_PEZZO, ALTEZZA_PEZZO);
+    }
     glEnd();
-    //    // 			glColor3f(0.0f,1.0f,1.0f);
-    //    // 			glBegin(GL_QUADS );
-    //    // 				glVertex3f(0,-5,-5);
-    //    // 				glVertex3f(+1,-5,-5);
-    //    // 				glVertex3f(+1,-5,+5);
-    //    // 				glVertex3f(0,-5,+5);
-    //    // 			glEnd();
-    //    // 			glBegin(GL_QUADS );
-    //    // 				glVertex3f(+1,-5,-5);
-    //    // 				glVertex3f(+1,-5,+5);
-    //    // 				glVertex3f(+1,+5,+5);
-    //    // 				glVertex3f(+1,+5,-5);
-    //    // 			glEnd();
-    //    // 			glBegin(GL_QUADS );
-    //    // 				glVertex3f(+1,-5,+5);
-    //    // 				glVertex3f(+1,+5,+5);
-    //    // 				glVertex3f(0,+5,+5);
-    //    // 				glVertex3f(0,-5,+5);
-    //    // 			glEnd();
-    //    // 			glBegin(GL_QUADS );
-    //    // 				glVertex3f(+5,+5,+5);
-    //    // 				glVertex3f(-5,+5,+5);
-    //    // 				glVertex3f(-5,+5,-5);
-    //    // 				glVertex3f(+5,+5,-5);
-    //    // 			glEnd();
-    //    glPopMatrix();
-    //
+    glBegin(GL_LINES);
+    {
+        glNormal3f(0.0, 1.0, -1.0);
+        glVertex3f(ALTEZZA_PEZZO, ALTEZZA_PEZZO, 0.0);
+        glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
+    }
+    glEnd();
+    glBegin(GL_LINES);
+    {
+        glNormal3f(1.0, 0.0, -1.0);
+        glVertex3f(ALTEZZA_PEZZO, ALTEZZA_PEZZO, 0.0);
+        glVertex3f(ALTEZZA_PEZZO, 0.0, 0.0);
+    }
+    glEnd();
+    glBegin(GL_LINES);
+    {
+        glNormal3f(0.0, 1.0, 1.0);
+        glVertex3f(0.0, ALTEZZA_PEZZO, ALTEZZA_PEZZO);
+        glVertex3f(ALTEZZA_PEZZO, ALTEZZA_PEZZO, ALTEZZA_PEZZO);
+    }
+    glEnd();
+    glBegin(GL_LINES);
+    {
+        glNormal3f(-1.0, 0.0, 1.0);
+        glVertex3f(0.0, ALTEZZA_PEZZO, ALTEZZA_PEZZO);
+        glVertex3f(0.0, 0.0, ALTEZZA_PEZZO);
+    }
+    glEnd();
+    glBegin(GL_LINES);
+    {
+        glNormal3f(-1.0, 1.0, 0.0);
+        glVertex3f(0.0, ALTEZZA_PEZZO, ALTEZZA_PEZZO);
+        glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
+    }
+    glEnd();
+    glBegin(GL_LINES);
+    {
+        glNormal3f(1.0, 0.0, 1.0);
+        glVertex3f(ALTEZZA_PEZZO, 0.0, ALTEZZA_PEZZO);
+        glVertex3f(ALTEZZA_PEZZO, ALTEZZA_PEZZO, ALTEZZA_PEZZO);
+    }
+    glEnd();
+    glBegin(GL_LINES);
+    {
+        glNormal3f(0.0, -1.0, 1.0);
+        glVertex3f(ALTEZZA_PEZZO, 0.0, ALTEZZA_PEZZO);
+        glVertex3f(0.0, 0.0, ALTEZZA_PEZZO);
+    }
+    glEnd();
+    glBegin(GL_LINES);
+    {
+        glNormal3f(1.0, -1.0, 0.0);
+        glVertex3f(ALTEZZA_PEZZO, 0.0, ALTEZZA_PEZZO);
+        glVertex3f(ALTEZZA_PEZZO, 0.0, 0.0);
+    }
+    glEnd();
+    glEnable(GL_LIGHTING);
     glPopMatrix();
     //    /* double buffering! */
 }
@@ -742,13 +683,31 @@ int Editor::video(Gioco& gioco) {
     //        cambio_zoom=false;
     //    }
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    /*
+     * GL_COLOR_BUFFER_BIT      Color buffers 		: Viene resa l’immagine (almeno 2, anche di piu’ per il rendering stereo.
+     * GL_DEPTH_BUFFER_BIT      Depth buffer		: Usato per eliminare le parti nascoste.
+     * GL_STENCIL_BUFFER_BIT    Stencil buffer 		: Usato per “ritagliare” aree dello schermo.
+     * GL_ACCUM_BUFFER_BIT      Accumulation buffer	: Accumula i risultati per effetti speciali come  Motion Blur, simulare il fuoco, ombre, ...
+     */
+
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     glPushMatrix();
     glTranslatef(livello_editor.getGriglia().x, livello_editor.getGriglia().y, 0);
     glScalef(livello_editor.getGriglia().zoom, livello_editor.getGriglia().zoom, livello_editor.getGriglia().zoom);
 
     stampaSuperficeBase();
+    int mouse_x_2d;
+    int mouse_y_2d;
+    SDL_GetMouseState(&mouse_x_2d, &mouse_y_2d);
+
+    int mouse_x = ((mouse_x_2d - (GLfloat) LARGHEZZA_FIN / 2) * muovi.da_2d_a_3d - livello_editor.getGriglia().x) / livello_editor.getGriglia().zoom;
+    int mouse_y = (((GLfloat) ALTEZZA_FIN / 2 - mouse_y_2d) * muovi.da_2d_a_3d - livello_editor.getGriglia().y) / livello_editor.getGriglia().zoom;
+    if ((unsigned) (mouse_x / (GLfloat) ALTEZZA_PEZZO) < GRIGLIA_EDITOR_X && (unsigned) (mouse_y / (GLfloat) ALTEZZA_PEZZO) < GRIGLIA_EDITOR_Y)
+        cubo_selezione[(unsigned) (mouse_x / (GLfloat) ALTEZZA_PEZZO)][(unsigned) (mouse_y / (GLfloat) ALTEZZA_PEZZO)] = 1;
+
+
     for (int i = 0; i < num_x_colonne; i++) {
         for (int j = 0; j < num_y_righe; j++) {
             if (cubo_selezione[i][j] > 0) {
@@ -826,6 +785,7 @@ int Editor::input(Gioco& gioco) {
                     muovi.start_t_y_2d = evento.button.y;
                     muovi.t_x = livello_editor.getGriglia().x;
                     muovi.t_y = livello_editor.getGriglia().y;
+                    muovi.z_zoom = livello_editor.getGriglia().zoom;
                     bottone_destro = true;
                 }
                 if (evento.button.button == SDL_BUTTON_WHEELUP) {
@@ -859,10 +819,17 @@ int Editor::input(Gioco& gioco) {
                 }
                 break;
             case SDL_MOUSEMOTION:
-                mouse_x = ((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * muovi.da_2d_a_3d - livello_editor.getGriglia().x) / livello_editor.getGriglia().zoom;
-                mouse_y = (((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * muovi.da_2d_a_3d - livello_editor.getGriglia().y) / livello_editor.getGriglia().zoom;
-                if ((unsigned) (mouse_x / (GLfloat) ALTEZZA_PEZZO) < GRIGLIA_EDITOR_X && (unsigned) (mouse_y / (GLfloat) ALTEZZA_PEZZO) < GRIGLIA_EDITOR_Y)
-                    cubo_selezione[(unsigned) (mouse_x / (GLfloat) ALTEZZA_PEZZO)][(unsigned) (mouse_y / (GLfloat) ALTEZZA_PEZZO)] = 1;
+
+                //sono uguali se il piano finale da disegno è nella posizione dello zfar
+
+                mouse_x = ((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * muovi.da_2d_a_3d);
+                mouse_y = (((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * muovi.da_2d_a_3d);
+                //                if ((unsigned) (mouse_x / (GLfloat) ALTEZZA_PEZZO) < GRIGLIA_EDITOR_X && (unsigned) (mouse_y / (GLfloat) ALTEZZA_PEZZO) < GRIGLIA_EDITOR_Y)
+                //                    cubo_selezione[(unsigned) (mouse_x / (GLfloat) ALTEZZA_PEZZO)][(unsigned) (mouse_y / (GLfloat) ALTEZZA_PEZZO)] = 1;
+
+                gluUnProject(evento.button.x, ALTEZZA_FIN - evento.button.y, 1.0, matrice_model, matrice_proj, matrice_view, &pos_x, &pos_y, &pos_z);
+                cout << pos_x << ' ' << pos_y << ' ' << pos_z << '\n' << flush;
+                cout << mouse_x << ' ' << mouse_y << ' ' << pos_z << '\n' << flush;
                 if (bottone_destro) {
                     muovi.t_x_2d = evento.button.x - muovi.start_t_x_2d;
                     muovi.t_y_2d = evento.button.y - muovi.start_t_y_2d;
