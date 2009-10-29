@@ -38,7 +38,9 @@ using namespace std;
 #define ALTEZZA_BASE 2
 #define SPESSORE_BASE 8
 
-#define H_PEZZO 2
+#define POSIZIONE_SUPERFICE -0.001
+
+#define Z_PEZZO 2
 
 //
 //GLfloat rx = 0;
@@ -222,7 +224,13 @@ protected:
     GLdouble matrice_proj[16];
     GLint matrice_view[4];
 
+    GLdouble superfice_z;
     GLdouble pos_x, pos_y, pos_z;
+
+    int mouse_x_fin, mouse_y_fin;
+    int pos_x_griglia, pos_y_griglia;
+    bool pos_griglia_ok;
+
 
 public:
 
@@ -239,6 +247,26 @@ public:
         //l_finestra = ((GLfloat)ALTEZZA_FIN/(GLfloat)LARGHEZZA_FIN)*h_finestra;
     }
 
+    bool getMousePosGrigliaXY(int mouse_x_fin_aux, int mouse_y_fin_aux) {
+        mouse_x_fin = mouse_x_fin_aux;
+        mouse_y_fin = mouse_y_fin_aux;
+        return getMousePosGrigliaXY();
+    }
+
+    bool getMousePosGrigliaXY() {
+        gluUnProject(mouse_x_fin, ALTEZZA_FIN - mouse_y_fin, superfice_z, matrice_model, matrice_proj, matrice_view, &pos_x, &pos_y, &pos_z);
+        pos_x = (pos_x - livello_editor.getGriglia().x) / livello_editor.getGriglia().zoom;
+        pos_y = (pos_y - livello_editor.getGriglia().y) / livello_editor.getGriglia().zoom;
+        pos_x_griglia = (int) (pos_x / (GLfloat) ALTEZZA_PEZZO);
+        pos_y_griglia = (int) (pos_y / (GLfloat) ALTEZZA_PEZZO);
+        if (pos_x_griglia >= 0 && pos_y_griglia >= 0 && pos_x_griglia < GRIGLIA_EDITOR_X && (unsigned) pos_y_griglia < GRIGLIA_EDITOR_Y) {
+            pos_griglia_ok = true;
+        } else {
+            pos_griglia_ok = false;
+        }
+        return pos_griglia_ok;
+    }
+
 };
 
 GLfloat coloryellow[] = {1.0f, 1.0f, 0.0f, 1.0f};
@@ -251,6 +279,7 @@ GLfloat lightpos_ambient[] = {0, 0, 100, 0};
 class Editor : public Livello {
     int num_x_colonne;
     int num_y_righe;
+    int posiziona_pezzi;
     GLfloat cubo_selezione[GRIGLIA_EDITOR_X][GRIGLIA_EDITOR_Y];
 
 public:
@@ -258,6 +287,7 @@ public:
     Editor(int num_y_righe_aux = GRIGLIA_EDITOR_Y, int num_x_colonne_aux = GRIGLIA_EDITOR_X) : Livello(num_x_colonne_aux, num_y_righe_aux) {
         num_y_righe = num_y_righe_aux;
         num_x_colonne = num_x_colonne_aux;
+        posiziona_pezzi = 0;
         for (int i = 0; i < GRIGLIA_EDITOR_X; i++)
             for (int j = 0; j < GRIGLIA_EDITOR_Y; j++)
                 cubo_selezione[i][j] = 0;
@@ -267,18 +297,18 @@ public:
         //glViewport(0,0,LARGHEZZA_FIN,ALTEZZA_FIN);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        //        glOrtho(0, ((GLfloat) num_x_colonne * (GLfloat) ALTEZZA_PEZZO),
-        //                0, ((GLfloat) num_y_righe * (GLfloat) ALTEZZA_PEZZO) / ((GLfloat) LARGHEZZA_FIN / (GLfloat) ALTEZZA_FIN),
-        //                100, 200); //misure rispetto alla posizione dell'occhio
-        //        glMultMatrixf(cavalier);
+        glOrtho(0, ((GLfloat) num_x_colonne * (GLfloat) ALTEZZA_PEZZO),
+                0, ((GLfloat) num_y_righe * (GLfloat) ALTEZZA_PEZZO) / ((GLfloat) LARGHEZZA_FIN / (GLfloat) ALTEZZA_FIN),
+                ZNEAR, ZFAR); //misure rispetto alla posizione dell'occhio
+        glMultMatrixf(cavalier);
 
-        gluPerspective
-                (
-                FOVY, /* field of view in degree */
-                LARGHEZZA_FIN / ALTEZZA_FIN, /* aspect ratio */
-                ZNEAR, /* Z near */
-                ZFAR /* Z far */
-                );
+        //        gluPerspective
+        //                (
+        //                FOVY, /* field of view in degree */
+        //                LARGHEZZA_FIN / ALTEZZA_FIN, /* aspect ratio */
+        //                ZNEAR, /* Z near */
+        //                ZFAR /* Z far */
+        //                );
 
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
@@ -296,6 +326,10 @@ public:
         glGetIntegerv(GL_VIEWPORT, matrice_view);
         glGetDoublev(GL_MODELVIEW_MATRIX, matrice_model);
         glGetDoublev(GL_PROJECTION_MATRIX, matrice_proj);
+
+        //recupero pa posizione z della superfice
+        GLdouble mouse_x, mouse_y;
+        gluProject(0.0, 0.0, 0.0, matrice_model, matrice_proj, matrice_view, &mouse_x, &mouse_y, &superfice_z);
 
     }
 
@@ -366,6 +400,8 @@ public:
         glEnable(GL_LIGHT1);
         glEnable(GL_LIGHTING);
         glEnable(GL_NORMALIZE);
+        //se lo attivo sparisce anche le faccie laterali
+        //glEnable(GL_CULL_FACE); //disattuva le faccie posteriori
 
         domino_editor.inizializzaEditor();
     }
@@ -435,7 +471,7 @@ void Editor::stampaSuperficeBase() {
     glPushMatrix();
 
     glMaterialfv(GL_FRONT, GL_DIFFUSE, colorblue);
-    glTranslatef(0.0, 0.0, -0.001);
+    glTranslatef(0.0, 0.0, POSIZIONE_SUPERFICE);
     glColor3f(1.0f, 1.0f, 0.0f);
     glBegin(GL_QUADS);
     glNormal3f(0.0, 0.0, 1.0);
@@ -458,7 +494,7 @@ void Editor::stampaPezzo(int x, int y) {
 
     glPushMatrix();
     glMaterialfv(GL_FRONT, GL_DIFFUSE, coloryellow);
-    glTranslatef(sposto_x, sposto_y, H_PEZZO);
+    glTranslatef(sposto_x, sposto_y, Z_PEZZO);
     glColor3f(1.0f, 1.0f, 1.0f);
     glLineWidth(1.5);
     glBegin(GL_QUADS);
@@ -693,21 +729,16 @@ int Editor::video(Gioco& gioco) {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+    SDL_GetMouseState(&mouse_x_fin, &mouse_y_fin);
+    if (getMousePosGrigliaXY()) {
+        cubo_selezione[(unsigned) (pos_x / (GLfloat) ALTEZZA_PEZZO)][(unsigned) (pos_y / (GLfloat) ALTEZZA_PEZZO)] = 1;
+    }
+
     glPushMatrix();
     glTranslatef(livello_editor.getGriglia().x, livello_editor.getGriglia().y, 0);
     glScalef(livello_editor.getGriglia().zoom, livello_editor.getGriglia().zoom, livello_editor.getGriglia().zoom);
 
     stampaSuperficeBase();
-    int mouse_x_2d;
-    int mouse_y_2d;
-    SDL_GetMouseState(&mouse_x_2d, &mouse_y_2d);
-
-    int mouse_x = ((mouse_x_2d - (GLfloat) LARGHEZZA_FIN / 2) * muovi.da_2d_a_3d - livello_editor.getGriglia().x) / livello_editor.getGriglia().zoom;
-    int mouse_y = (((GLfloat) ALTEZZA_FIN / 2 - mouse_y_2d) * muovi.da_2d_a_3d - livello_editor.getGriglia().y) / livello_editor.getGriglia().zoom;
-    if ((unsigned) (mouse_x / (GLfloat) ALTEZZA_PEZZO) < GRIGLIA_EDITOR_X && (unsigned) (mouse_y / (GLfloat) ALTEZZA_PEZZO) < GRIGLIA_EDITOR_Y)
-        cubo_selezione[(unsigned) (mouse_x / (GLfloat) ALTEZZA_PEZZO)][(unsigned) (mouse_y / (GLfloat) ALTEZZA_PEZZO)] = 1;
-
-
     for (int i = 0; i < num_x_colonne; i++) {
         for (int j = 0; j < num_y_righe; j++) {
             if (cubo_selezione[i][j] > 0) {
@@ -722,12 +753,9 @@ int Editor::video(Gioco& gioco) {
             }
         }
     }
-    //for (int i = 0; i < 90; i++)stampaPezzo(i * 2);
-    //stampaPezzo(0);
+
     glPopMatrix();
     SDL_GL_SwapBuffers();
-
-
 
     return 1;
 }
@@ -735,7 +763,6 @@ int Editor::video(Gioco& gioco) {
 int Editor::input(Gioco& gioco) {
     SDL_Event evento;
     SDL_PumpEvents();
-    GLfloat mouse_x, mouse_y;
     while (SDL_PollEvent(&evento)) {
         if (evento.type == SDL_QUIT) {
             gameExit();
@@ -770,13 +797,13 @@ int Editor::input(Gioco& gioco) {
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 if (evento.button.button == SDL_BUTTON_LEFT) {
-                    mouse_x = ((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * muovi.da_2d_a_3d - livello_editor.getGriglia().x) / livello_editor.getGriglia().zoom;
-                    mouse_y = (((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * muovi.da_2d_a_3d - livello_editor.getGriglia().y) / livello_editor.getGriglia().zoom;
-                    if ((unsigned) (mouse_x / (GLfloat) ALTEZZA_PEZZO) < GRIGLIA_EDITOR_X && (unsigned) (mouse_y / (GLfloat) ALTEZZA_PEZZO) < GRIGLIA_EDITOR_Y) {
-                        if (livello_editor.getPezzo((unsigned) (mouse_x / (GLfloat) ALTEZZA_PEZZO), (unsigned) (mouse_y / (GLfloat) ALTEZZA_PEZZO)).getAlive()) {
-                            livello_editor.getPezzo((unsigned) (mouse_x / (GLfloat) ALTEZZA_PEZZO), (unsigned) (mouse_y / (GLfloat) ALTEZZA_PEZZO)).setAlive(false);
+                    if (getMousePosGrigliaXY(evento.button.x, evento.button.y)){
+                        if (livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).getAlive()) {
+                            livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(false);
+                            posiziona_pezzi = -1;
                         } else {
-                            livello_editor.getPezzo((unsigned) (mouse_x / (GLfloat) ALTEZZA_PEZZO), (unsigned) (mouse_y / (GLfloat) ALTEZZA_PEZZO)).setAlive(true);
+                            livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(true);
+                            posiziona_pezzi = 1;
                         }
                     }
                 }
@@ -819,24 +846,24 @@ int Editor::input(Gioco& gioco) {
                 }
                 break;
             case SDL_MOUSEMOTION:
-
-                //sono uguali se il piano finale da disegno è nella posizione dello zfar
-
-                mouse_x = ((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * muovi.da_2d_a_3d);
-                mouse_y = (((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * muovi.da_2d_a_3d);
-                //                if ((unsigned) (mouse_x / (GLfloat) ALTEZZA_PEZZO) < GRIGLIA_EDITOR_X && (unsigned) (mouse_y / (GLfloat) ALTEZZA_PEZZO) < GRIGLIA_EDITOR_Y)
-                //                    cubo_selezione[(unsigned) (mouse_x / (GLfloat) ALTEZZA_PEZZO)][(unsigned) (mouse_y / (GLfloat) ALTEZZA_PEZZO)] = 1;
-
-                gluUnProject(evento.button.x, ALTEZZA_FIN - evento.button.y, 1.0, matrice_model, matrice_proj, matrice_view, &pos_x, &pos_y, &pos_z);
-                cout << pos_x << ' ' << pos_y << ' ' << pos_z << '\n' << flush;
-                cout << mouse_x << ' ' << mouse_y << ' ' << pos_z << '\n' << flush;
                 if (bottone_destro) {
                     muovi.t_x_2d = evento.button.x - muovi.start_t_x_2d;
                     muovi.t_y_2d = evento.button.y - muovi.start_t_y_2d;
                     livello_editor.setGrigliaXY(muovi.t_x + (muovi.t_x_2d * muovi.da_2d_a_3d), muovi.t_y - (muovi.t_y_2d * muovi.da_2d_a_3d));
                 }
+                if (getMousePosGrigliaXY(evento.button.x, evento.button.y)) {
+                    if (posiziona_pezzi == -1) {
+                        livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(false);
+                    }
+                    if (posiziona_pezzi == 1) {
+                        livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(true);
+                    }
+                }
                 break;
             case SDL_MOUSEBUTTONUP:
+                if (evento.button.button == SDL_BUTTON_LEFT) {
+                    posiziona_pezzi = 0;
+                }
                 if (evento.button.button == SDL_BUTTON_RIGHT) {
                     bottone_destro = false;
                 }
