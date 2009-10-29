@@ -30,6 +30,10 @@ using namespace std;
 #define ZNEAR   5
 #define ZFAR    500
 
+#define LIMITE_SUPERIORE_ZOOM 10
+#define LIMITE_INFERIORE_ZOOM 0.1
+#define DELTA_ZOOM 2.0
+
 #define LARGHEZZA_PEZZO 4
 #define ALTEZZA_PEZZO 8
 #define SPESSORE_PEZZO 2
@@ -49,6 +53,10 @@ using namespace std;
 //GLfloat startx = 0;
 //GLfloat starty = 0;
 //GLfloat jump = 0;
+
+enum Proiezione {
+    ASSIONOMETRICA, PROSPETTICA
+};
 
 enum Stato {
     MENU,
@@ -120,52 +128,6 @@ public:
     }
 };
 
-class MuoviGriglia {
-public:
-    GLfloat da_2d_a_3d;
-    GLfloat delta_zoom;
-
-    GLfloat start_t_x_2d;
-    GLfloat start_t_y_2d;
-    GLfloat t_x_2d;
-    GLfloat t_y_2d;
-
-    GLfloat t_x;
-    GLfloat t_y;
-
-    GLfloat z_x;
-    GLfloat z_y;
-    GLfloat z_zoom;
-
-    MuoviGriglia(GLfloat da_2d_a_3d_aux, GLfloat delta_zoom_aux) {
-        da_2d_a_3d = da_2d_a_3d_aux;
-        delta_zoom = delta_zoom_aux;
-
-        start_t_x_2d = 0;
-        start_t_y_2d = 0;
-        t_x_2d = 0;
-        t_y_2d = 0;
-
-        t_x = 0;
-        t_y = 0;
-
-        z_x = 0;
-        z_y = 0;
-        z_zoom = 1;
-    }
-};
-
-
-//    void setGrigliaAuxZoom(GLfloat aux_zoom, GLfloat aux_zoom_x = 0, GLfloat aux_zoom_y = 0) {
-//        griglia.t_aux_zoom = aux_zoom;
-//        griglia.zoom_aux_x = aux_zoom_x;
-//        griglia.zoom_aux_y = aux_zoom_y;
-//    }
-//
-//    void setGrigliaAuxXY(GLfloat aux_x, GLfloat aux_y) {
-//        griglia.t_aux_x = aux_x;
-//        griglia.t_aux_y = aux_y;
-//    }
 
 class Griglia {
     PosXYZoom griglia;
@@ -216,7 +178,8 @@ public:
 class Livello {
 protected:
     Griglia livello_editor;
-    MuoviGriglia muovi;
+    PosXYZoom aux_griglia;
+    //MuoviGriglia muovi;
 
     bool bottone_sinistro, bottone_destro;
 
@@ -226,6 +189,7 @@ protected:
 
     GLdouble superfice_z;
     GLdouble pos_x, pos_y, pos_z;
+    GLdouble pos_x_iniziali, pos_y_iniziali;
 
     int mouse_x_fin, mouse_y_fin;
     int pos_x_griglia, pos_y_griglia;
@@ -235,8 +199,7 @@ protected:
 public:
 
     Livello(int num_x_colonne_aux, int num_y_righe_aux) :
-    livello_editor(num_x_colonne_aux, num_y_righe_aux),
-    muovi(2.0 * H_TELECAMERA * tan(FOVY / 2.0 / 180.0 * M_PI) / (GLfloat) ALTEZZA_FIN, 2) {
+    livello_editor(num_x_colonne_aux, num_y_righe_aux) {
         bottone_destro = false;
         bottone_sinistro = false;
 
@@ -247,6 +210,18 @@ public:
         //l_finestra = ((GLfloat)ALTEZZA_FIN/(GLfloat)LARGHEZZA_FIN)*h_finestra;
     }
 
+    //    void getMousePosXY(int mouse_x_fin_aux, int mouse_y_fin_aux) {
+    //        mouse_x_fin = mouse_x_fin_aux;
+    //        mouse_y_fin = mouse_y_fin_aux;
+    //        getMousePosXY();
+    //    }
+    //
+    //    void getMousePosXY() {
+    //        gluUnProject(mouse_x_fin, ALTEZZA_FIN - mouse_y_fin, superfice_z, matrice_model, matrice_proj, matrice_view, &pos_x, &pos_y, &pos_z);
+    //        pos_x = (pos_x - livello_editor.getGriglia().x) / livello_editor.getGriglia().zoom;
+    //        pos_y = (pos_y - livello_editor.getGriglia().y) / livello_editor.getGriglia().zoom;
+    //    }
+
     bool getMousePosGrigliaXY(int mouse_x_fin_aux, int mouse_y_fin_aux) {
         mouse_x_fin = mouse_x_fin_aux;
         mouse_y_fin = mouse_y_fin_aux;
@@ -255,10 +230,8 @@ public:
 
     bool getMousePosGrigliaXY() {
         gluUnProject(mouse_x_fin, ALTEZZA_FIN - mouse_y_fin, superfice_z, matrice_model, matrice_proj, matrice_view, &pos_x, &pos_y, &pos_z);
-        pos_x = (pos_x - livello_editor.getGriglia().x) / livello_editor.getGriglia().zoom;
-        pos_y = (pos_y - livello_editor.getGriglia().y) / livello_editor.getGriglia().zoom;
-        pos_x_griglia = (int) (pos_x / (GLfloat) ALTEZZA_PEZZO);
-        pos_y_griglia = (int) (pos_y / (GLfloat) ALTEZZA_PEZZO);
+        pos_x_griglia = (int) (((pos_x - livello_editor.getGriglia().x) / livello_editor.getGriglia().zoom) / (GLfloat) ALTEZZA_PEZZO);
+        pos_y_griglia = (int) (((pos_y - livello_editor.getGriglia().y) / livello_editor.getGriglia().zoom) / (GLfloat) ALTEZZA_PEZZO);
         if (pos_x_griglia >= 0 && pos_y_griglia >= 0 && pos_x_griglia < GRIGLIA_EDITOR_X && (unsigned) pos_y_griglia < GRIGLIA_EDITOR_Y) {
             pos_griglia_ok = true;
         } else {
@@ -295,20 +268,36 @@ public:
 
     void inizializzaEditor() {
         //glViewport(0,0,LARGHEZZA_FIN,ALTEZZA_FIN);
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(0, ((GLfloat) num_x_colonne * (GLfloat) ALTEZZA_PEZZO),
-                0, ((GLfloat) num_y_righe * (GLfloat) ALTEZZA_PEZZO) / ((GLfloat) LARGHEZZA_FIN / (GLfloat) ALTEZZA_FIN),
-                ZNEAR, ZFAR); //misure rispetto alla posizione dell'occhio
-        glMultMatrixf(cavalier);
 
-        //        gluPerspective
-        //                (
-        //                FOVY, /* field of view in degree */
-        //                LARGHEZZA_FIN / ALTEZZA_FIN, /* aspect ratio */
-        //                ZNEAR, /* Z near */
-        //                ZFAR /* Z far */
-        //                );
+        setProiezione(ASSIONOMETRICA);
+
+        glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, colorwhite);
+        glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
+        glLightfv(GL_LIGHT1, GL_DIFFUSE, colorwhite);
+        glLightfv(GL_LIGHT1, GL_POSITION, lightpos_ambient);
+    }
+
+    int stato(Gioco& gioco);
+    int video(Gioco& gioco);
+    int input(Gioco& gioco);
+
+    void setProiezione(Proiezione tipo) {
+        switch (tipo) {
+            case ASSIONOMETRICA:
+                glMatrixMode(GL_PROJECTION);
+                glLoadIdentity();
+                glOrtho(0, ((GLfloat) num_x_colonne * (GLfloat) ALTEZZA_PEZZO),
+                        0, ((GLfloat) num_y_righe * (GLfloat) ALTEZZA_PEZZO) / ((GLfloat) LARGHEZZA_FIN / (GLfloat) ALTEZZA_FIN),
+                        ZNEAR, ZFAR); //misure rispetto alla posizione dell'occhio
+                glMultMatrixf(cavalier);
+                break;
+            case PROSPETTICA:
+                glMatrixMode(GL_PROJECTION);
+                glLoadIdentity();
+                gluPerspective(FOVY, LARGHEZZA_FIN / ALTEZZA_FIN, ZNEAR, ZFAR);
+                break;
+        }
 
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
@@ -317,12 +306,6 @@ public:
                 0.0, 0.0, 0.0, /* center  */
                 0.0, 1.0, 0.0); /* up is in positive Y direction */
 
-        glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, colorwhite);
-        glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
-        glLightfv(GL_LIGHT1, GL_DIFFUSE, colorwhite);
-        glLightfv(GL_LIGHT1, GL_POSITION, lightpos_ambient);
-
         glGetIntegerv(GL_VIEWPORT, matrice_view);
         glGetDoublev(GL_MODELVIEW_MATRIX, matrice_model);
         glGetDoublev(GL_PROJECTION_MATRIX, matrice_proj);
@@ -330,12 +313,7 @@ public:
         //recupero pa posizione z della superfice
         GLdouble mouse_x, mouse_y;
         gluProject(0.0, 0.0, 0.0, matrice_model, matrice_proj, matrice_view, &mouse_x, &mouse_y, &superfice_z);
-
     }
-
-    int stato(Gioco& gioco);
-    int video(Gioco& gioco);
-    int input(Gioco& gioco);
 
     void stampaSuperficeBase();
     void stampaPezzo(int x, int y);
@@ -458,11 +436,11 @@ int main(int argc, char** argv) {
 }
 
 int Editor::stato(Gioco& gioco) {
-    if (fabs(livello_editor.getGriglia().zoom - muovi.z_zoom) >= 0.01) {
-        livello_editor.setGrigliaXY(livello_editor.getGriglia().x + ((muovi.z_x - livello_editor.getGriglia().x) / 10),
-                livello_editor.getGriglia().y + ((muovi.z_y - livello_editor.getGriglia().y) / 10));
+    if (fabs(livello_editor.getGriglia().zoom - aux_griglia.zoom) >= 0.01) {
+        livello_editor.setGrigliaXY(livello_editor.getGriglia().x + ((aux_griglia.x - livello_editor.getGriglia().x) / 10),
+                livello_editor.getGriglia().y + ((aux_griglia.y - livello_editor.getGriglia().y) / 10));
 
-        livello_editor.setGrigliaZoom(livello_editor.getGriglia().zoom + (muovi.z_zoom - livello_editor.getGriglia().zoom) / 10);
+        livello_editor.setGrigliaZoom(livello_editor.getGriglia().zoom + (aux_griglia.zoom - livello_editor.getGriglia().zoom) / 10);
     }
     return 1;
 }
@@ -731,7 +709,7 @@ int Editor::video(Gioco& gioco) {
 
     SDL_GetMouseState(&mouse_x_fin, &mouse_y_fin);
     if (getMousePosGrigliaXY()) {
-        cubo_selezione[(unsigned) (pos_x / (GLfloat) ALTEZZA_PEZZO)][(unsigned) (pos_y / (GLfloat) ALTEZZA_PEZZO)] = 1;
+        cubo_selezione[pos_x_griglia][pos_y_griglia] = 1;
     }
 
     glPushMatrix();
@@ -780,9 +758,11 @@ int Editor::input(Gioco& gioco) {
                     case SDLK_PAGEDOWN:
                         gioco.setFrames(gioco.getFrames() + 1);
                         break;
-                    case SDLK_3:
+                    case SDLK_p:
+                        setProiezione(PROSPETTICA);
                         break;
-                    case SDLK_4:
+                    case SDLK_a:
+                        setProiezione(ASSIONOMETRICA);
                         break;
                     case SDLK_5:
                         break;
@@ -796,8 +776,9 @@ int Editor::input(Gioco& gioco) {
                 }
                 break;
             case SDL_MOUSEBUTTONDOWN:
+                getMousePosGrigliaXY(evento.button.x, evento.button.y);
                 if (evento.button.button == SDL_BUTTON_LEFT) {
-                    if (getMousePosGrigliaXY(evento.button.x, evento.button.y)){
+                    if (pos_griglia_ok) {
                         if (livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).getAlive()) {
                             livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(false);
                             posiziona_pezzi = -1;
@@ -808,22 +789,24 @@ int Editor::input(Gioco& gioco) {
                     }
                 }
                 if (evento.button.button == SDL_BUTTON_RIGHT) {
-                    muovi.start_t_x_2d = evento.button.x;
-                    muovi.start_t_y_2d = evento.button.y;
-                    muovi.t_x = livello_editor.getGriglia().x;
-                    muovi.t_y = livello_editor.getGriglia().y;
-                    muovi.z_zoom = livello_editor.getGriglia().zoom;
+                    pos_x_iniziali = pos_x;
+                    pos_y_iniziali = pos_y;
+                    // muovi.start_t_x_2d = evento.button.x;
+                    // muovi.start_t_y_2d = evento.button.y;
+                    aux_griglia.x = livello_editor.getGriglia().x;
+                    aux_griglia.y = livello_editor.getGriglia().y;
+                    aux_griglia.zoom = livello_editor.getGriglia().zoom;
                     bottone_destro = true;
                 }
-                if (evento.button.button == SDL_BUTTON_WHEELUP) {
+                if (!bottone_destro && evento.button.button == SDL_BUTTON_WHEELUP) {
                     GLfloat zoom = livello_editor.getGriglia().zoom;
-                    if (zoom * muovi.delta_zoom < 10) {
-                        muovi.z_zoom = zoom * muovi.delta_zoom;
-                        muovi.z_x = livello_editor.getGriglia().x + (1 - muovi.delta_zoom)*((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * muovi.da_2d_a_3d - livello_editor.getGriglia().x);
-                        muovi.z_y = livello_editor.getGriglia().y + (1 - muovi.delta_zoom)*(((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * muovi.da_2d_a_3d - livello_editor.getGriglia().y);
+                    if (zoom * DELTA_ZOOM < LIMITE_SUPERIORE_ZOOM) {
+                        aux_griglia.zoom = zoom * DELTA_ZOOM;
+                        aux_griglia.x = livello_editor.getGriglia().x + (1 - DELTA_ZOOM)*(pos_x - livello_editor.getGriglia().x);
+                        aux_griglia.y = livello_editor.getGriglia().y + (1 - DELTA_ZOOM)*(pos_y - livello_editor.getGriglia().y);
                     }
                 }
-                if (evento.button.button == SDL_BUTTON_WHEELDOWN) {
+                if (!bottone_destro && evento.button.button == SDL_BUTTON_WHEELDOWN) {
                     /*
                     //_mouseX_3d_zoomNuovo_[posizione del mouse riportata in uno spazio 3d ed eliminato il fattore di zoom] = (((_mouseX_[coordinate della finestra asse x verso destra asse y verso basso]-_LARGHEZZA_FIN/2_[perchè la telecamera punta in (zero[x],zero[y]) che qundi si trova a metà finestra])*
                     //_da_2d_a_3d_[variabile che riporta la mia distanza sulla finestra in una distanza 3d vedi formula sopra] - _x_[posizione x assoluta della griglia])/ _zoomNuovo_[successivo livello di zoom])
@@ -838,19 +821,14 @@ int Editor::input(Gioco& gioco) {
                      //        livello_editor.getGriglia().y +(livello_editor.getGriglia().zoom-0.1)*((((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y) / (livello_editor.getGriglia().zoom-0.1)-(((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y) / livello_editor.getGriglia().zoom));
                      */
                     GLfloat zoom = livello_editor.getGriglia().zoom;
-                    if (zoom / muovi.delta_zoom > 0.1) {
-                        muovi.z_zoom = zoom / muovi.delta_zoom;
-                        muovi.z_x = livello_editor.getGriglia().x + ((muovi.delta_zoom - 1) / muovi.delta_zoom)*((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * muovi.da_2d_a_3d - livello_editor.getGriglia().x);
-                        muovi.z_y = livello_editor.getGriglia().y + ((muovi.delta_zoom - 1) / muovi.delta_zoom)*(((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * muovi.da_2d_a_3d - livello_editor.getGriglia().y);
+                    if (zoom / DELTA_ZOOM > LIMITE_INFERIORE_ZOOM) {
+                        aux_griglia.zoom = zoom / DELTA_ZOOM;
+                        aux_griglia.x = livello_editor.getGriglia().x + ((DELTA_ZOOM - 1) / DELTA_ZOOM)*(pos_x - livello_editor.getGriglia().x);
+                        aux_griglia.y = livello_editor.getGriglia().y + ((DELTA_ZOOM - 1) / DELTA_ZOOM)*(pos_y - livello_editor.getGriglia().y);
                     }
                 }
                 break;
             case SDL_MOUSEMOTION:
-                if (bottone_destro) {
-                    muovi.t_x_2d = evento.button.x - muovi.start_t_x_2d;
-                    muovi.t_y_2d = evento.button.y - muovi.start_t_y_2d;
-                    livello_editor.setGrigliaXY(muovi.t_x + (muovi.t_x_2d * muovi.da_2d_a_3d), muovi.t_y - (muovi.t_y_2d * muovi.da_2d_a_3d));
-                }
                 if (getMousePosGrigliaXY(evento.button.x, evento.button.y)) {
                     if (posiziona_pezzi == -1) {
                         livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(false);
@@ -858,6 +836,12 @@ int Editor::input(Gioco& gioco) {
                     if (posiziona_pezzi == 1) {
                         livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(true);
                     }
+                }
+                if (bottone_destro) {
+                    // muovi.t_x_2d = evento.button.x - muovi.start_t_x_2d;
+                    // muovi.t_y_2d = evento.button.y - muovi.start_t_y_2d;
+                    //                    livello_editor.setGrigliaXY(muovi.t_x + (muovi.t_x_2d * muovi.da_2d_a_3d), muovi.t_y - (muovi.t_y_2d * muovi.da_2d_a_3d));
+                    livello_editor.setGrigliaXY(aux_griglia.x + (pos_x - pos_x_iniziali), aux_griglia.y + (pos_y - pos_y_iniziali));
                 }
                 break;
             case SDL_MOUSEBUTTONUP:
