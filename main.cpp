@@ -30,10 +30,10 @@ using namespace std;
 #define H_TELECAMERA 150
 #define FOVY    40
 #define ZNEAR   5
-#define ZFAR    500
+#define ZFAR    700
 
 #define LIMITE_SUPERIORE_ZOOM 10
-#define LIMITE_INFERIORE_ZOOM 0.1
+#define LIMITE_INFERIORE_ZOOM 0.5
 #define DELTA_ZOOM 2.0
 
 #define LARGHEZZA_PEZZO 4
@@ -300,20 +300,29 @@ public:
                         0, ((GLfloat) num_y_righe * (GLfloat) ALTEZZA_PEZZO) / ((GLfloat) larghezza_fin / (GLfloat) altezza_fin),
                         ZNEAR, ZFAR); //misure rispetto alla posizione dell'occhio
                 glMultMatrixf(cavalier);
+
+                glMatrixMode(GL_MODELVIEW);
+                glLoadIdentity();
+                gluLookAt(
+                        0.0, 0.0, H_TELECAMERA, /* eye  */
+                        0.0, 0.0, 0.0, /* center  */
+                        0.0, 1.0, 0.0); /* up is in positive Y direction */
+
                 break;
             case PROSPETTICA:
                 glMatrixMode(GL_PROJECTION);
                 glLoadIdentity();
-                gluPerspective(FOVY, (GLfloat)larghezza_fin / (GLfloat)altezza_fin, ZNEAR, ZFAR);
+                gluPerspective(FOVY, (GLfloat) larghezza_fin / (GLfloat) altezza_fin, ZNEAR, ZFAR);
+
+                glMatrixMode(GL_MODELVIEW);
+                glLoadIdentity();
+                gluLookAt(
+                        0.0, 0.0, H_TELECAMERA * 3.5, /* eye  */
+                        0.0, 0.0, 0.0, /* center  */
+                        0.0, 1.0, 0.0); /* up is in positive Y direction */
+
                 break;
         }
-
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        gluLookAt(
-                0.0, 0.0, H_TELECAMERA, /* eye  */
-                0.0, 0.0, 0.0, /* center  */
-                0.0, 1.0, 0.0); /* up is in positive Y direction */
 
         glGetIntegerv(GL_VIEWPORT, matrice_view);
         glGetDoublev(GL_MODELVIEW_MATRIX, matrice_model);
@@ -336,9 +345,10 @@ class Gioco {
     int larghezza_finestra;
     int altezza_finestra;
     int bpp;
+    bool fullscreen;
 
     /* Flags to pass to SDL_SetVideoMode */
-    int videoFlags;
+    unsigned videoFlags;
 
     /* this holds some info about our display */
     const SDL_VideoInfo *videoInfo;
@@ -363,6 +373,7 @@ public:
     Gioco() {
         bpp = BPP_FIN;
 
+        fullscreen = false;
         stato = EDITOR_COSTRUISCI;
         alive = true;
         frame_ms = FRAMEMS;
@@ -383,10 +394,10 @@ public:
 
         /* the flags to pass to SDL_SetVideoMode */
         videoFlags = SDL_OPENGL; /* Enable OpenGL in SDL */
-        videoFlags |= SDL_GL_DOUBLEBUFFER; /* Enable double buffering */
+        //videoFlags |= SDL_GL_DOUBLEBUFFER; /* Enable double buffering */
         videoFlags |= SDL_HWPALETTE; /* Store the palette in hardware */
         videoFlags |= SDL_RESIZABLE; /* Enable window resizing */
-        videoFlags |= SDL_GL_SWAP_CONTROL;
+        //videoFlags |= SDL_GL_SWAP_CONTROL;
 
         /* This checks to see if surfaces can be stored in memory */
         if (videoInfo->hw_available)
@@ -400,6 +411,7 @@ public:
 
         /* Sets up OpenGL double buffering */
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+        SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
 
         /* get a SDL surface */
         bpp = videoInfo->vfmt->BitsPerPixel;
@@ -474,11 +486,39 @@ public:
             exit(-1);
         }
     }
-    int getWindowL(){
+
+    void setFullScreen() {
+        fullscreen = true;
+        SDL_WM_ToggleFullScreen(screen);
+        //        videoFlags |= SDL_FULLSCREEN;
+        //        setWindowLA(videoInfo->current_w, videoInfo->current_h);
+    }
+
+    void resetFullScreen() {
+        fullscreen = false;
+        SDL_WM_ToggleFullScreen(screen);
+        //        videoFlags &= ~SDL_FULLSCREEN;
+        //        setWindowLA(larghezza_finestra, altezza_finestra);
+    }
+
+    bool getFullScreen() {
+        return fullscreen;
+    }
+
+    int getWindowL() {
         return larghezza_finestra;
     }
-    int getWindowA(){
+
+    int getWindowA() {
         return altezza_finestra;
+    }
+
+    int getScreenL() {
+        return videoInfo->current_w;
+    }
+
+    int getScreenA() {
+        return videoInfo->current_h;
     }
 };
 
@@ -813,12 +853,31 @@ int Editor::input() {
                         gioco->setFrames(gioco->getFrames() + 1);
                         break;
                     case SDLK_p:
-                        setProiezione(PROSPETTICA,gioco->getWindowL(),gioco->getWindowA());
+                        SDL_GetMouseState(&mouse_x_fin, &mouse_y_fin);
+                        getMousePosGrigliaXY(gioco->getWindowA());
+                        pos_x_iniziali = pos_x;
+                        pos_y_iniziali = pos_y;
+                        setProiezione(PROSPETTICA, gioco->getWindowL(), gioco->getWindowA());
+                        getMousePosGrigliaXY(gioco->getWindowA());
+                        livello_editor.setGrigliaXY(livello_editor.getGriglia().x + (pos_x - pos_x_iniziali), livello_editor.getGriglia().y + (pos_y - pos_y_iniziali));
                         break;
                     case SDLK_a:
-                        setProiezione(ASSIONOMETRICA,gioco->getWindowL(),gioco->getWindowA());
+                        SDL_GetMouseState(&mouse_x_fin, &mouse_y_fin);
+                        getMousePosGrigliaXY(gioco->getWindowA());
+                        pos_x_iniziali = pos_x;
+                        pos_y_iniziali = pos_y;
+                        setProiezione(ASSIONOMETRICA, gioco->getWindowL(), gioco->getWindowA());
+                        getMousePosGrigliaXY(gioco->getWindowA());
+                        livello_editor.setGrigliaXY(livello_editor.getGriglia().x + (pos_x - pos_x_iniziali), livello_editor.getGriglia().y + (pos_y - pos_y_iniziali));
                         break;
-                    case SDLK_5:
+                    case SDLK_f:
+                        if (gioco->getFullScreen()) {
+                            gioco->resetFullScreen();
+                            //setProiezione(tipo_proiezione, gioco->getWindowA(), gioco->getWindowL());
+                        } else {
+                            gioco->setFullScreen();
+                            //setProiezione(tipo_proiezione, gioco->getScreenA(), gioco->getScreenL());
+                        }
                         break;
                     case SDLK_6:
                         break;
@@ -830,7 +889,7 @@ int Editor::input() {
                 }
                 break;
             case SDL_MOUSEBUTTONDOWN:
-                getMousePosGrigliaXY(gioco->getWindowA(),evento.button.x, evento.button.y);
+                getMousePosGrigliaXY(gioco->getWindowA(), evento.button.x, evento.button.y);
                 if (evento.button.button == SDL_BUTTON_LEFT) {
                     if (pos_griglia_ok) {
                         if (livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).getAlive()) {
@@ -858,6 +917,10 @@ int Editor::input() {
                         aux_griglia.zoom = zoom * DELTA_ZOOM;
                         aux_griglia.x = livello_editor.getGriglia().x + (1 - DELTA_ZOOM)*(pos_x - livello_editor.getGriglia().x);
                         aux_griglia.y = livello_editor.getGriglia().y + (1 - DELTA_ZOOM)*(pos_y - livello_editor.getGriglia().y);
+                    } else {
+                        aux_griglia.zoom = LIMITE_SUPERIORE_ZOOM;
+                        aux_griglia.x = livello_editor.getGriglia().x + (1 - (GLfloat)LIMITE_SUPERIORE_ZOOM/zoom)*(pos_x - livello_editor.getGriglia().x);
+                        aux_griglia.y = livello_editor.getGriglia().y + (1 - (GLfloat)LIMITE_SUPERIORE_ZOOM/zoom)*(pos_y - livello_editor.getGriglia().y);
                     }
                 }
                 if (!bottone_destro && evento.button.button == SDL_BUTTON_WHEELDOWN) {
@@ -879,11 +942,15 @@ int Editor::input() {
                         aux_griglia.zoom = zoom / DELTA_ZOOM;
                         aux_griglia.x = livello_editor.getGriglia().x + ((DELTA_ZOOM - 1) / DELTA_ZOOM)*(pos_x - livello_editor.getGriglia().x);
                         aux_griglia.y = livello_editor.getGriglia().y + ((DELTA_ZOOM - 1) / DELTA_ZOOM)*(pos_y - livello_editor.getGriglia().y);
+                    } else {
+                        aux_griglia.zoom = LIMITE_INFERIORE_ZOOM;
+                        aux_griglia.x = livello_editor.getGriglia().x + (((zoom/(GLfloat)LIMITE_INFERIORE_ZOOM) - 1) / (zoom/(GLfloat)LIMITE_INFERIORE_ZOOM))*(pos_x - livello_editor.getGriglia().x);
+                        aux_griglia.y = livello_editor.getGriglia().y + (((zoom/(GLfloat)LIMITE_INFERIORE_ZOOM) - 1) / (zoom/(GLfloat)LIMITE_INFERIORE_ZOOM))*(pos_y - livello_editor.getGriglia().y);
                     }
                 }
                 break;
             case SDL_MOUSEMOTION:
-                if (getMousePosGrigliaXY(gioco->getWindowA(),evento.button.x, evento.button.y)) {
+                if (getMousePosGrigliaXY(gioco->getWindowA(), evento.button.x, evento.button.y)) {
                     if (posiziona_pezzi == -1) {
                         livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(false);
                     }
@@ -908,7 +975,7 @@ int Editor::input() {
                 break;
             case SDL_VIDEORESIZE:
                 gioco->setWindowLA(evento.resize.w, evento.resize.h);
-                setProiezione(tipo_proiezione,evento.resize.w,evento.resize.h);
+                setProiezione(tipo_proiezione, evento.resize.w, evento.resize.h);
             default:
                 break;
         }
