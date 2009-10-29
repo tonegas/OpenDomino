@@ -18,6 +18,8 @@ using namespace std;
 
 #define LARGHEZZA_FIN 1000
 #define ALTEZZA_FIN  1000
+#define LARGHEZZA_FIN_EDITOR 1000
+#define ALTEZZA_FIN_EDITOR  1000
 #define BPP_FIN       32
 
 #define GRIGLIA_EDITOR_Y 50
@@ -26,7 +28,7 @@ using namespace std;
 #define X_TELECAMERA 0
 #define Y_TELECAMERA 0
 #define H_TELECAMERA 150
-#define FOVY    30
+#define FOVY    40
 #define ZNEAR   5
 #define ZFAR    500
 
@@ -128,7 +130,6 @@ public:
     }
 };
 
-
 class Griglia {
     PosXYZoom griglia;
     Pezzo matrice_pezzi[GRIGLIA_EDITOR_X][GRIGLIA_EDITOR_Y];
@@ -222,14 +223,14 @@ public:
     //        pos_y = (pos_y - livello_editor.getGriglia().y) / livello_editor.getGriglia().zoom;
     //    }
 
-    bool getMousePosGrigliaXY(int mouse_x_fin_aux, int mouse_y_fin_aux) {
+    bool getMousePosGrigliaXY(int larghezza_fin, int mouse_x_fin_aux, int mouse_y_fin_aux) {
         mouse_x_fin = mouse_x_fin_aux;
         mouse_y_fin = mouse_y_fin_aux;
-        return getMousePosGrigliaXY();
+        return getMousePosGrigliaXY(larghezza_fin);
     }
 
-    bool getMousePosGrigliaXY() {
-        gluUnProject(mouse_x_fin, ALTEZZA_FIN - mouse_y_fin, superfice_z, matrice_model, matrice_proj, matrice_view, &pos_x, &pos_y, &pos_z);
+    bool getMousePosGrigliaXY(int larghezza_fin) {
+        gluUnProject(mouse_x_fin, larghezza_fin - mouse_y_fin, superfice_z, matrice_model, matrice_proj, matrice_view, &pos_x, &pos_y, &pos_z);
         pos_x_griglia = (int) (((pos_x - livello_editor.getGriglia().x) / livello_editor.getGriglia().zoom) / (GLfloat) ALTEZZA_PEZZO);
         pos_y_griglia = (int) (((pos_y - livello_editor.getGriglia().y) / livello_editor.getGriglia().zoom) / (GLfloat) ALTEZZA_PEZZO);
         if (pos_x_griglia >= 0 && pos_y_griglia >= 0 && pos_x_griglia < GRIGLIA_EDITOR_X && (unsigned) pos_y_griglia < GRIGLIA_EDITOR_Y) {
@@ -253,6 +254,11 @@ class Editor : public Livello {
     int num_x_colonne;
     int num_y_righe;
     int posiziona_pezzi;
+
+    Gioco *gioco;
+
+    Proiezione tipo_proiezione;
+
     GLfloat cubo_selezione[GRIGLIA_EDITOR_X][GRIGLIA_EDITOR_Y];
 
 public:
@@ -266,10 +272,11 @@ public:
                 cubo_selezione[i][j] = 0;
     }
 
-    void inizializzaEditor() {
-        //glViewport(0,0,LARGHEZZA_FIN,ALTEZZA_FIN);
+    void inizializzaEditor(Gioco *gioco_aux) {
+        tipo_proiezione = ASSIONOMETRICA;
+        gioco = gioco_aux;
 
-        setProiezione(ASSIONOMETRICA);
+        setProiezione(tipo_proiezione, LARGHEZZA_FIN_EDITOR, ALTEZZA_FIN_EDITOR);
 
         glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
         glLightfv(GL_LIGHT0, GL_DIFFUSE, colorwhite);
@@ -278,24 +285,26 @@ public:
         glLightfv(GL_LIGHT1, GL_POSITION, lightpos_ambient);
     }
 
-    int stato(Gioco& gioco);
-    int video(Gioco& gioco);
-    int input(Gioco& gioco);
+    int stato();
+    int video();
+    int input();
 
-    void setProiezione(Proiezione tipo) {
-        switch (tipo) {
+    void setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin) {
+        tipo_proiezione = tipo;
+        glViewport(0, 0, (GLint) larghezza_fin, (GLint) altezza_fin);
+        switch (tipo_proiezione) {
             case ASSIONOMETRICA:
                 glMatrixMode(GL_PROJECTION);
                 glLoadIdentity();
                 glOrtho(0, ((GLfloat) num_x_colonne * (GLfloat) ALTEZZA_PEZZO),
-                        0, ((GLfloat) num_y_righe * (GLfloat) ALTEZZA_PEZZO) / ((GLfloat) LARGHEZZA_FIN / (GLfloat) ALTEZZA_FIN),
+                        0, ((GLfloat) num_y_righe * (GLfloat) ALTEZZA_PEZZO) / ((GLfloat) larghezza_fin / (GLfloat) altezza_fin),
                         ZNEAR, ZFAR); //misure rispetto alla posizione dell'occhio
                 glMultMatrixf(cavalier);
                 break;
             case PROSPETTICA:
                 glMatrixMode(GL_PROJECTION);
                 glLoadIdentity();
-                gluPerspective(FOVY, LARGHEZZA_FIN / ALTEZZA_FIN, ZNEAR, ZFAR);
+                gluPerspective(FOVY, (GLfloat)larghezza_fin / (GLfloat)altezza_fin, ZNEAR, ZFAR);
                 break;
         }
 
@@ -324,9 +333,15 @@ public:
 
 class Gioco {
     //parametri finestra
-    int larghezza;
-    int altezza;
+    int larghezza_finestra;
+    int altezza_finestra;
     int bpp;
+
+    /* Flags to pass to SDL_SetVideoMode */
+    int videoFlags;
+
+    /* this holds some info about our display */
+    const SDL_VideoInfo *videoInfo;
 
     //superfice della finestra
     SDL_Surface *screen;
@@ -346,9 +361,6 @@ class Gioco {
 public:
 
     Gioco() {
-
-        larghezza = LARGHEZZA_FIN;
-        altezza = ALTEZZA_FIN;
         bpp = BPP_FIN;
 
         stato = EDITOR_COSTRUISCI;
@@ -360,13 +372,39 @@ public:
             exit(-1);
         }
 
-        //SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1); funziona solamento in fullscreen
-        screen = SDL_SetVideoMode(larghezza, altezza, bpp, SDL_HWSURFACE | SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_GL_SWAP_CONTROL);
 
-        if (screen == NULL) {
-            printf("ERRORE di creazione video SDL: %s.\n", SDL_GetError());
+        /* Fetch the video info */
+        videoInfo = SDL_GetVideoInfo();
+
+        if (!videoInfo) {
+            fprintf(stderr, "Video query failed: %s\n", SDL_GetError());
             exit(-1);
         }
+
+        /* the flags to pass to SDL_SetVideoMode */
+        videoFlags = SDL_OPENGL; /* Enable OpenGL in SDL */
+        videoFlags |= SDL_GL_DOUBLEBUFFER; /* Enable double buffering */
+        videoFlags |= SDL_HWPALETTE; /* Store the palette in hardware */
+        videoFlags |= SDL_RESIZABLE; /* Enable window resizing */
+        videoFlags |= SDL_GL_SWAP_CONTROL;
+
+        /* This checks to see if surfaces can be stored in memory */
+        if (videoInfo->hw_available)
+            videoFlags |= SDL_HWSURFACE;
+        else
+            videoFlags |= SDL_SWSURFACE;
+
+        /* This checks if hardware blits can be done */
+        if (videoInfo->blit_hw)
+            videoFlags |= SDL_HWACCEL;
+
+        /* Sets up OpenGL double buffering */
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+        /* get a SDL surface */
+        bpp = videoInfo->vfmt->BitsPerPixel;
+
+        setWindowLA(LARGHEZZA_FIN, ALTEZZA_FIN);
 
         glEnable(GL_LINE_SMOOTH);
         glEnable(GL_BLEND);
@@ -381,7 +419,7 @@ public:
         //se lo attivo sparisce anche le faccie laterali
         //glEnable(GL_CULL_FACE); //disattuva le faccie posteriori
 
-        domino_editor.inizializzaEditor();
+        domino_editor.inizializzaEditor(this);
     }
 
     void loop() {
@@ -394,9 +432,9 @@ public:
         while (alive) {
             inizio = SDL_GetTicks();
 
-            domino_editor.input((*this));
-            domino_editor.stato((*this));
-            domino_editor.video((*this));
+            domino_editor.input();
+            domino_editor.stato();
+            domino_editor.video();
             //    SDL_Flip(screen);
 
             fine = SDL_GetTicks();
@@ -426,6 +464,22 @@ public:
     int getFrames() {
         return frame_ms;
     }
+
+    void setWindowLA(int larghezza_finestra_aux, int altezza_finestra_aux) {
+        larghezza_finestra = larghezza_finestra_aux;
+        altezza_finestra = altezza_finestra_aux;
+        screen = SDL_SetVideoMode(larghezza_finestra, altezza_finestra, bpp, videoFlags);
+        if (!screen) {
+            fprintf(stderr, "Could not get a surface after resize: %s\n", SDL_GetError());
+            exit(-1);
+        }
+    }
+    int getWindowL(){
+        return larghezza_finestra;
+    }
+    int getWindowA(){
+        return altezza_finestra;
+    }
 };
 
 int main(int argc, char** argv) {
@@ -435,7 +489,7 @@ int main(int argc, char** argv) {
     return (EXIT_SUCCESS);
 }
 
-int Editor::stato(Gioco& gioco) {
+int Editor::stato() {
     if (fabs(livello_editor.getGriglia().zoom - aux_griglia.zoom) >= 0.01) {
         livello_editor.setGrigliaXY(livello_editor.getGriglia().x + ((aux_griglia.x - livello_editor.getGriglia().x) / 10),
                 livello_editor.getGriglia().y + ((aux_griglia.y - livello_editor.getGriglia().y) / 10));
@@ -679,7 +733,7 @@ void Editor::stampaQuadrato(int x, int y, GLfloat attivo) {
     //    /* double buffering! */
 }
 
-int Editor::video(Gioco& gioco) {
+int Editor::video() {
 
     //SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
     //SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1 );
@@ -708,7 +762,7 @@ int Editor::video(Gioco& gioco) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     SDL_GetMouseState(&mouse_x_fin, &mouse_y_fin);
-    if (getMousePosGrigliaXY()) {
+    if (getMousePosGrigliaXY(gioco->getWindowA())) {
         cubo_selezione[pos_x_griglia][pos_y_griglia] = 1;
     }
 
@@ -738,9 +792,9 @@ int Editor::video(Gioco& gioco) {
     return 1;
 }
 
-int Editor::input(Gioco& gioco) {
-    SDL_Event evento;
+int Editor::input() {
     SDL_PumpEvents();
+    SDL_Event evento;
     while (SDL_PollEvent(&evento)) {
         if (evento.type == SDL_QUIT) {
             gameExit();
@@ -752,17 +806,17 @@ int Editor::input(Gioco& gioco) {
                         gameExit();
                         break;
                     case SDLK_PAGEUP:
-                        if (gioco.getFrames() > 1)
-                            gioco.setFrames(gioco.getFrames() - 1);
+                        if (gioco->getFrames() > 1)
+                            gioco->setFrames(gioco->getFrames() - 1);
                         break;
                     case SDLK_PAGEDOWN:
-                        gioco.setFrames(gioco.getFrames() + 1);
+                        gioco->setFrames(gioco->getFrames() + 1);
                         break;
                     case SDLK_p:
-                        setProiezione(PROSPETTICA);
+                        setProiezione(PROSPETTICA,gioco->getWindowL(),gioco->getWindowA());
                         break;
                     case SDLK_a:
-                        setProiezione(ASSIONOMETRICA);
+                        setProiezione(ASSIONOMETRICA,gioco->getWindowL(),gioco->getWindowA());
                         break;
                     case SDLK_5:
                         break;
@@ -776,7 +830,7 @@ int Editor::input(Gioco& gioco) {
                 }
                 break;
             case SDL_MOUSEBUTTONDOWN:
-                getMousePosGrigliaXY(evento.button.x, evento.button.y);
+                getMousePosGrigliaXY(gioco->getWindowA(),evento.button.x, evento.button.y);
                 if (evento.button.button == SDL_BUTTON_LEFT) {
                     if (pos_griglia_ok) {
                         if (livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).getAlive()) {
@@ -829,7 +883,7 @@ int Editor::input(Gioco& gioco) {
                 }
                 break;
             case SDL_MOUSEMOTION:
-                if (getMousePosGrigliaXY(evento.button.x, evento.button.y)) {
+                if (getMousePosGrigliaXY(gioco->getWindowA(),evento.button.x, evento.button.y)) {
                     if (posiziona_pezzi == -1) {
                         livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(false);
                     }
@@ -852,9 +906,14 @@ int Editor::input(Gioco& gioco) {
                     bottone_destro = false;
                 }
                 break;
+            case SDL_VIDEORESIZE:
+                gioco->setWindowLA(evento.resize.w, evento.resize.h);
+                setProiezione(tipo_proiezione,evento.resize.w,evento.resize.h);
             default:
                 break;
         }
+
+
 
     }
     return 1;
