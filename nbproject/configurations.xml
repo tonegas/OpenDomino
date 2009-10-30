@@ -14,6 +14,11 @@
                    projectFiles="true">
       <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/basi/Base.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/basi/Base.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/Domino</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/Editor.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/Editor.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/Gioco.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/Gioco.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/Griglia.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/Griglia.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/Livello.cpp</itemPath>

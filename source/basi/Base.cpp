@@ -5,7 +5,7 @@
  * Created on 30 ottobre 2009, 15.45
  */
 
-#include "../../include/basi/Base.h"
+#include "../../include/Domino.h"
 
 Base::Base(bool alive_aux) {
     presente = alive_aux;

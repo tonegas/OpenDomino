@@ -12,7 +12,7 @@
 #define ALTEZZA_BASE 2
 #define SPESSORE_BASE 8
 
-#include <SDL/SDL_opengl.h>
+#include "../Domino.h"
 
 
 class Base {

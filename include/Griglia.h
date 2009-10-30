@@ -8,8 +8,7 @@
 #ifndef _GRIGLIA_H
 #define	_GRIGLIA_H
 
-#include "pezzi/Pezzo.h"
-#include "basi/Base.h"
+#include "Domino.h"
 
 class PosXYZoom {
 public:

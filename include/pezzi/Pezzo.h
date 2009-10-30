@@ -12,7 +12,7 @@
 #define ALTEZZA_PEZZO 8
 #define SPESSORE_PEZZO 2
 
-#include <SDL/SDL_opengl.h>
+#include "../Domino.h"
 
 class Pezzo {
     bool presente;

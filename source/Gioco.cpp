@@ -1,0 +1,166 @@
+/* 
+ * File:   Gioco.cpp
+ * Author: tonegas
+ * 
+ * Created on 30 ottobre 2009, 23.31
+ */
+
+#include "../include/Domino.h"
+
+Gioco::Gioco() {
+    bpp = BPP_FIN;
+
+    fullscreen = false;
+    stato = EDITOR_COSTRUISCI;
+    alive = true;
+    frame_ms = FRAMEMS;
+
+    if ((SDL_Init(SDL_INIT_EVERYTHING) == -1)) {
+        printf("ERRORE di inizializzazione SDL: %s.\n", SDL_GetError());
+        exit(-1);
+    }
+
+
+    /* Fetch the video info */
+    videoInfo = SDL_GetVideoInfo();
+
+    if (!videoInfo) {
+        fprintf(stderr, "Video query failed: %s\n", SDL_GetError());
+        exit(-1);
+    }
+
+    /* the flags to pass to SDL_SetVideoMode */
+    videoFlags = SDL_OPENGL; /* Enable OpenGL in SDL */
+    //videoFlags |= SDL_GL_DOUBLEBUFFER; /* Enable double buffering */
+    videoFlags |= SDL_HWPALETTE; /* Store the palette in hardware */
+    videoFlags |= SDL_RESIZABLE; /* Enable window resizing */
+    //videoFlags |= SDL_GL_SWAP_CONTROL;
+    //videoFlags |= SDL_FULLSCREEN;
+
+    /* This checks to see if surfaces can be stored in memory */
+    if (videoInfo->hw_available)
+        videoFlags |= SDL_HWSURFACE;
+    else
+        videoFlags |= SDL_SWSURFACE;
+
+    /* This checks if hardware blits can be done */
+    if (videoInfo->blit_hw)
+        videoFlags |= SDL_HWACCEL;
+
+    /* Sets up OpenGL double buffering */
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
+
+    /* get a SDL surface */
+    bpp = videoInfo->vfmt->BitsPerPixel;
+
+    setWindowLA(LARGHEZZA_FIN, ALTEZZA_FIN);
+
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+    glEnable(GL_DEPTH_TEST); //questa andrà attivata
+
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_NORMALIZE);
+    //se lo attivo sparisce anche le faccie laterali
+    //glEnable(GL_CULL_FACE); //disattuva le faccie posteriori
+
+    domino_editor.inizializzaEditor(this);
+}
+
+void Gioco::loop() {
+    Uint32 inizio, fine;
+    int durata, aspetto;
+
+    SDL_Event evento;
+    while (SDL_PollEvent(&evento)) {
+    }
+    while (alive) {
+        inizio = SDL_GetTicks();
+
+        domino_editor.gestisciInput(&evento);
+        domino_editor.aggiornaStato();
+        domino_editor.video();
+        //    SDL_Flip(screen);
+
+        fine = SDL_GetTicks();
+        durata = fine - inizio;
+        aspetto = frame_ms - durata;
+        if (aspetto > 0)
+            SDL_Delay(aspetto);
+        //            else
+        //                cout << "H" << flush;
+
+        //        if(SDL_GetTicks() - tempo > 1000){
+        //            tempo = SDL_GetTicks();
+        //            cout<<frame<<' '<<flush;
+        //            frame=0;
+        //        }
+        //        frame++;
+        //        input(&evento);
+        //        stato();
+        //        video();
+    }
+}
+
+void Gioco::gameExit() {
+    alive = false;
+}
+
+void Gioco::setFrames(GLfloat frame_aux) {
+    frame_ms = frame_aux;
+}
+
+int Gioco::getFrames() {
+    return frame_ms;
+}
+
+void Gioco::setWindowLA(int larghezza_finestra_aux, int altezza_finestra_aux) {
+    larghezza_finestra = larghezza_finestra_aux;
+    altezza_finestra = altezza_finestra_aux;
+    screen = SDL_SetVideoMode(larghezza_finestra, altezza_finestra, bpp, videoFlags);
+    if (!screen) {
+        fprintf(stderr, "Could not get a surface after resize: %s\n", SDL_GetError());
+        exit(-1);
+    }
+}
+
+void Gioco::setFullScreen() {
+    fullscreen = true;
+    SDL_WM_ToggleFullScreen(screen);
+    //        videoFlags |= SDL_FULLSCREEN;
+    //        setWindowLA(videoInfo->current_w, videoInfo->current_h);
+}
+
+void Gioco::resetFullScreen() {
+    fullscreen = false;
+    SDL_WM_ToggleFullScreen(screen);
+    //        videoFlags &= ~SDL_FULLSCREEN;
+    //        setWindowLA(larghezza_finestra, altezza_finestra);
+}
+
+bool Gioco::getFullScreen() {
+    return fullscreen;
+}
+
+int Gioco::getWindowL() {
+    return larghezza_finestra;
+}
+
+int Gioco::getWindowA() {
+    return altezza_finestra;
+}
+
+int Gioco::getScreenL() {
+    return videoInfo->current_w;
+}
+
+int Gioco::getScreenA() {
+    return videoInfo->current_h;
+}
+
+

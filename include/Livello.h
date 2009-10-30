@@ -8,16 +8,40 @@
 #ifndef _LIVELLO_H
 #define	_LIVELLO_H
 
-#include "Griglia.h"
+#include "Domino.h"
+
+#define X_TELECAMERA 0
+#define Y_TELECAMERA 0
+#define H_TELECAMERA 150
+#define FOVY    40
+#define ZNEAR   5
+#define ZFAR    700
+
+#define LIMITE_SUPERIORE_ZOOM 10
+#define LIMITE_INFERIORE_ZOOM 0.5
+#define DELTA_ZOOM 1.1
+#define INCREMENTO_DELTA_ZOOM 1.1
 
 enum Proiezione {
     ASSIONOMETRICA, PROSPETTICA
 };
 
+const GLfloat cavalier[] = {
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    -0.5, -0.5, 1, 0,
+    0, 0, 0, 1
+};
+
+class Gioco;
+
 class Livello {
 protected:
+    //puntatore al gioco per interagire sulle funzionidi gioco
+    Gioco *gioco;
+
     //matrici dinamiche di pezzi e basi
-    Griglia livello_editor;
+    Griglia griglia_livello;
 
     //struttura ausiliaria per il movimento della griglia
     PosXYZoom aux_griglia;
@@ -28,6 +52,13 @@ protected:
     //per ora sono solo due bottoni ma penso che diventerà una struttura per gestire l'input in maniera
     //differente a seconda che il livello si editor partita o altro
     bool bottone_sinistro, bottone_destro;
+
+    //variazione del delta di incremento dello zoom
+    GLfloat delta_zoom;
+    //tempo per il reset del delta_zoom
+    int tempo_reset_delta_zoom;
+    //velocita di frame rate per temporizzare le cose
+    int frame_rate;
 
     //matrici per il recupero dell'input del muose
     //inizializzate della classe che deriva livello
@@ -53,11 +84,18 @@ protected:
 
 public:
 
-    Livello(int num_x_colonne_aux, int num_y_righe_aux);
+    Livello(int num_x_colonne_aux, int num_y_righe_aux,int frame_rate);
 
     bool getMousePosGrigliaXY(int larghezza_fin, int mouse_x_fin_aux, int mouse_y_fin_aux);
 
     bool getMousePosGrigliaXY(int larghezza_fin);
+
+    void setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin);
+
+    virtual int aggiornaStato();
+
+    virtual int gestisciInput(SDL_Event *evento);
+    
 };
 
 #endif	/* _LIVELLO_H */

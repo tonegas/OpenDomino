@@ -5,7 +5,7 @@
  * Created on 30 ottobre 2009, 15.35
  */
 
-#include "../../include/pezzi/Pezzo.h"
+#include "../../include/Domino.h"
 
 Pezzo::Pezzo(bool alive_aux) {
     presente = alive_aux;

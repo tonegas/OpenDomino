@@ -5,7 +5,7 @@
  * Created on 30 ottobre 2009, 15.53
  */
 
-#include "../include/Griglia.h"
+#include "../include/Domino.h"
 
 Griglia::Griglia(int num_x_colonne_aux, int num_y_righe_aux) {
     num_y_righe = num_y_righe_aux;
