@@ -74,13 +74,6 @@ const GLfloat cavalier[] = {
     0, 0, 0, 1
 };
 
-//quando passa a false il gioco si chiude
-bool alive;
-
-void gameExit() {
-    alive = false;
-}
-
 class Gioco;
 
 class Pezzo {
@@ -150,26 +143,35 @@ public:
 
 class Griglia {
     PosXYZoom griglia;
-    Pezzo matrice_pezzi[GRIGLIA_EDITOR_X][GRIGLIA_EDITOR_Y];
-    Base matrice_basi[GRIGLIA_EDITOR_X][GRIGLIA_EDITOR_Y];
-    int num_y_righe;
-    int num_x_colonne;
+    Pezzo **matrice_pezzi;
+    Base **matrice_basi;
+    unsigned num_y_righe;
+    unsigned num_x_colonne;
 public:
 
     Griglia(int num_x_colonne_aux, int num_y_righe_aux) {
         num_y_righe = num_y_righe_aux;
         num_x_colonne = num_x_colonne_aux;
-        for (int i = 0; i < GRIGLIA_EDITOR_X; i++)
-            for (int j = 0; j < GRIGLIA_EDITOR_Y; j++) {
+        matrice_pezzi = new Pezzo*[num_x_colonne];
+        matrice_basi = new Base*[num_x_colonne];
+        for (unsigned i = 0; i < num_x_colonne; i++) {
+            matrice_pezzi[i] = new Pezzo[num_y_righe];
+            matrice_basi[i] = new Base[num_y_righe];
+        }
+        for (unsigned i = 0; i < num_x_colonne; i++)
+            for (unsigned j = 0; j < num_y_righe; j++) {
                 matrice_pezzi[i][j].setAlive(false);
                 matrice_basi[i][j].setAlive(false);
             }
-        //        matrice_pezzi = new Pezzo*[num_colonne];
-        //   	for(int i=0;i<num_colonne;i++)
-        //            matrice_pezzi[i] = new Pezzo[num_colonne];
     }
 
     ~Griglia() {
+        for (unsigned i = 0; i < num_x_colonne; i++) {
+            delete matrice_pezzi[i];
+            delete matrice_basi[i];
+        }
+        delete matrice_pezzi;
+        delete matrice_basi;
     }
 
     PosXYZoom getGriglia() {
@@ -192,6 +194,14 @@ public:
         griglia.x = x;
         griglia.y = y;
     }
+
+    unsigned getDimGrigliaX() {
+        return num_x_colonne;
+    }
+
+    unsigned getDimGrigliaY() {
+        return num_y_righe;
+    }
 };
 
 class Livello {
@@ -199,6 +209,8 @@ protected:
     Griglia livello_editor;
     PosXYZoom aux_griglia;
     //MuoviGriglia muovi;
+
+    Proiezione tipo_proiezione;
 
     bool bottone_sinistro, bottone_destro;
 
@@ -251,14 +263,13 @@ public:
         gluUnProject(mouse_x_fin, larghezza_fin - mouse_y_fin, superfice_z, matrice_model, matrice_proj, matrice_view, &pos_x, &pos_y, &pos_z);
         pos_x_griglia = (int) (((pos_x - livello_editor.getGriglia().x) / livello_editor.getGriglia().zoom) / (GLfloat) ALTEZZA_PEZZO);
         pos_y_griglia = (int) (((pos_y - livello_editor.getGriglia().y) / livello_editor.getGriglia().zoom) / (GLfloat) ALTEZZA_PEZZO);
-        if (pos_x_griglia >= 0 && pos_y_griglia >= 0 && pos_x_griglia < GRIGLIA_EDITOR_X && (unsigned) pos_y_griglia < GRIGLIA_EDITOR_Y) {
+        if (pos_x_griglia >= 0 && pos_y_griglia >= 0 && (unsigned) pos_x_griglia < livello_editor.getDimGrigliaX() && (unsigned) pos_y_griglia < livello_editor.getDimGrigliaY()) {
             pos_griglia_ok = true;
         } else {
             pos_griglia_ok = false;
         }
         return pos_griglia_ok;
     }
-
 };
 
 GLfloat coloryellow[] = {1.0f, 1.0f, 0.0f, 1.0f};
@@ -276,9 +287,7 @@ class Editor : public Livello {
 
     Gioco *gioco;
 
-    Proiezione tipo_proiezione;
-
-    GLfloat cubo_selezione[GRIGLIA_EDITOR_X][GRIGLIA_EDITOR_Y];
+    GLfloat **cubo_selezione;
 
 public:
 
@@ -287,16 +296,25 @@ public:
         num_x_colonne = num_x_colonne_aux;
         posiziona_pezzi = true;
         posiziona_continua = 0;
-        for (int i = 0; i < GRIGLIA_EDITOR_X; i++)
-            for (int j = 0; j < GRIGLIA_EDITOR_Y; j++)
+        cubo_selezione = new GLfloat*[num_x_colonne];
+        for (int i = 0; i < num_y_righe; i++)
+            cubo_selezione[i] = new GLfloat[num_y_righe];
+        for (int i = 0; i < num_y_righe; i++)
+            for (int j = 0; j < num_x_colonne; j++)
                 cubo_selezione[i][j] = 0;
+    }
+
+    ~Editor() {
+        for (int i = 0; i < num_y_righe; i++)
+            delete cubo_selezione[i];
+        delete cubo_selezione;
     }
 
     void inizializzaEditor(Gioco *gioco_aux) {
         tipo_proiezione = ASSIONOMETRICA;
         gioco = gioco_aux;
 
-        setProiezione(tipo_proiezione, LARGHEZZA_FIN_EDITOR, ALTEZZA_FIN_EDITOR);
+        setProiezione(tipo_proiezione, gioco_aux->getWindowL(), gioco_aux->getWindowA());
 
         glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
         glLightfv(GL_LIGHT0, GL_DIFFUSE, colorwhite);
@@ -388,6 +406,9 @@ class Gioco {
     //Oggetto editor per la gestione della grafica della partita
     Editor domino_editor;
 
+    //indica se il gioco deve smettere di ciclare
+    bool alive;
+
 public:
 
     Gioco() {
@@ -418,6 +439,7 @@ public:
         videoFlags |= SDL_HWPALETTE; /* Store the palette in hardware */
         videoFlags |= SDL_RESIZABLE; /* Enable window resizing */
         //videoFlags |= SDL_GL_SWAP_CONTROL;
+        videoFlags |= SDL_FULLSCREEN;
 
         /* This checks to see if surfaces can be stored in memory */
         if (videoInfo->hw_available)
@@ -487,6 +509,10 @@ public:
             //        stato();
             //        video();
         }
+    }
+
+    void gameExit() {
+        alive = false;
     }
 
     void setFrames(GLfloat frame_aux) {
@@ -886,19 +912,19 @@ int Editor::video() {
                 cubo_selezione[i][j] -= 0.05;
             }
             if (livello_editor.getPezzo(i, j).getSelezione() > 0) {
-                stampaPezzo(true, i, j,livello_editor.getPezzo(i, j).getSelezione());
-                livello_editor.getPezzo(i, j).setSelezione(livello_editor.getPezzo(i, j).getSelezione()-0.05);
+                stampaPezzo(true, i, j, livello_editor.getPezzo(i, j).getSelezione());
+                livello_editor.getPezzo(i, j).setSelezione(livello_editor.getPezzo(i, j).getSelezione() - 0.05);
             }
             if (livello_editor.getBase(i, j).getSelezione() > 0) {
-                stampaBasi(true, i, j,livello_editor.getBase(i, j).getSelezione());
-                livello_editor.getBase(i, j).setSelezione(livello_editor.getBase(i, j).getSelezione()-0.05);
+                stampaBasi(true, i, j, livello_editor.getBase(i, j).getSelezione());
+                livello_editor.getBase(i, j).setSelezione(livello_editor.getBase(i, j).getSelezione() - 0.05);
             }
             if (livello_editor.getPezzo(i, j).getAlive() == 1) {
-                stampaPezzo(false, i, j,0.0);
+                stampaPezzo(false, i, j, 0.0);
                 livello_editor.getPezzo(i, j).setSelezione(0);
             }
             if (livello_editor.getBase(i, j).getAlive() == 1) {
-                stampaBasi(false, i, j,0.0);
+                stampaBasi(false, i, j, 0.0);
                 livello_editor.getBase(i, j).setSelezione(0);
             }
         }
@@ -915,13 +941,13 @@ int Editor::input() {
     SDL_Event evento;
     while (SDL_PollEvent(&evento)) {
         if (evento.type == SDL_QUIT) {
-            gameExit();
+            gioco->gameExit();
         }
         switch (evento.type) {
             case SDL_KEYDOWN:
                 switch (evento.key.keysym.sym) {
                     case SDLK_ESCAPE:
-                        gameExit();
+                        gioco->gameExit();
                         break;
                     case SDLK_PAGEUP:
                         if (gioco->getFrames() > 1)
