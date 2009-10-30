@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <iostream>
 #include <math.h>
+#include "include/Livello.h"
+
 
 using namespace std;
 
@@ -22,8 +24,8 @@ using namespace std;
 #define ALTEZZA_FIN_EDITOR  1000
 #define BPP_FIN       32
 
-#define GRIGLIA_EDITOR_Y 50
-#define GRIGLIA_EDITOR_X 50
+#define GRIGLIA_EDITOR_Y 10
+#define GRIGLIA_EDITOR_X 10
 
 #define X_TELECAMERA 0
 #define Y_TELECAMERA 0
@@ -35,14 +37,6 @@ using namespace std;
 #define LIMITE_SUPERIORE_ZOOM 10
 #define LIMITE_INFERIORE_ZOOM 0.5
 #define DELTA_ZOOM 2.0
-
-#define LARGHEZZA_PEZZO 4
-#define ALTEZZA_PEZZO 8
-#define SPESSORE_PEZZO 2
-
-#define LARGHEZZA_BASE 8
-#define ALTEZZA_BASE 2
-#define SPESSORE_BASE 8
 
 #define POSIZIONE_SUPERFICE -0.001
 
@@ -56,9 +50,6 @@ using namespace std;
 //GLfloat starty = 0;
 //GLfloat jump = 0;
 
-enum Proiezione {
-    ASSIONOMETRICA, PROSPETTICA
-};
 
 enum Stato {
     MENU,
@@ -76,208 +67,13 @@ const GLfloat cavalier[] = {
 
 class Gioco;
 
-class Pezzo {
-    bool presente;
-    GLfloat selezione;
-public:
-
-    Pezzo(bool alive_aux = false) {
-        presente = alive_aux;
-    }
-
-    void setAlive(bool alive_aux) {
-        presente = alive_aux;
-    }
-
-    bool getAlive() {
-        return presente;
-    }
-
-    void setSelezione(GLfloat selezione_aux) {
-        selezione = selezione_aux;
-    }
-
-    GLfloat getSelezione() {
-        return selezione;
-    }
-};
-
-class Base {
-    bool presente;
-    GLfloat selezione;
-public:
-
-    Base(bool alive_aux = false) {
-        presente = alive_aux;
-    }
-
-    void setAlive(bool alive_aux) {
-        presente = alive_aux;
-    }
-
-    bool getAlive() {
-        return presente;
-    }
-
-    void setSelezione(GLfloat selezione_aux) {
-        selezione = selezione_aux;
-    }
-
-    GLfloat getSelezione() {
-        return selezione;
-    }
-};
-
-class PosXYZoom {
-public:
-    GLfloat x;
-    GLfloat y;
-    GLfloat zoom;
-
-    PosXYZoom(GLfloat x_aux = 0, GLfloat y_aux = 0, GLfloat zoom_aux = 1) {
-        x = x_aux;
-        y = y_aux;
-        zoom = zoom_aux;
-    }
-};
-
-class Griglia {
-    PosXYZoom griglia;
-    Pezzo **matrice_pezzi;
-    Base **matrice_basi;
-    unsigned num_y_righe;
-    unsigned num_x_colonne;
-public:
-
-    Griglia(int num_x_colonne_aux, int num_y_righe_aux) {
-        num_y_righe = num_y_righe_aux;
-        num_x_colonne = num_x_colonne_aux;
-        matrice_pezzi = new Pezzo*[num_x_colonne];
-        matrice_basi = new Base*[num_x_colonne];
-        for (unsigned i = 0; i < num_x_colonne; i++) {
-            matrice_pezzi[i] = new Pezzo[num_y_righe];
-            matrice_basi[i] = new Base[num_y_righe];
-        }
-        for (unsigned i = 0; i < num_x_colonne; i++)
-            for (unsigned j = 0; j < num_y_righe; j++) {
-                matrice_pezzi[i][j].setAlive(false);
-                matrice_basi[i][j].setAlive(false);
-            }
-    }
-
-    ~Griglia() {
-        for (unsigned i = 0; i < num_x_colonne; i++) {
-            delete matrice_pezzi[i];
-            delete matrice_basi[i];
-        }
-        delete matrice_pezzi;
-        delete matrice_basi;
-    }
-
-    PosXYZoom getGriglia() {
-        return griglia;
-    }
-
-    Pezzo& getPezzo(int i, int j) {
-        return matrice_pezzi[i][j];
-    }
-
-    Base& getBase(int i, int j) {
-        return matrice_basi[i][j];
-    }
-
-    void setGrigliaZoom(GLfloat zoom) {
-        griglia.zoom = zoom;
-    }
-
-    void setGrigliaXY(GLfloat x, GLfloat y) {
-        griglia.x = x;
-        griglia.y = y;
-    }
-
-    unsigned getDimGrigliaX() {
-        return num_x_colonne;
-    }
-
-    unsigned getDimGrigliaY() {
-        return num_y_righe;
-    }
-};
-
-class Livello {
-protected:
-    Griglia livello_editor;
-    PosXYZoom aux_griglia;
-    //MuoviGriglia muovi;
-
-    Proiezione tipo_proiezione;
-
-    bool bottone_sinistro, bottone_destro;
-
-    GLdouble matrice_model[16];
-    GLdouble matrice_proj[16];
-    GLint matrice_view[4];
-
-    GLdouble superfice_z;
-    GLdouble pos_x, pos_y, pos_z;
-    GLdouble pos_x_iniziali, pos_y_iniziali;
-
-    int mouse_x_fin, mouse_y_fin;
-    int pos_x_griglia, pos_y_griglia;
-    bool pos_griglia_ok;
-
-
-public:
-
-    Livello(int num_x_colonne_aux, int num_y_righe_aux) :
-    livello_editor(num_x_colonne_aux, num_y_righe_aux) {
-        bottone_destro = false;
-        bottone_sinistro = false;
-
-        //livello_editor.setGrigliaZoom(1.0);
-        //livello_editor.setGrigliaAuxZoom(1.0);
-
-        //h_finestra = 2.0*h_telecamera*tan(fovy/2.0/180.0*M_PI);
-        //l_finestra = ((GLfloat)ALTEZZA_FIN/(GLfloat)LARGHEZZA_FIN)*h_finestra;
-    }
-
-    //    void getMousePosXY(int mouse_x_fin_aux, int mouse_y_fin_aux) {
-    //        mouse_x_fin = mouse_x_fin_aux;
-    //        mouse_y_fin = mouse_y_fin_aux;
-    //        getMousePosXY();
-    //    }
-    //
-    //    void getMousePosXY() {
-    //        gluUnProject(mouse_x_fin, ALTEZZA_FIN - mouse_y_fin, superfice_z, matrice_model, matrice_proj, matrice_view, &pos_x, &pos_y, &pos_z);
-    //        pos_x = (pos_x - livello_editor.getGriglia().x) / livello_editor.getGriglia().zoom;
-    //        pos_y = (pos_y - livello_editor.getGriglia().y) / livello_editor.getGriglia().zoom;
-    //    }
-
-    bool getMousePosGrigliaXY(int larghezza_fin, int mouse_x_fin_aux, int mouse_y_fin_aux) {
-        mouse_x_fin = mouse_x_fin_aux;
-        mouse_y_fin = mouse_y_fin_aux;
-        return getMousePosGrigliaXY(larghezza_fin);
-    }
-
-    bool getMousePosGrigliaXY(int larghezza_fin) {
-        gluUnProject(mouse_x_fin, larghezza_fin - mouse_y_fin, superfice_z, matrice_model, matrice_proj, matrice_view, &pos_x, &pos_y, &pos_z);
-        pos_x_griglia = (int) (((pos_x - livello_editor.getGriglia().x) / livello_editor.getGriglia().zoom) / (GLfloat) ALTEZZA_PEZZO);
-        pos_y_griglia = (int) (((pos_y - livello_editor.getGriglia().y) / livello_editor.getGriglia().zoom) / (GLfloat) ALTEZZA_PEZZO);
-        if (pos_x_griglia >= 0 && pos_y_griglia >= 0 && (unsigned) pos_x_griglia < livello_editor.getDimGrigliaX() && (unsigned) pos_y_griglia < livello_editor.getDimGrigliaY()) {
-            pos_griglia_ok = true;
-        } else {
-            pos_griglia_ok = false;
-        }
-        return pos_griglia_ok;
-    }
-};
-
 GLfloat coloryellow[] = {1.0f, 1.0f, 0.0f, 1.0f};
 GLfloat colorblue [] = {0.0f, 0.0f, 1.0f, 1.0f};
 GLfloat colorgreen [] = {0.0f, 1.0f, 0.0f, 1.0f};
 GLfloat colorwhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
 GLfloat lightpos[] = {0, 0, 0, 1};
 GLfloat lightpos_ambient[] = {60, 100, 120, 0};
+
 
 class Editor : public Livello {
     int num_x_colonne;
@@ -314,7 +110,7 @@ public:
         tipo_proiezione = ASSIONOMETRICA;
         gioco = gioco_aux;
 
-        setProiezione(tipo_proiezione, gioco_aux->getWindowL(), gioco_aux->getWindowA());
+        setProiezione(tipo_proiezione, LARGHEZZA_FIN_EDITOR, ALTEZZA_FIN_EDITOR);
 
         glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
         glLightfv(GL_LIGHT0, GL_DIFFUSE, colorwhite);
@@ -439,7 +235,7 @@ public:
         videoFlags |= SDL_HWPALETTE; /* Store the palette in hardware */
         videoFlags |= SDL_RESIZABLE; /* Enable window resizing */
         //videoFlags |= SDL_GL_SWAP_CONTROL;
-        videoFlags |= SDL_FULLSCREEN;
+        //videoFlags |= SDL_FULLSCREEN;
 
         /* This checks to see if surfaces can be stored in memory */
         if (videoInfo->hw_available)
