@@ -85,6 +85,7 @@ class Gioco;
 
 class Pezzo {
     bool presente;
+    GLfloat selezione;
 public:
 
     Pezzo(bool alive_aux = false) {
@@ -98,10 +99,19 @@ public:
     bool getAlive() {
         return presente;
     }
+
+    void setSelezione(GLfloat selezione_aux) {
+        selezione = selezione_aux;
+    }
+
+    GLfloat getSelezione() {
+        return selezione;
+    }
 };
 
 class Base {
     bool presente;
+    GLfloat selezione;
 public:
 
     Base(bool alive_aux = false) {
@@ -114,6 +124,14 @@ public:
 
     bool getAlive() {
         return presente;
+    }
+
+    void setSelezione(GLfloat selezione_aux) {
+        selezione = selezione_aux;
+    }
+
+    GLfloat getSelezione() {
+        return selezione;
     }
 };
 
@@ -253,7 +271,7 @@ GLfloat lightpos_ambient[] = {60, 100, 120, 0};
 class Editor : public Livello {
     int num_x_colonne;
     int num_y_righe;
-    bool posiziona_pezzi,posiziona_basi;
+    bool posiziona_pezzi, posiziona_basi;
     int posiziona_continua;
 
     Gioco *gioco;
@@ -268,7 +286,7 @@ public:
         num_y_righe = num_y_righe_aux;
         num_x_colonne = num_x_colonne_aux;
         posiziona_pezzi = true;
-        posiziona_continua=0;
+        posiziona_continua = 0;
         for (int i = 0; i < GRIGLIA_EDITOR_X; i++)
             for (int j = 0; j < GRIGLIA_EDITOR_Y; j++)
                 cubo_selezione[i][j] = 0;
@@ -336,8 +354,8 @@ public:
     }
 
     void stampaSuperficeBase();
-    void stampaPezzo(int x, int y);
-    void stampaBasi(int x, int y);
+    void stampaPezzo(bool wire, int x, int y, GLfloat attivo);
+    void stampaBasi(bool wire, int x, int y, GLfloat attivo);
     void stampaQuadrato(int x, int y, GLfloat attivo);
 
 };
@@ -558,7 +576,7 @@ void Editor::stampaSuperficeBase() {
     glPopMatrix();
 }
 
-void Editor::stampaPezzo(int x, int y) {
+void Editor::stampaPezzo(bool wire, int x, int y, GLfloat attivo) {
 
     GLfloat xf = (GLfloat) x;
     GLfloat yf = (GLfloat) y;
@@ -567,68 +585,76 @@ void Editor::stampaPezzo(int x, int y) {
     GLfloat sposto_y = ((GLfloat) ALTEZZA_PEZZO) * yf;
 
     glPushMatrix();
+    if (wire)glDisable(GL_LIGHTING);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, coloryellow);
     glTranslatef(sposto_x, sposto_y, Z_PEZZO);
-    glColor3f(1.0f, 1.0f, 1.0f);
+    glColor4f(1.0f, 1.0f, 0.0f, attivo);
     glLineWidth(1.5);
-    glBegin(GL_QUADS);
+    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
     {
         glNormal3f(0.0, 0.0, -1.0);
         glVertex3f(0.0, 0.0, 0.0);
         glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
         glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, 0.0);
         glVertex3f(SPESSORE_PEZZO, 0.0, 0.0);
+        glVertex3f(0.0, 0.0, 0.0);
     }
     glEnd();
-    glBegin(GL_QUADS);
+    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
     {
         glNormal3f(1.0, 0.0, 0.0);
         glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, 0.0);
         glVertex3f(SPESSORE_PEZZO, 0.0, 0.0);
         glVertex3f(SPESSORE_PEZZO, 0.0, LARGHEZZA_PEZZO);
         glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
+        glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, 0.0);
     }
     glEnd();
-    glBegin(GL_QUADS);
+    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
     {
         glNormal3f(0.0, 0.0, 1.0);
         glVertex3f(SPESSORE_PEZZO, 0.0, LARGHEZZA_PEZZO);
         glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
         glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
         glVertex3f(0.0, 0.0, LARGHEZZA_PEZZO);
+        glVertex3f(SPESSORE_PEZZO, 0.0, LARGHEZZA_PEZZO);
     }
     glEnd();
-    glBegin(GL_QUADS);
+    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
     {
         glNormal3f(-1.0, 0.0, 0.0);
         glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
         glVertex3f(0.0, 0.0, LARGHEZZA_PEZZO);
         glVertex3f(0.0, 0.0, 0.0);
         glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
+        glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
     }
     glEnd();
-    glBegin(GL_QUADS);
+    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
     {
         glNormal3f(0.0, 1.0, 0.0);
         glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
         glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
         glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, 0.0);
         glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
+        glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
     }
     glEnd();
-    glBegin(GL_QUADS);
+    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
     {
         glNormal3f(0.0, -1.0, 0.0);
         glVertex3f(0.0, 0.0, 0.0);
         glVertex3f(SPESSORE_PEZZO, 0.0, 0.0);
         glVertex3f(SPESSORE_PEZZO, 0.0, LARGHEZZA_PEZZO);
         glVertex3f(0.0, 0.0, LARGHEZZA_PEZZO);
+        glVertex3f(0.0, 0.0, 0.0);
     }
     glEnd();
+    if (wire)glEnable(GL_LIGHTING);
     glPopMatrix();
 }
 
-void Editor::stampaBasi(int x, int y) {
+void Editor::stampaBasi(bool wire, int x, int y, GLfloat attivo) {
 
 
     GLfloat xf = (GLfloat) x;
@@ -638,64 +664,72 @@ void Editor::stampaBasi(int x, int y) {
     GLfloat sposto_y = ((GLfloat) ALTEZZA_PEZZO) * yf;
 
     glPushMatrix();
+    if (wire)glDisable(GL_LIGHTING);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, colorgreen);
     glTranslatef(sposto_x, sposto_y + ALTEZZA_PEZZO - ALTEZZA_BASE, 0.0);
-    glColor3f(1.0f, 1.0f, 1.0f);
+    glColor4f(0.0f, 1.0f, 0.0f, attivo);
     glLineWidth(1.5);
-    glBegin(GL_QUADS);
+    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
     {
         glNormal3f(0.0, 0.0, -1.0);
         glVertex3f(0.0, 0.0, 0.0);
         glVertex3f(0.0, ALTEZZA_BASE, 0.0);
         glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, 0.0);
         glVertex3f(SPESSORE_BASE, 0.0, 0.0);
+        glVertex3f(0.0, 0.0, 0.0);
     }
     glEnd();
-    glBegin(GL_QUADS);
+    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
     {
         glNormal3f(1.0, 0.0, 0.0);
         glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, 0.0);
         glVertex3f(SPESSORE_BASE, 0.0, 0.0);
         glVertex3f(SPESSORE_BASE, 0.0, LARGHEZZA_BASE);
         glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, LARGHEZZA_BASE);
+        glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, 0.0);
     }
     glEnd();
-    glBegin(GL_QUADS);
+    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
     {
         glNormal3f(0.0, 0.0, 1.0);
         glVertex3f(SPESSORE_BASE, 0.0, LARGHEZZA_BASE);
         glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, LARGHEZZA_BASE);
         glVertex3f(0.0, ALTEZZA_BASE, LARGHEZZA_BASE);
         glVertex3f(0.0, 0.0, LARGHEZZA_BASE);
+        glVertex3f(SPESSORE_BASE, 0.0, LARGHEZZA_BASE);
     }
     glEnd();
-    glBegin(GL_QUADS);
+    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
     {
         glNormal3f(-1.0, 0.0, 0.0);
         glVertex3f(0.0, ALTEZZA_BASE, LARGHEZZA_BASE);
         glVertex3f(0.0, 0.0, LARGHEZZA_BASE);
         glVertex3f(0.0, 0.0, 0.0);
         glVertex3f(0.0, ALTEZZA_BASE, 0.0);
+        glVertex3f(0.0, ALTEZZA_BASE, LARGHEZZA_BASE);
     }
     glEnd();
-    glBegin(GL_QUADS);
+    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
     {
         glNormal3f(0.0, 1.0, 0.0);
         glVertex3f(0.0, ALTEZZA_BASE, LARGHEZZA_BASE);
         glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, LARGHEZZA_BASE);
         glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, 0.0);
         glVertex3f(0.0, ALTEZZA_BASE, 0.0);
+        glVertex3f(0.0, ALTEZZA_BASE, LARGHEZZA_BASE);
     }
     glEnd();
-    glBegin(GL_QUADS);
+    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
     {
         glNormal3f(0.0, -1.0, 0.0);
         glVertex3f(0.0, 0.0, 0.0);
         glVertex3f(SPESSORE_BASE, 0.0, 0.0);
         glVertex3f(SPESSORE_BASE, 0.0, LARGHEZZA_BASE);
         glVertex3f(0.0, 0.0, LARGHEZZA_BASE);
+        glVertex3f(0.0, 0.0, 0.0);
     }
     glEnd();
+    if (wire)glEnable(GL_LIGHTING);
     glPopMatrix();
 }
 
@@ -708,7 +742,7 @@ void Editor::stampaQuadrato(int x, int y, GLfloat attivo) {
 
     glPushMatrix();
     glDisable(GL_LIGHTING);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, colorgreen);
+    //glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, colorgreen);
     glTranslatef(sposto_x, sposto_y, 0.0);
     glScalef(0.97, 0.97, 0.97);
     glTranslatef(ALTEZZA_PEZZO * 0.015, ALTEZZA_PEZZO * 0.015, ALTEZZA_PEZZO * 0.015);
@@ -833,7 +867,11 @@ int Editor::video() {
 
     SDL_GetMouseState(&mouse_x_fin, &mouse_y_fin);
     if (getMousePosGrigliaXY(gioco->getWindowA())) {
-        cubo_selezione[pos_x_griglia][pos_y_griglia] = 1;
+        //cubo_selezione[pos_x_griglia][pos_y_griglia] = 1;
+        if (posiziona_pezzi)
+            livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setSelezione(1);
+        else
+            livello_editor.getBase(pos_x_griglia, pos_y_griglia).setSelezione(1);
     }
 
     glPushMatrix();
@@ -847,11 +885,21 @@ int Editor::video() {
                 stampaQuadrato(i, j, cubo_selezione[i][j]);
                 cubo_selezione[i][j] -= 0.05;
             }
+            if (livello_editor.getPezzo(i, j).getSelezione() > 0) {
+                stampaPezzo(true, i, j,livello_editor.getPezzo(i, j).getSelezione());
+                livello_editor.getPezzo(i, j).setSelezione(livello_editor.getPezzo(i, j).getSelezione()-0.05);
+            }
+            if (livello_editor.getBase(i, j).getSelezione() > 0) {
+                stampaBasi(true, i, j,livello_editor.getBase(i, j).getSelezione());
+                livello_editor.getBase(i, j).setSelezione(livello_editor.getBase(i, j).getSelezione()-0.05);
+            }
             if (livello_editor.getPezzo(i, j).getAlive() == 1) {
-                stampaPezzo(i, j);
+                stampaPezzo(false, i, j,0.0);
+                livello_editor.getPezzo(i, j).setSelezione(0);
             }
             if (livello_editor.getBase(i, j).getAlive() == 1) {
-                stampaBasi(i, j);
+                stampaBasi(false, i, j,0.0);
+                livello_editor.getBase(i, j).setSelezione(0);
             }
         }
     }
@@ -983,13 +1031,13 @@ int Editor::input() {
             case SDL_MOUSEMOTION:
                 if (getMousePosGrigliaXY(gioco->getWindowA(), evento.button.x, evento.button.y)) {
                     if (posiziona_continua == -1) {
-                        if(posiziona_pezzi)
+                        if (posiziona_pezzi)
                             livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(false);
                         else
                             livello_editor.getBase(pos_x_griglia, pos_y_griglia).setAlive(false);
                     }
                     if (posiziona_continua == 1) {
-                        if(posiziona_pezzi)
+                        if (posiziona_pezzi)
                             livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(true);
                         else
                             livello_editor.getBase(pos_x_griglia, pos_y_griglia).setAlive(true);
