@@ -248,12 +248,13 @@ GLfloat colorblue [] = {0.0f, 0.0f, 1.0f, 1.0f};
 GLfloat colorgreen [] = {0.0f, 1.0f, 0.0f, 1.0f};
 GLfloat colorwhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
 GLfloat lightpos[] = {0, 0, 0, 1};
-GLfloat lightpos_ambient[] = {0, 0, 100, 0};
+GLfloat lightpos_ambient[] = {60, 100, 120, 0};
 
 class Editor : public Livello {
     int num_x_colonne;
     int num_y_righe;
-    int posiziona_pezzi;
+    bool posiziona_pezzi,posiziona_basi;
+    int posiziona_continua;
 
     Gioco *gioco;
 
@@ -266,7 +267,8 @@ public:
     Editor(int num_y_righe_aux = GRIGLIA_EDITOR_Y, int num_x_colonne_aux = GRIGLIA_EDITOR_X) : Livello(num_x_colonne_aux, num_y_righe_aux) {
         num_y_righe = num_y_righe_aux;
         num_x_colonne = num_x_colonne_aux;
-        posiziona_pezzi = 0;
+        posiziona_pezzi = true;
+        posiziona_continua=0;
         for (int i = 0; i < GRIGLIA_EDITOR_X; i++)
             for (int j = 0; j < GRIGLIA_EDITOR_Y; j++)
                 cubo_selezione[i][j] = 0;
@@ -627,6 +629,8 @@ void Editor::stampaPezzo(int x, int y) {
 }
 
 void Editor::stampaBasi(int x, int y) {
+
+
     GLfloat xf = (GLfloat) x;
     GLfloat yf = (GLfloat) y;
 
@@ -634,38 +638,64 @@ void Editor::stampaBasi(int x, int y) {
     GLfloat sposto_y = ((GLfloat) ALTEZZA_PEZZO) * yf;
 
     glPushMatrix();
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, colorgreen);
     glTranslatef(sposto_x, sposto_y + ALTEZZA_PEZZO - ALTEZZA_BASE, 0.0);
     glColor3f(1.0f, 1.0f, 1.0f);
     glLineWidth(1.5);
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(0.0, 0.0, 0.0);
-    glVertex3f(SPESSORE_BASE, 0.0, 0.0);
-    glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, 0.0);
-    glVertex3f(0.0, ALTEZZA_BASE, 0.0);
-    glVertex3f(0.0, 0.0, 0.0);
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(0.0, 0.0, -1.0);
+        glVertex3f(0.0, 0.0, 0.0);
+        glVertex3f(0.0, ALTEZZA_BASE, 0.0);
+        glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, 0.0);
+        glVertex3f(SPESSORE_BASE, 0.0, 0.0);
+    }
     glEnd();
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(0.0, 0.0, LARGHEZZA_BASE);
-    glVertex3f(SPESSORE_BASE, 0.0, LARGHEZZA_BASE);
-    glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, LARGHEZZA_BASE);
-    glVertex3f(0.0, ALTEZZA_BASE, LARGHEZZA_BASE);
-    glVertex3f(0.0, 0.0, LARGHEZZA_BASE);
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(1.0, 0.0, 0.0);
+        glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, 0.0);
+        glVertex3f(SPESSORE_BASE, 0.0, 0.0);
+        glVertex3f(SPESSORE_BASE, 0.0, LARGHEZZA_BASE);
+        glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, LARGHEZZA_BASE);
+    }
     glEnd();
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(0.0, 0.0, 0.0);
-    glVertex3f(SPESSORE_BASE, 0.0, 0.0);
-    glVertex3f(SPESSORE_BASE, 0.0, LARGHEZZA_BASE);
-    glVertex3f(0.0, 0.0, LARGHEZZA_BASE);
-    glVertex3f(0.0, 0.0, 0.0);
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(0.0, 0.0, 1.0);
+        glVertex3f(SPESSORE_BASE, 0.0, LARGHEZZA_BASE);
+        glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, LARGHEZZA_BASE);
+        glVertex3f(0.0, ALTEZZA_BASE, LARGHEZZA_BASE);
+        glVertex3f(0.0, 0.0, LARGHEZZA_BASE);
+    }
     glEnd();
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(0.0, ALTEZZA_BASE, 0.0);
-    glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, 0.0);
-    glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, LARGHEZZA_BASE);
-    glVertex3f(0.0, ALTEZZA_BASE, LARGHEZZA_BASE);
-    glVertex3f(0.0, ALTEZZA_BASE, 0.0);
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(-1.0, 0.0, 0.0);
+        glVertex3f(0.0, ALTEZZA_BASE, LARGHEZZA_BASE);
+        glVertex3f(0.0, 0.0, LARGHEZZA_BASE);
+        glVertex3f(0.0, 0.0, 0.0);
+        glVertex3f(0.0, ALTEZZA_BASE, 0.0);
+    }
     glEnd();
-
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(0.0, 1.0, 0.0);
+        glVertex3f(0.0, ALTEZZA_BASE, LARGHEZZA_BASE);
+        glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, LARGHEZZA_BASE);
+        glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, 0.0);
+        glVertex3f(0.0, ALTEZZA_BASE, 0.0);
+    }
+    glEnd();
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(0.0, -1.0, 0.0);
+        glVertex3f(0.0, 0.0, 0.0);
+        glVertex3f(SPESSORE_BASE, 0.0, 0.0);
+        glVertex3f(SPESSORE_BASE, 0.0, LARGHEZZA_BASE);
+        glVertex3f(0.0, 0.0, LARGHEZZA_BASE);
+    }
+    glEnd();
     glPopMatrix();
 }
 
@@ -879,9 +909,15 @@ int Editor::input() {
                             //setProiezione(tipo_proiezione, gioco->getScreenA(), gioco->getScreenL());
                         }
                         break;
-                    case SDLK_6:
+                    case SDLK_1:
+                        posiziona_pezzi = true;
+                        posiziona_basi = false;
+                        posiziona_continua = 0;
                         break;
-                    case SDLK_7:
+                    case SDLK_2:
+                        posiziona_pezzi = false;
+                        posiziona_basi = true;
+                        posiziona_continua = 0;
                         break;
                     default:
                         break;
@@ -892,20 +928,28 @@ int Editor::input() {
                 getMousePosGrigliaXY(gioco->getWindowA(), evento.button.x, evento.button.y);
                 if (evento.button.button == SDL_BUTTON_LEFT) {
                     if (pos_griglia_ok) {
-                        if (livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).getAlive()) {
-                            livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(false);
-                            posiziona_pezzi = -1;
+                        if (posiziona_pezzi) {
+                            if (livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).getAlive()) {
+                                livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(false);
+                                posiziona_continua = -1;
+                            } else {
+                                livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(true);
+                                posiziona_continua = 1;
+                            }
                         } else {
-                            livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(true);
-                            posiziona_pezzi = 1;
+                            if (livello_editor.getBase(pos_x_griglia, pos_y_griglia).getAlive()) {
+                                livello_editor.getBase(pos_x_griglia, pos_y_griglia).setAlive(false);
+                                posiziona_continua = -1;
+                            } else {
+                                livello_editor.getBase(pos_x_griglia, pos_y_griglia).setAlive(true);
+                                posiziona_continua = 1;
+                            }
                         }
                     }
                 }
                 if (evento.button.button == SDL_BUTTON_RIGHT) {
                     pos_x_iniziali = pos_x;
                     pos_y_iniziali = pos_y;
-                    // muovi.start_t_x_2d = evento.button.x;
-                    // muovi.start_t_y_2d = evento.button.y;
                     aux_griglia.x = livello_editor.getGriglia().x;
                     aux_griglia.y = livello_editor.getGriglia().y;
                     aux_griglia.zoom = livello_editor.getGriglia().zoom;
@@ -919,24 +963,11 @@ int Editor::input() {
                         aux_griglia.y = livello_editor.getGriglia().y + (1 - DELTA_ZOOM)*(pos_y - livello_editor.getGriglia().y);
                     } else {
                         aux_griglia.zoom = LIMITE_SUPERIORE_ZOOM;
-                        aux_griglia.x = livello_editor.getGriglia().x + (1 - (GLfloat)LIMITE_SUPERIORE_ZOOM/zoom)*(pos_x - livello_editor.getGriglia().x);
-                        aux_griglia.y = livello_editor.getGriglia().y + (1 - (GLfloat)LIMITE_SUPERIORE_ZOOM/zoom)*(pos_y - livello_editor.getGriglia().y);
+                        aux_griglia.x = livello_editor.getGriglia().x + (1 - (GLfloat) LIMITE_SUPERIORE_ZOOM / zoom)*(pos_x - livello_editor.getGriglia().x);
+                        aux_griglia.y = livello_editor.getGriglia().y + (1 - (GLfloat) LIMITE_SUPERIORE_ZOOM / zoom)*(pos_y - livello_editor.getGriglia().y);
                     }
                 }
                 if (!bottone_destro && evento.button.button == SDL_BUTTON_WHEELDOWN) {
-                    /*
-                    //_mouseX_3d_zoomNuovo_[posizione del mouse riportata in uno spazio 3d ed eliminato il fattore di zoom] = (((_mouseX_[coordinate della finestra asse x verso destra asse y verso basso]-_LARGHEZZA_FIN/2_[perchè la telecamera punta in (zero[x],zero[y]) che qundi si trova a metà finestra])*
-                    //_da_2d_a_3d_[variabile che riporta la mia distanza sulla finestra in una distanza 3d vedi formula sopra] - _x_[posizione x assoluta della griglia])/ _zoomNuovo_[successivo livello di zoom])
-
-                    //_mouseY_3d_zoomNuovo_[posizione del mouse riportata in uno spazio 3d ed eliminato il fattore di zoom] = (((_ALTEZZA_FIN/2_[perchè la telecamera punta in (zero[x],zero[y]) che qundi si trova a metà finestra] - _mouseY_[coordinate della finestra asse x verso destra asse y verso basso])*
-                    //_da_2d_a_3d_[variabile che riporta la mia distanza sulla finestra in una distanza 3d vedi formula sopra] - _y_[posizione y assoluta della griglia])/ _zoomNuovo_[successivo livello di zoom])
-
-                    //formula per determinare il movimento della griglia quando essa viene zoommata (_x_+_zoomNuovo_*((_mouseX_3d_zoomNuovo_)-(_mouseX_3d_zoomVecchio_)))
-                    //(_y_+_zoomNuovo_*((_mouseY_3d_zoomNuovo_)-(_mouseY_3d_zoomVecchio_)))
-
-                     //livello_editor.setGrigliaXY(livello_editor.getGriglia().x + (livello_editor.getGriglia().zoom-0.1)*((((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * da_2d_a_3d - livello_editor.getGriglia().x) / (livello_editor.getGriglia().zoom-0.1))-(((evento.button.x - (GLfloat) LARGHEZZA_FIN / 2) * da_2d_a_3d - livello_editor.getGriglia().x) / livello_editor.getGriglia().zoom)),
-                     //        livello_editor.getGriglia().y +(livello_editor.getGriglia().zoom-0.1)*((((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y) / (livello_editor.getGriglia().zoom-0.1)-(((GLfloat) ALTEZZA_FIN / 2 - evento.button.y) * da_2d_a_3d - livello_editor.getGriglia().y) / livello_editor.getGriglia().zoom));
-                     */
                     GLfloat zoom = livello_editor.getGriglia().zoom;
                     if (zoom / DELTA_ZOOM > LIMITE_INFERIORE_ZOOM) {
                         aux_griglia.zoom = zoom / DELTA_ZOOM;
@@ -944,30 +975,33 @@ int Editor::input() {
                         aux_griglia.y = livello_editor.getGriglia().y + ((DELTA_ZOOM - 1) / DELTA_ZOOM)*(pos_y - livello_editor.getGriglia().y);
                     } else {
                         aux_griglia.zoom = LIMITE_INFERIORE_ZOOM;
-                        aux_griglia.x = livello_editor.getGriglia().x + (((zoom/(GLfloat)LIMITE_INFERIORE_ZOOM) - 1) / (zoom/(GLfloat)LIMITE_INFERIORE_ZOOM))*(pos_x - livello_editor.getGriglia().x);
-                        aux_griglia.y = livello_editor.getGriglia().y + (((zoom/(GLfloat)LIMITE_INFERIORE_ZOOM) - 1) / (zoom/(GLfloat)LIMITE_INFERIORE_ZOOM))*(pos_y - livello_editor.getGriglia().y);
+                        aux_griglia.x = livello_editor.getGriglia().x + (((zoom / (GLfloat) LIMITE_INFERIORE_ZOOM) - 1) / (zoom / (GLfloat) LIMITE_INFERIORE_ZOOM))*(pos_x - livello_editor.getGriglia().x);
+                        aux_griglia.y = livello_editor.getGriglia().y + (((zoom / (GLfloat) LIMITE_INFERIORE_ZOOM) - 1) / (zoom / (GLfloat) LIMITE_INFERIORE_ZOOM))*(pos_y - livello_editor.getGriglia().y);
                     }
                 }
                 break;
             case SDL_MOUSEMOTION:
                 if (getMousePosGrigliaXY(gioco->getWindowA(), evento.button.x, evento.button.y)) {
-                    if (posiziona_pezzi == -1) {
-                        livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(false);
+                    if (posiziona_continua == -1) {
+                        if(posiziona_pezzi)
+                            livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(false);
+                        else
+                            livello_editor.getBase(pos_x_griglia, pos_y_griglia).setAlive(false);
                     }
-                    if (posiziona_pezzi == 1) {
-                        livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(true);
+                    if (posiziona_continua == 1) {
+                        if(posiziona_pezzi)
+                            livello_editor.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(true);
+                        else
+                            livello_editor.getBase(pos_x_griglia, pos_y_griglia).setAlive(true);
                     }
                 }
                 if (bottone_destro) {
-                    // muovi.t_x_2d = evento.button.x - muovi.start_t_x_2d;
-                    // muovi.t_y_2d = evento.button.y - muovi.start_t_y_2d;
-                    //                    livello_editor.setGrigliaXY(muovi.t_x + (muovi.t_x_2d * muovi.da_2d_a_3d), muovi.t_y - (muovi.t_y_2d * muovi.da_2d_a_3d));
                     livello_editor.setGrigliaXY(aux_griglia.x + (pos_x - pos_x_iniziali), aux_griglia.y + (pos_y - pos_y_iniziali));
                 }
                 break;
             case SDL_MOUSEBUTTONUP:
                 if (evento.button.button == SDL_BUTTON_LEFT) {
-                    posiziona_pezzi = 0;
+                    posiziona_continua = 0;
                 }
                 if (evento.button.button == SDL_BUTTON_RIGHT) {
                     bottone_destro = false;
