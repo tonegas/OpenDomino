@@ -77,6 +77,8 @@ protected:
     //matrici per il recupero dell'input del muose
     //inizializzate della classe che deriva livello
     GLdouble matrice_model[16];
+    //coordinate sono riferite alla griglia
+    GLdouble matrice_model_griglia[16];
     GLdouble matrice_proj[16];
     GLint matrice_view[4];
 

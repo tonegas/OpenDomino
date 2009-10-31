@@ -39,13 +39,15 @@ public:
 
     void inizializzaEditor(Gioco *gioco_aux);
 
+    int mouseSelezione(int larghezza_fin);
+
     int aggiornaStato();
     int video();
     int gestisciInput(SDL_Event *evento);
 
     void stampaSuperficeBase();
     void stampaPezzo(bool wire, int x, int y, GLfloat attivo);
-    void stampaBasi(bool wire, int x, int y, GLfloat attivo);
+    void stampaBase(bool wire, int x, int y, GLfloat attivo);
     void stampaQuadrato(int x, int y, GLfloat attivo);
 
 };
