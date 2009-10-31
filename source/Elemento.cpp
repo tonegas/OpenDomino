@@ -7,8 +7,9 @@
 
 #include "../include/Domino.h"
 
-Elemento::Elemento(bool alive_aux) {
+Elemento::Elemento(int tipo_aux,bool alive_aux) {
     presente = alive_aux;
+    tipo = tipo_aux;
 }
 
 Elemento::Elemento(const Elemento& orig) {
@@ -22,6 +23,10 @@ void Elemento::setAlive(bool alive_aux) {
 
 bool Elemento::getAlive() {
     return presente;
+}
+
+int Elemento::getTipo() {
+    return tipo;
 }
 
 void Elemento::setSelezione(GLfloat selezione_aux) {

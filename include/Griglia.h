@@ -31,8 +31,7 @@ public:
 
 class Griglia {
     PosXYZoom griglia;
-    Pezzo **matrice_pezzi;
-    Base **matrice_basi;
+    Elemento* **matrice_elementi;
     unsigned num_y_righe;
     unsigned num_x_colonne;
 public:

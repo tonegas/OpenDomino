@@ -12,6 +12,8 @@
 #define ALTEZZA_PEZZO 8
 #define SPESSORE_PEZZO 2
 
+#define PEZZ0_GIALLO 1
+
 #include "../Domino.h"
 
 class Pezzo : public Elemento{

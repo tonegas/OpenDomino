@@ -12,6 +12,8 @@
 #define ALTEZZA_BASE 2
 #define SPESSORE_BASE 8
 
+#define BASE 100
+
 #include "../Domino.h"
 
 

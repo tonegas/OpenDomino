@@ -8,15 +8,16 @@
 #ifndef _ELEMENTO_H
 #define	_ELEMENTO_H
 
+
 #include "Domino.h"
 
 class Elemento {
 protected:
     bool presente;
+    int tipo;
     GLfloat selezione;
-
 public:
-    Elemento(bool alive_aux = false);
+    Elemento(int tipo_aux,bool alive_aux = false);
     Elemento(const Elemento& orig);
     //virtual ~Elemento();
 
@@ -24,6 +25,7 @@ public:
     bool getAlive();
     void setSelezione(GLfloat selezione_aux);
     GLfloat getSelezione();
+    int getTipo();
 };
 
 #endif	/* _ELEMENTO_H */

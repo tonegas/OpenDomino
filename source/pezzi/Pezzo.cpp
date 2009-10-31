@@ -7,6 +7,6 @@
 
 #include "../../include/Domino.h"
 
-Pezzo::Pezzo(bool alive_aux):Elemento(alive_aux) {}
+Pezzo::Pezzo(bool alive_aux):Elemento(PEZZ0_GIALLO,alive_aux) {}
 
 Pezzo::Pezzo(const Pezzo& orig) : Elemento(orig) {}

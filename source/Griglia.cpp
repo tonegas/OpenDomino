@@ -10,43 +10,48 @@
 Griglia::Griglia(int num_x_colonne_aux, int num_y_righe_aux) {
     num_y_righe = num_y_righe_aux;
     num_x_colonne = num_x_colonne_aux;
-    matrice_pezzi = new Pezzo*[num_x_colonne];
-    matrice_basi = new Base*[num_x_colonne];
+    matrice_elementi = new Elemento**[num_x_colonne];
     for (unsigned i = 0; i < num_x_colonne; i++) {
-        matrice_pezzi[i] = new Pezzo[num_y_righe];
-        matrice_basi[i] = new Base[num_y_righe];
+        matrice_elementi[i] = new Elemento*[num_y_righe];
     }
-    for (unsigned i = 0; i < num_x_colonne; i++)
+    for (unsigned i = 0; i < num_x_colonne; i++) {
         for (unsigned j = 0; j < num_y_righe; j++) {
-            matrice_pezzi[i][j].setAlive(false);
-            matrice_basi[i][j].setAlive(false);
+            matrice_elementi[i][j] = NULL;
         }
+    }
 }
 
 Griglia::Griglia(const Griglia& orig) {
     griglia = orig.griglia;
     num_y_righe = orig.num_y_righe;
     num_x_colonne = orig.num_x_colonne;
-    matrice_pezzi = new Pezzo*[num_x_colonne];
-    matrice_basi = new Base*[num_x_colonne];
+    matrice_elementi = new Elemento**[num_x_colonne];
     for (unsigned i = 0; i < num_x_colonne; i++) {
-        matrice_pezzi[i] = new Pezzo[num_y_righe];
-        matrice_basi[i] = new Base[num_y_righe];
+        matrice_elementi[i] = new Elemento*[num_y_righe];
     }
-    for (unsigned i = 0; i < num_x_colonne; i++)
+    for (unsigned i = 0; i < num_x_colonne; i++) {
         for (unsigned j = 0; j < num_y_righe; j++) {
-            matrice_pezzi[i][j].setAlive(orig.matrice_pezzi[i][j].getAlive());
-            matrice_basi[i][j].setAlive(orig.matrice_basi[i][j].getAlive());
+            if (orig.matrice_elementi[i][j] != NULL) {
+                if (orig.matrice_elementi[i][j]->getTipo() == 1) {
+                    matrice_elementi[i][j] = new Pezzo(*(Pezzo*)orig.matrice_elementi[i][j]);
+                } else {
+                    matrice_elementi[i][j] = new Base(*(Base*)orig.matrice_elementi[i][j]);
+                }
+            }
         }
+    }
 }
 
 Griglia::~Griglia() {
     for (unsigned i = 0; i < num_x_colonne; i++) {
-        delete matrice_pezzi[i];
-        delete matrice_basi[i];
+        for (unsigned j = 0; j < num_y_righe; j++) {
+            delete matrice_elementi[i][j];
+        }
     }
-    delete matrice_pezzi;
-    delete matrice_basi;
+    for (unsigned i = 0; i < num_x_colonne; i++) {
+        delete (*matrice_elementi)[i];
+    }
+    delete matrice_elementi;
 }
 
 PosXYZoom Griglia::getGriglia() {
@@ -54,11 +59,11 @@ PosXYZoom Griglia::getGriglia() {
 }
 
 Pezzo& Griglia::getPezzo(int i, int j) {
-    return matrice_pezzi[i][j];
+    return *(Pezzo*)matrice_elementi[i][j];
 }
 
 Base& Griglia::getBase(int i, int j) {
-    return matrice_basi[i][j];
+    return *(Base*)matrice_elementi[i][j];
 }
 
 void Griglia::setGrigliaZoom(GLfloat zoom) {

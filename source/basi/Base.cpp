@@ -7,6 +7,6 @@
 
 #include "../../include/Domino.h"
 
-Base::Base(bool alive_aux) : Elemento(alive_aux){}
+Base::Base(bool alive_aux) : Elemento(BASE,alive_aux){}
 
 Base::Base(const Base& orig) : Elemento(orig)  {}
