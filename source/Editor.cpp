@@ -511,7 +511,7 @@ int Editor::mouseSelezione(int altezza_fin) {
         if (tipo_proiezione == PROSPETTICA) {
             gluPerspective(FOVY, (GLfloat) (matrice_view[2] - matrice_view[0]) / (GLfloat) (matrice_view[3] - matrice_view[1]), ZNEAR, ZFAR);
         } else {
-            glOrtho(0, (GLfloat) (matrice_view[3] - matrice_view[1]), 0, (GLfloat) altezza_fin, ZNEAR, ZFAR);
+            glOrtho(0, (GLfloat)  (matrice_view[2] - matrice_view[0]), 0, (GLfloat) altezza_fin, ZNEAR, ZFAR);
             glMultMatrixf(cavalier);
         }
         glMatrixMode(GL_MODELVIEW);
