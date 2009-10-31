@@ -35,7 +35,6 @@ Gioco::Gioco() {
     videoFlags |= SDL_HWPALETTE; /* Store the palette in hardware */
     videoFlags |= SDL_RESIZABLE; /* Enable window resizing */
     //videoFlags |= SDL_GL_SWAP_CONTROL;
-    //videoFlags |= SDL_FULLSCREEN;
 
     /* This checks to see if surfaces can be stored in memory */
     if (videoInfo->hw_available)
@@ -50,10 +49,15 @@ Gioco::Gioco() {
     /* Sets up OpenGL double buffering */
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+
 
     /* get a SDL surface */
     bpp = videoInfo->vfmt->BitsPerPixel;
 
+    //videoFlags |= SDL_FULLSCREEN;
+    //setWindowLA(videoInfo->current_h, videoInfo->current_h);
     setWindowLA(LARGHEZZA_FIN, ALTEZZA_FIN);
 
 
@@ -63,11 +67,11 @@ Gioco::Gioco() {
 
     glHint(GL_POINT_SMOOTH, GL_NICEST);
     glHint(GL_LINE_SMOOTH, GL_NICEST);
-    //glHint(GL_POLYGON_SMOOTH, GL_NICEST);
+    glHint(GL_POLYGON_SMOOTH, GL_NICEST);
 
     glEnable(GL_POINT_SMOOTH);
     glEnable(GL_LINE_SMOOTH);
-    //glEnable(GL_POLYGON_SMOOTH);
+    glEnable(GL_POLYGON_SMOOTH);
 
     glEnable(GL_DEPTH_TEST); //questa andrà attivata
 
@@ -76,7 +80,7 @@ Gioco::Gioco() {
     glEnable(GL_LIGHTING);
     glEnable(GL_NORMALIZE);
 
-    //glEnable(GL_MULTISAMPLE);
+    glEnable(GL_MULTISAMPLE);
     //se lo attivo sparisce anche le faccie laterali
     //glEnable(GL_CULL_FACE); //disattuva le faccie posteriori
     

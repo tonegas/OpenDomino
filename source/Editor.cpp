@@ -369,9 +369,9 @@ int Editor::video() {
     }
 
     glPushMatrix();
-    if(tipo_proiezione == PROSPETTICA){
-        glRotatef(angolo_telecamera_y,1,0,0);
-        glRotatef(-angolo_telecamera_x,0,1,0);
+    if (tipo_proiezione == PROSPETTICA) {
+        glRotatef(angolo_telecamera_y, 1, 0, 0);
+        glRotatef(-angolo_telecamera_x, 0, 1, 0);
     }
     glTranslatef(griglia_livello.getGriglia().x, griglia_livello.getGriglia().y, 0);
     glScalef(griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom);
