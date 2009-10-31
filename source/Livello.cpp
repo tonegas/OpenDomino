@@ -279,8 +279,24 @@ int Livello::gestisciInput(SDL_Event *evento) {
                 griglia_livello.setGrigliaXY(aux_griglia.x + (pos_x - pos_x_iniziali), aux_griglia.y + (pos_y - pos_y_iniziali));
             }
             if (bottone_centrale) {
-                angolo_telecamera_x = angolo_telecamera_x_iniziale + (pos_x_iniziali - pos_x);
-                angolo_telecamera_y = angolo_telecamera_y_iniziale + (pos_y_iniziali - pos_y);
+                GLfloat nuovo_angolo_x = angolo_telecamera_x_iniziale + (pos_x_iniziali - pos_x);
+                GLfloat nuovo_angolo_y = angolo_telecamera_y_iniziale + (pos_y_iniziali - pos_y);
+                if (fabs(nuovo_angolo_x) < MAX_ANGOLO_TELECAMERA_XY) {
+                    angolo_telecamera_x = nuovo_angolo_x;
+                } else {
+                    if(angolo_telecamera_x < 0)
+                        angolo_telecamera_x = -MAX_ANGOLO_TELECAMERA_XY;
+                    else
+                       angolo_telecamera_x = MAX_ANGOLO_TELECAMERA_XY;
+                }
+                if (fabs(nuovo_angolo_y) < MAX_ANGOLO_TELECAMERA_XY) {
+                    angolo_telecamera_y = nuovo_angolo_y;
+                } else {
+                    if(nuovo_angolo_y < 0)
+                        angolo_telecamera_y = -MAX_ANGOLO_TELECAMERA_XY;
+                    else
+                        angolo_telecamera_y = MAX_ANGOLO_TELECAMERA_XY;
+                }
             }
             break;
         case SDL_MOUSEBUTTONUP:

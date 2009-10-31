@@ -14,22 +14,10 @@
 
 #include "../Domino.h"
 
-class Pezzo {
-    bool presente;
-    GLfloat selezione;
+class Pezzo : public Elemento{
 public:
-
     Pezzo(bool alive_aux = false);
-
     Pezzo(const Pezzo& orig);
-
-    void setAlive(bool alive_aux);
-
-    bool getAlive();
-
-    void setSelezione(GLfloat selezione_aux);
-
-    GLfloat getSelezione();
 };
 
 #endif	/* _PEZZO_H */

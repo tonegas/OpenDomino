@@ -31,6 +31,7 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Elemento.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Editor.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/pezzi/Pezzo.o \
 	${OBJECTDIR}/main.o \
@@ -62,6 +63,11 @@ LDLIBSOPTIONS=
 dist/Debug/GNU-Linux-x86/opendomino: ${OBJECTFILES}
 	${MKDIR} -p dist/Debug/GNU-Linux-x86
 	${LINK.cc} `pkg-config --libs sdl` -lGL -lGLU -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/opendomino  ${OBJECTFILES} ${LDLIBSOPTIONS} 
+
+${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Elemento.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/Elemento.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Elemento.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/Elemento.cpp
 
 ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Editor.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/Editor.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source

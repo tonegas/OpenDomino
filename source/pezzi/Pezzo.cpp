@@ -7,27 +7,6 @@
 
 #include "../../include/Domino.h"
 
-Pezzo::Pezzo(bool alive_aux) {
-    presente = alive_aux;
-}
+Pezzo::Pezzo(bool alive_aux):Elemento(alive_aux) {}
 
-Pezzo::Pezzo(const Pezzo& orig) {
-    presente = orig.presente;
-    selezione = orig.selezione;
-}
-
-void Pezzo::setAlive(bool alive_aux) {
-    presente = alive_aux;
-}
-
-bool Pezzo::getAlive() {
-    return presente;
-}
-
-void Pezzo::setSelezione(GLfloat selezione_aux) {
-    selezione = selezione_aux;
-}
-
-GLfloat Pezzo::getSelezione() {
-    return selezione;
-}
+Pezzo::Pezzo(const Pezzo& orig) : Elemento(orig) {}

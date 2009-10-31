@@ -7,28 +7,6 @@
 
 #include "../../include/Domino.h"
 
-Base::Base(bool alive_aux) {
-    presente = alive_aux;
-}
+Base::Base(bool alive_aux) : Elemento(alive_aux){}
 
-Base::Base(const Base& orig) {
-    presente = orig.presente;
-    selezione = orig.selezione;
-}
-
-void Base::setAlive(bool alive_aux) {
-    presente = alive_aux;
-}
-
-bool Base::getAlive() {
-    return presente;
-}
-
-void Base::setSelezione(GLfloat selezione_aux) {
-    selezione = selezione_aux;
-}
-
-GLfloat Base::getSelezione() {
-    return selezione;
-}
-
+Base::Base(const Base& orig) : Elemento(orig)  {}

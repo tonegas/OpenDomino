@@ -15,6 +15,7 @@
 #include <iostream>
 #include <math.h>
 
+#include "Elemento.h"
 #include "pezzi/Pezzo.h"
 #include "basi/Base.h"
 #include "Griglia.h"

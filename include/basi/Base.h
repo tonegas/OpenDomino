@@ -15,22 +15,10 @@
 #include "../Domino.h"
 
 
-class Base {
-    bool presente;
-    GLfloat selezione;
+class Base : public Elemento{
 public:
-
     Base(bool alive_aux = false);
-
     Base(const Base& orig);
-
-    void setAlive(bool alive_aux);
-
-    bool getAlive();
-
-    void setSelezione(GLfloat selezione_aux);
-
-    GLfloat getSelezione();
 };
 
 #endif	/* _BASE_H */
