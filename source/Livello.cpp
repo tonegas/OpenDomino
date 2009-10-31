@@ -30,13 +30,93 @@ bool Livello::getMousePosGrigliaXY(int larghezza_fin, int mouse_x_fin_aux, int m
 }
 
 bool Livello::getMousePosGrigliaXY(int altezza_fin) {
-    gluUnProject(mouse_x_fin, altezza_fin - mouse_y_fin, superfice_z, matrice_model, matrice_proj, matrice_view, &pos_x, &pos_y, &pos_z);
-    pos_x_griglia = (int) (((pos_x - griglia_livello.getGriglia().x) / griglia_livello.getGriglia().zoom) / (GLfloat) ALTEZZA_PEZZO);
-    pos_y_griglia = (int) (((pos_y - griglia_livello.getGriglia().y) / griglia_livello.getGriglia().zoom) / (GLfloat) ALTEZZA_PEZZO);
-    if (pos_x_griglia >= 0 && pos_y_griglia >= 0 && (unsigned) pos_x_griglia < griglia_livello.getDimGrigliaX() && (unsigned) pos_y_griglia < griglia_livello.getDimGrigliaY()) {
-        pos_griglia_ok = true;
+    if (tipo_proiezione == ASSIONOMETRICA) {
+        gluUnProject(mouse_x_fin, altezza_fin - mouse_y_fin, superfice_z, matrice_model, matrice_proj, matrice_view, &pos_x, &pos_y, &pos_z);
+        pos_x_griglia = (int) (((pos_x - griglia_livello.getGriglia().x) / griglia_livello.getGriglia().zoom) / (GLfloat) ALTEZZA_PEZZO);
+        pos_y_griglia = (int) (((pos_y - griglia_livello.getGriglia().y) / griglia_livello.getGriglia().zoom) / (GLfloat) ALTEZZA_PEZZO);
+        if (pos_x_griglia >= 0 && pos_y_griglia >= 0 && (unsigned) pos_x_griglia < griglia_livello.getDimGrigliaX() && (unsigned) pos_y_griglia < griglia_livello.getDimGrigliaY()) {
+            pos_griglia_ok = true;
+        } else {
+            pos_griglia_ok = false;
+        }
     } else {
-        pos_griglia_ok = false;
+        GLuint buffer[512]; // Set Up A Selection Buffer
+        GLint hits;
+        GLfloat colorblue [] = {0.0f, 0.0f, 1.0f, 1.0f};
+        glSelectBuffer(512, buffer);
+        glRenderMode(GL_SELECT);
+        glInitNames();
+        glPushName(0);
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        {
+            glLoadIdentity();
+            gluPickMatrix((GLdouble) mouse_x_fin, (GLdouble) (altezza_fin - mouse_y_fin), 1.0f, 1.0f, matrice_view);
+            gluPerspective(FOVY, (GLfloat) (matrice_view[2] - matrice_view[0]) / (GLfloat) (matrice_view[3] - matrice_view[1]), ZNEAR, ZFAR);
+            glMatrixMode(GL_MODELVIEW);
+            glPushMatrix();
+            {
+                glLoadName(0);
+                glRotatef(angolo_telecamera_y, 1, 0, 0);
+                glRotatef(-angolo_telecamera_x, 0, 1, 0);
+                glTranslatef(griglia_livello.getGriglia().x, griglia_livello.getGriglia().y, 0);
+                glScalef(griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom);
+                glMaterialfv(GL_FRONT, GL_DIFFUSE, colorblue);
+                glTranslatef(0.0, 0.0, POSIZIONE_SUPERFICE);
+                glColor3f(1.0f, 1.0f, 0.0f);
+                glBegin(GL_QUADS);
+                {
+                    glNormal3f(0.0, 0.0, 1.0);
+                    glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+                    glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+                    glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+                    glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+                }
+                glEnd();
+            }
+            glPopMatrix();
+            glMatrixMode(GL_PROJECTION);
+        }
+        glPopMatrix();
+        glMatrixMode(GL_MODELVIEW);
+        hits = glRenderMode(GL_RENDER);
+        if (hits > 0) // If There Were More Than 0 Hits
+        {
+            int choose = buffer[3]; // Make Our Selection The First Object
+            GLuint depth = buffer[2]; // Store How Far Away It Is
+            //cout << "depth:" << (GLfloat) depth / (GLfloat) (GLuint) (-1) << '\t' << superfice_z << '\n' << flush;
+            glMatrixMode(GL_MODELVIEW);
+            glPushMatrix();
+            {
+                glRotatef(angolo_telecamera_y, 1, 0, 0);
+                glRotatef(-angolo_telecamera_x, 0, 1, 0);
+                glTranslatef(griglia_livello.getGriglia().x, griglia_livello.getGriglia().y, 0);
+                glScalef(griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom);
+                glTranslatef(0.0, 0.0, POSIZIONE_SUPERFICE);
+                glGetDoublev(GL_MODELVIEW_MATRIX, matrice_model);
+
+            }
+            glPopMatrix();
+            gluUnProject(mouse_x_fin, altezza_fin - mouse_y_fin, (GLdouble) depth / (GLdouble) (GLuint) (-1), matrice_model, matrice_proj, matrice_view, &pos_x, &pos_y, &pos_z);
+            cout << pos_x << ' ' << pos_y << ' ' << pos_z << '\t';
+            pos_x_griglia = pos_x / (GLfloat) ALTEZZA_PEZZO;
+            pos_y_griglia = pos_y / (GLfloat) ALTEZZA_PEZZO;
+
+            glGetDoublev(GL_MODELVIEW_MATRIX, matrice_model);
+            gluUnProject(mouse_x_fin, altezza_fin - mouse_y_fin, superfice_z, matrice_model, matrice_proj, matrice_view, &pos_x, &pos_y, &pos_z);
+            cout << ((pos_x - griglia_livello.getGriglia().x) / griglia_livello.getGriglia().zoom) << ' ' << ((pos_y - griglia_livello.getGriglia().y) / griglia_livello.getGriglia().zoom) << ' ' << pos_z << '\n' << flush;
+            //            pos_x_griglia = (int) (((pos_x - griglia_livello.getGriglia().x) / griglia_livello.getGriglia().zoom) / (GLfloat) ALTEZZA_PEZZO);
+            //            pos_y_griglia = (int) (((pos_y - griglia_livello.getGriglia().y) / griglia_livello.getGriglia().zoom) / (GLfloat) ALTEZZA_PEZZO);
+
+            if (pos_x_griglia >= 0 && pos_y_griglia >= 0 && (unsigned) pos_x_griglia < griglia_livello.getDimGrigliaX() && (unsigned) pos_y_griglia < griglia_livello.getDimGrigliaY()) {
+                pos_griglia_ok = true;
+            } else {
+                pos_griglia_ok = false;
+            }
+
+        } else {
+            pos_griglia_ok = false;
+        }
     }
     return pos_griglia_ok;
 }
@@ -99,6 +179,7 @@ void Livello::setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin)
     //recupero pa posizione z della superfice
     GLdouble mouse_x, mouse_y;
     gluProject(0.0, 0.0, 0.0, matrice_model, matrice_proj, matrice_view, &mouse_x, &mouse_y, &superfice_z);
+    cout << superfice_z << flush;
 }
 
 int Livello::aggiornaStato() {
