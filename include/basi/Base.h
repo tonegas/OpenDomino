@@ -12,14 +12,14 @@
 #define ALTEZZA_BASE 2
 #define SPESSORE_BASE 8
 
-#define BASE 100
+#define ELEM_BASE 100
 
 #include "../Domino.h"
 
 
 class Base : public Elemento{
 public:
-    Base(bool alive_aux = false);
+    Base();
     Base(const Base& orig);
 };
 

@@ -22,12 +22,17 @@
 
 #define POSIZIONE_SUPERFICE -0.001
 
+#define POSIZIONA_PEZZI 1
+#define POSIZIONA_BASI 2
+#define ELIMINA_PEZZI -1
+#define ELIMINA_BASI -2
+
 class Editor : public Livello {
     int num_x_colonne;
     int num_y_righe;
 
     bool posiziona_pezzi, posiziona_basi;
-    int posiziona_continua;
+    int azione_continua;
 
     GLfloat **cubo_selezione;
 

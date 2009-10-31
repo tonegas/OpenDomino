@@ -20,7 +20,7 @@ Editor::Editor(int num_y_righe_aux, int num_x_colonne_aux) : Livello(num_x_colon
     num_y_righe = num_y_righe_aux;
     num_x_colonne = num_x_colonne_aux;
     posiziona_pezzi = true;
-    posiziona_continua = 0;
+    azione_continua = 0;
     cubo_selezione = new GLfloat*[num_x_colonne];
     for (int i = 0; i < num_x_colonne; i++)
         cubo_selezione[i] = new GLfloat[num_y_righe];
@@ -356,14 +356,25 @@ int Editor::video() {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+    Posizione* p_aux;
     SDL_GetMouseState(&mouse_x_fin, &mouse_y_fin);
     if (getMousePosGrigliaXY(gioco->getWindowA())) {
         //cubo_selezione[pos_x_griglia][pos_y_griglia] = 1;
         int sopra = mouseSelezione(gioco->getWindowA());
-        if (sopra == 1 && posiziona_continua != -2 && posiziona_continua != 2)
-            griglia_livello.getPezzo(pos_x_griglia, pos_y_griglia).setSelezione(1);
-        if (sopra == 2 && posiziona_continua != -1 && posiziona_continua != 1)
-            griglia_livello.getBase(pos_x_griglia, pos_y_griglia).setSelezione(1);
+        p_aux = griglia_livello.getPosizione(pos_x_griglia, pos_y_griglia);
+        if (azione_continua == 0) {
+            if (p_aux->occupata) {
+                if (sopra == POSIZIONA_BASI && p_aux->tipo == ELEM_BASE)
+                    p_aux->attivaSelezione(ELEM_BASE);
+                if (sopra == POSIZIONA_PEZZI && p_aux->tipo == ELEM_PEZZ0)
+                    p_aux->attivaSelezione(ELEM_PEZZ0);
+            } else {
+                if (sopra == POSIZIONA_PEZZI)
+                    p_aux->attivaSelezione(ELEM_PEZZ0);
+                if (sopra == POSIZIONA_BASI)
+                    p_aux->attivaSelezione(ELEM_BASE);
+            }
+        }
 
     }
 
@@ -384,25 +395,24 @@ int Editor::video() {
     stampaSuperficeBase();
     for (int i = 0; i < num_x_colonne; i++) {
         for (int j = 0; j < num_y_righe; j++) {
-            if (cubo_selezione[i][j] > 0) {
-                stampaQuadrato(i, j, cubo_selezione[i][j]);
-                cubo_selezione[i][j] -= 0.05;
+            p_aux = griglia_livello.getPosizione(i, j);
+            //            if (cubo_selezione[i][j] > 0) {
+            //                stampaQuadrato(i, j, cubo_selezione[i][j]);
+            //                cubo_selezione[i][j] -= 0.05;
+            //            }
+            if (p_aux->selezione_pezzo > 0) {
+                stampaPezzo(true, i, j, p_aux->selezione_pezzo);
+                p_aux->selezione_pezzo -= 0.05;
             }
-            if (griglia_livello.getPezzo(i, j).getSelezione() > 0) {
-                stampaPezzo(true, i, j, griglia_livello.getPezzo(i, j).getSelezione());
-                griglia_livello.getPezzo(i, j).setSelezione(griglia_livello.getPezzo(i, j).getSelezione() - 0.05);
+            if (p_aux->selezione_base > 0) {
+                stampaBase(true, i, j, p_aux->selezione_base);
+                p_aux->selezione_base -= 0.05;
             }
-            if (griglia_livello.getBase(i, j).getSelezione() > 0) {
-                stampaBase(true, i, j, griglia_livello.getBase(i, j).getSelezione());
-                griglia_livello.getBase(i, j).setSelezione(griglia_livello.getBase(i, j).getSelezione() - 0.05);
-            }
-            if (griglia_livello.getPezzo(i, j).getAlive() == 1) {
+            if (p_aux->occupata == 1 && p_aux->tipo == ELEM_PEZZ0) {
                 stampaPezzo(false, i, j, 0.0);
-                griglia_livello.getPezzo(i, j).setSelezione(0);
             }
-            if (griglia_livello.getBase(i, j).getAlive() == 1) {
+            if (p_aux->occupata == 1 && p_aux->tipo == ELEM_BASE) {
                 stampaBase(false, i, j, 0.0);
-                griglia_livello.getBase(i, j).setSelezione(0);
             }
         }
     }
@@ -424,12 +434,12 @@ int Editor::gestisciInput(SDL_Event *evento) {
                         case SDLK_1:
                             posiziona_pezzi = true;
                             posiziona_basi = false;
-                            posiziona_continua = 0;
+                            azione_continua = 0;
                             break;
                         case SDLK_2:
                             posiziona_pezzi = false;
                             posiziona_basi = true;
-                            posiziona_continua = 0;
+                            azione_continua = 0;
                             break;
                         default:
                             break;
@@ -441,22 +451,27 @@ int Editor::gestisciInput(SDL_Event *evento) {
                     if (evento->button.button == SDL_BUTTON_LEFT) {
                         if (pos_griglia_ok) {
                             sopra = mouseSelezione(gioco->getWindowA());
-                            if (sopra == 1) {
-                                if (griglia_livello.getPezzo(pos_x_griglia, pos_y_griglia).getAlive()) {
-                                    griglia_livello.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(false);
-                                    posiziona_continua = -1;
+                            Posizione* p_aux = griglia_livello.getPosizione(pos_x_griglia, pos_y_griglia);
+                            if (p_aux->occupata) {
+                                if (p_aux->tipo == ELEM_PEZZ0) {
+                                    if (sopra == POSIZIONA_PEZZI) {
+                                        p_aux->liberaPosizione();
+                                        azione_continua = ELIMINA_PEZZI;
+                                    }
                                 } else {
-                                    griglia_livello.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(true);
-                                    posiziona_continua = 1;
+                                    if (sopra == POSIZIONA_BASI) {
+                                        p_aux->liberaPosizione();
+                                        azione_continua = ELIMINA_BASI;
+                                    }
                                 }
-                            }
-                            if (sopra == 2) {
-                                if (griglia_livello.getBase(pos_x_griglia, pos_y_griglia).getAlive()) {
-                                    griglia_livello.getBase(pos_x_griglia, pos_y_griglia).setAlive(false);
-                                    posiziona_continua = -2;
-                                } else {
-                                    griglia_livello.getBase(pos_x_griglia, pos_y_griglia).setAlive(true);
-                                    posiziona_continua = 2;
+                            } else {
+                                if (sopra == 1) {
+                                    p_aux->occupaPosizione(new Pezzo);
+                                    azione_continua = POSIZIONA_PEZZI;
+                                }
+                                if (sopra == 2) {
+                                    p_aux->occupaPosizione(new Base);
+                                    azione_continua = POSIZIONA_BASI;
                                 }
                             }
                         }
@@ -465,27 +480,53 @@ int Editor::gestisciInput(SDL_Event *evento) {
                 case SDL_MOUSEMOTION:
                     if (getMousePosGrigliaXY(gioco->getWindowA(), evento->button.x, evento->button.y)) {
                         sopra = mouseSelezione(gioco->getWindowA());
-                        if (sopra == 1 && posiziona_continua != -2 && posiziona_continua != 2)
-                            griglia_livello.getPezzo(pos_x_griglia, pos_y_griglia).setSelezione(1);
-                        if (sopra == 2 && posiziona_continua != -1 && posiziona_continua != 1)
-                            griglia_livello.getBase(pos_x_griglia, pos_y_griglia).setSelezione(1);
+                        //cout<<sopra<<flush;
+                        Posizione* p_aux = griglia_livello.getPosizione(pos_x_griglia, pos_y_griglia);
+                        switch (azione_continua) {
+                            case POSIZIONA_PEZZI:
+                                if (sopra == POSIZIONA_PEZZI && !p_aux->occupata) {
+                                    p_aux->occupaPosizione(new Pezzo);
+                                    p_aux->attivaSelezione(ELEM_PEZZ0);
+                                }
+                                break;
+                            case POSIZIONA_BASI:
+                                if (sopra == POSIZIONA_BASI && !p_aux->occupata) {
+                                    p_aux->occupaPosizione(new Base);
+                                    p_aux->attivaSelezione(ELEM_BASE);
+                                }
+                                break;
+                            case ELIMINA_PEZZI:
+                                if (sopra == POSIZIONA_PEZZI && p_aux->occupata && p_aux->tipo == ELEM_PEZZ0) {
+                                    p_aux->liberaPosizione();
+                                    p_aux->attivaSelezione(ELEM_PEZZ0);
+                                }
+                                break;
+                            case ELIMINA_BASI:
+                                if (sopra == POSIZIONA_BASI && p_aux->occupata && p_aux->tipo == ELEM_BASE) {
+                                    p_aux->liberaPosizione();
+                                    p_aux->attivaSelezione(ELEM_BASE);
+                                }
+                                break;
+                            default:
+                                if (p_aux->occupata) {
+                                    if (sopra == POSIZIONA_BASI && p_aux->tipo == ELEM_BASE)
+                                        p_aux->attivaSelezione(ELEM_BASE);
+                                    if (sopra == POSIZIONA_PEZZI && p_aux->tipo == ELEM_PEZZ0)
+                                        p_aux->attivaSelezione(ELEM_PEZZ0);
+                                } else {
+                                    if (sopra == POSIZIONA_PEZZI)
+                                        p_aux->attivaSelezione(ELEM_PEZZ0);
+                                    if (sopra == POSIZIONA_BASI)
+                                        p_aux->attivaSelezione(ELEM_BASE);
+                                }
+                                break;
 
-                        if (posiziona_continua == -1 && sopra == 1)
-                            griglia_livello.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(false);
-                        if (posiziona_continua == -2 && sopra == 2)
-                            griglia_livello.getBase(pos_x_griglia, pos_y_griglia).setAlive(false);
-
-                        if (posiziona_continua == 1 && sopra == 1)
-                            griglia_livello.getPezzo(pos_x_griglia, pos_y_griglia).setAlive(true);
-                        if (posiziona_continua == 2 && sopra == 2)
-                            griglia_livello.getBase(pos_x_griglia, pos_y_griglia).setAlive(true);
-
+                        }
                     }
                     break;
                 case SDL_MOUSEBUTTONUP:
                     if (evento->button.button == SDL_BUTTON_LEFT) {
-
-                        posiziona_continua = 0;
+                        azione_continua = 0;
                     }
                     break;
                 default:
@@ -511,7 +552,7 @@ int Editor::mouseSelezione(int altezza_fin) {
         if (tipo_proiezione == PROSPETTICA) {
             gluPerspective(FOVY, (GLfloat) (matrice_view[2] - matrice_view[0]) / (GLfloat) (matrice_view[3] - matrice_view[1]), ZNEAR, ZFAR);
         } else {
-            glOrtho(0, (GLfloat)  (matrice_view[2] - matrice_view[0]), 0, (GLfloat) altezza_fin, ZNEAR, ZFAR);
+            glOrtho(0, (GLfloat) (matrice_view[2] - matrice_view[0]), 0, (GLfloat) altezza_fin, ZNEAR, ZFAR);
             glMultMatrixf(cavalier);
         }
         glMatrixMode(GL_MODELVIEW);
@@ -537,12 +578,27 @@ int Editor::mouseSelezione(int altezza_fin) {
     hits = glRenderMode(GL_RENDER);
     if (hits > 0) // If There Were More Than 0 Hits
     {
-        for (int loop = 0; loop < hits; loop++) {
-            if (buffer[loop * 4 + 3] == 2 && posiziona_continua != -1 && posiziona_continua != 1) {
-                return 2;
-            }
-        }
-        return 1;
+        /*VA SISTEMATA*/
+//        cout<<hits<<' ';
+//        for (int loop = 0; loop < hits; loop++) {
+//            cout<<buffer[loop * 4 + 3]<<' ';
+//            if (buffer[loop * 4 + 3] == 2) {
+//                for (int loop_int = loop; loop_int < hits; loop_int++){
+//                    cout<<buffer[loop_int * 4 + 3]<<'\n'<<flush;
+//                    if (buffer[loop_int * 4 + 3] == 1)
+//                        return 3;
+//                }
+//                return 2;
+//            }
+//            if (buffer[loop * 4 + 3] == 1) {
+//                for (int loop_int = loop; loop_int < hits; loop_int++){
+//                    cout<<buffer[loop_int * 4 + 3]<<'\n'<<flush;
+//                    if (buffer[loop_int * 4 + 3] == 2)
+//                        return 3;
+//                }
+//                return 1;
+//            }
+//        }
     }
     return 0;
 }

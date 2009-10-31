@@ -31,12 +31,12 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Elemento.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Editor.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/pezzi/Pezzo.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Gioco.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/basi/Base.o \
+	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Posizione.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Livello.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Griglia.o
 
@@ -64,11 +64,6 @@ dist/Release/GNU-Linux-x86/opendomino: ${OBJECTFILES}
 	${MKDIR} -p dist/Release/GNU-Linux-x86
 	${LINK.cc} `pkg-config --libs sdl` -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/opendomino  ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
-${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Elemento.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/Elemento.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source
-	${RM} $@.d
-	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Elemento.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/Elemento.cpp
-
 ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Editor.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/Editor.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source
 	${RM} $@.d
@@ -93,6 +88,11 @@ ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/basi/Base.
 	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/basi
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/basi/Base.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/basi/Base.cpp
+
+${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Posizione.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/Posizione.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Posizione.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/Posizione.cpp
 
 ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Livello.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/Livello.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source

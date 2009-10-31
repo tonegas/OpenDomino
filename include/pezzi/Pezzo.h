@@ -12,13 +12,13 @@
 #define ALTEZZA_PEZZO 8
 #define SPESSORE_PEZZO 2
 
-#define PEZZ0_GIALLO 1
+#define ELEM_PEZZ0 10
 
 #include "../Domino.h"
 
 class Pezzo : public Elemento{
 public:
-    Pezzo(bool alive_aux = false);
+    Pezzo();
     Pezzo(const Pezzo& orig);
 };
 
