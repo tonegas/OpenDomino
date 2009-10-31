@@ -11,6 +11,7 @@ using namespace std;
 
 Livello::Livello(int num_x_colonne_aux, int num_y_righe_aux, int frame_rate_aux) :
 griglia_livello(num_x_colonne_aux, num_y_righe_aux) {
+    griglia_livello.setGrigliaZoom(LIMITE_INFERIORE_ZOOM);
     bottone_destro = false;
     bottone_sinistro = false;
     frame_rate = frame_rate_aux;
@@ -24,8 +25,8 @@ bool Livello::getMousePosGrigliaXY(int larghezza_fin, int mouse_x_fin_aux, int m
     return getMousePosGrigliaXY(larghezza_fin);
 }
 
-bool Livello::getMousePosGrigliaXY(int larghezza_fin) {
-    gluUnProject(mouse_x_fin, larghezza_fin - mouse_y_fin, superfice_z, matrice_model, matrice_proj, matrice_view, &pos_x, &pos_y, &pos_z);
+bool Livello::getMousePosGrigliaXY(int altezza_fin) {
+    gluUnProject(mouse_x_fin, altezza_fin - mouse_y_fin, superfice_z, matrice_model, matrice_proj, matrice_view, &pos_x, &pos_y, &pos_z);
     pos_x_griglia = (int) (((pos_x - griglia_livello.getGriglia().x) / griglia_livello.getGriglia().zoom) / (GLfloat) ALTEZZA_PEZZO);
     pos_y_griglia = (int) (((pos_y - griglia_livello.getGriglia().y) / griglia_livello.getGriglia().zoom) / (GLfloat) ALTEZZA_PEZZO);
     if (pos_x_griglia >= 0 && pos_y_griglia >= 0 && (unsigned) pos_x_griglia < griglia_livello.getDimGrigliaX() && (unsigned) pos_y_griglia < griglia_livello.getDimGrigliaY()) {
@@ -43,8 +44,8 @@ void Livello::setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin)
         case ASSIONOMETRICA:
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
-            glOrtho(0, ((GLfloat) griglia_livello.getDimGrigliaX() * (GLfloat) ALTEZZA_PEZZO),
-                    0, ((GLfloat) griglia_livello.getDimGrigliaY() * (GLfloat) ALTEZZA_PEZZO) / ((GLfloat) larghezza_fin / (GLfloat) altezza_fin),
+            glOrtho(0, (GLfloat) larghezza_fin,
+                    0, (GLfloat) altezza_fin,
                     ZNEAR, ZFAR); //misure rispetto alla posizione dell'occhio
             glMultMatrixf(cavalier);
 
@@ -64,7 +65,7 @@ void Livello::setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin)
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
             gluLookAt(
-                    0.0, 0.0, H_TELECAMERA * 3.5, /* eye  */
+                    0.0, 0.0, H_TELECAMERA, /* eye  */
                     0.0, 0.0, 0.0, /* center  */
                     0.0, 1.0, 0.0); /* up is in positive Y direction */
 

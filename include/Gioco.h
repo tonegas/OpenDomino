@@ -15,8 +15,6 @@
 
 #define LARGHEZZA_FIN 1000
 #define ALTEZZA_FIN  1000
-#define LARGHEZZA_FIN_EDITOR 1000
-#define ALTEZZA_FIN_EDITOR  1000
 #define BPP_FIN       32
 
 enum Stato {
