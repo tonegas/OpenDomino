@@ -11,12 +11,16 @@ using namespace std;
 
 Livello::Livello(int num_x_colonne_aux, int num_y_righe_aux, int frame_rate_aux) :
 griglia_livello(num_x_colonne_aux, num_y_righe_aux) {
-    griglia_livello.setGrigliaZoom(LIMITE_INFERIORE_ZOOM);
     bottone_destro = false;
     bottone_sinistro = false;
+    bottone_centrale = false;
+    angolo_telecamera_x = 0;
+    angolo_telecamera_y = 0;
+
     frame_rate = frame_rate_aux;
     delta_zoom = DELTA_ZOOM;
     tempo_reset_delta_zoom = 0;
+    mouvi_zoom = false;
 }
 
 bool Livello::getMousePosGrigliaXY(int larghezza_fin, int mouse_x_fin_aux, int mouse_y_fin_aux) {
@@ -38,9 +42,8 @@ bool Livello::getMousePosGrigliaXY(int altezza_fin) {
 }
 
 void Livello::setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin) {
-    tipo_proiezione = tipo;
     glViewport(0, 0, (GLint) larghezza_fin, (GLint) altezza_fin);
-    switch (tipo_proiezione) {
+    switch (tipo) {
         case ASSIONOMETRICA:
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
@@ -55,7 +58,14 @@ void Livello::setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin)
                     0.0, 0.0, H_TELECAMERA, /* eye  */
                     0.0, 0.0, 0.0, /* center  */
                     0.0, 1.0, 0.0); /* up is in positive Y direction */
-
+            if (tipo_proiezione != tipo) {
+                griglia_prospettica = griglia_livello.getGriglia();
+                griglia_livello.setGrigliaXY(griglia_assionometrica.x, griglia_assionometrica.y);
+                griglia_livello.setGrigliaZoom(griglia_assionometrica.zoom);
+                max_zoom = MAX_ZOOM_ASSIONOMETRIA;
+                min_zoom = MIN_ZOOM_ASSIONOMETRIA;
+                tipo_proiezione = tipo;
+            }
             break;
         case PROSPETTICA:
             glMatrixMode(GL_PROJECTION);
@@ -68,7 +78,14 @@ void Livello::setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin)
                     0.0, 0.0, H_TELECAMERA, /* eye  */
                     0.0, 0.0, 0.0, /* center  */
                     0.0, 1.0, 0.0); /* up is in positive Y direction */
-
+            if (tipo_proiezione != tipo) {
+                griglia_assionometrica = griglia_livello.getGriglia();
+                griglia_livello.setGrigliaXY(griglia_prospettica.x, griglia_prospettica.y);
+                griglia_livello.setGrigliaZoom(griglia_prospettica.zoom);
+                max_zoom = MAX_ZOOM_PROSPETTICA;
+                min_zoom = MIN_ZOOM_PROSPETTICA;
+                tipo_proiezione = tipo;
+            }
             break;
     }
 
@@ -77,7 +94,7 @@ void Livello::setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin)
     glGetDoublev(GL_PROJECTION_MATRIX, matrice_proj);
 
     //resetto il movimento dello zoom
-    aux_griglia.zoom = griglia_livello.getGriglia().zoom;
+    mouvi_zoom = false;
 
     //recupero pa posizione z della superfice
     GLdouble mouse_x, mouse_y;
@@ -85,11 +102,18 @@ void Livello::setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin)
 }
 
 int Livello::aggiornaStato() {
-    if (fabs(griglia_livello.getGriglia().zoom - aux_griglia.zoom) >= 0.01) {
-        griglia_livello.setGrigliaXY(griglia_livello.getGriglia().x + ((aux_griglia.x - griglia_livello.getGriglia().x) / 10),
-                griglia_livello.getGriglia().y + ((aux_griglia.y - griglia_livello.getGriglia().y) / 10));
+    //così fa schifo va sistemato non è possibile che ogni volta devo settare anche l'aux altrimenti mi si sposta tutto è meglio se faccio un booleano
+    if (mouvi_zoom) {
+        if (fabs(griglia_livello.getGriglia().zoom - aux_griglia.zoom) >= 0.001) {
+            griglia_livello.setGrigliaXY(griglia_livello.getGriglia().x + ((aux_griglia.x - griglia_livello.getGriglia().x) / 10),
+                    griglia_livello.getGriglia().y + ((aux_griglia.y - griglia_livello.getGriglia().y) / 10));
 
-        griglia_livello.setGrigliaZoom(griglia_livello.getGriglia().zoom + (aux_griglia.zoom - griglia_livello.getGriglia().zoom) / 10);
+            griglia_livello.setGrigliaZoom(griglia_livello.getGriglia().zoom + (aux_griglia.zoom - griglia_livello.getGriglia().zoom) / 10);
+        } else {
+            mouvi_zoom = false;
+            griglia_livello.setGrigliaXY(aux_griglia.x, aux_griglia.y);
+            griglia_livello.setGrigliaZoom(aux_griglia.zoom);
+        }
     }
     if (delta_zoom > DELTA_ZOOM) {
         tempo_reset_delta_zoom++;
@@ -120,22 +144,10 @@ int Livello::gestisciInput(SDL_Event *evento) {
                     gioco->setFrames(gioco->getFrames() + 1);
                     break;
                 case SDLK_p:
-                    SDL_GetMouseState(&mouse_x_fin, &mouse_y_fin);
-                    getMousePosGrigliaXY(gioco->getWindowA());
-                    pos_x_iniziali = pos_x;
-                    pos_y_iniziali = pos_y;
                     setProiezione(PROSPETTICA, gioco->getWindowL(), gioco->getWindowA());
-                    getMousePosGrigliaXY(gioco->getWindowA());
-                    griglia_livello.setGrigliaXY(griglia_livello.getGriglia().x + (pos_x - pos_x_iniziali), griglia_livello.getGriglia().y + (pos_y - pos_y_iniziali));
                     break;
                 case SDLK_a:
-                    SDL_GetMouseState(&mouse_x_fin, &mouse_y_fin);
-                    getMousePosGrigliaXY(gioco->getWindowA());
-                    pos_x_iniziali = pos_x;
-                    pos_y_iniziali = pos_y;
                     setProiezione(ASSIONOMETRICA, gioco->getWindowL(), gioco->getWindowA());
-                    getMousePosGrigliaXY(gioco->getWindowA());
-                    griglia_livello.setGrigliaXY(griglia_livello.getGriglia().x + (pos_x - pos_x_iniziali), griglia_livello.getGriglia().y + (pos_y - pos_y_iniziali));
                     break;
                 case SDLK_f:
                     if (gioco->getFullScreen()) {
@@ -164,31 +176,44 @@ int Livello::gestisciInput(SDL_Event *evento) {
             if (!bottone_destro && (evento->button.button == SDL_BUTTON_WHEELUP || evento->button.button == SDL_BUTTON_WHEELDOWN)) {
                 if (evento->button.button == SDL_BUTTON_WHEELUP) {
                     GLfloat zoom = griglia_livello.getGriglia().zoom;
-                    if (zoom * delta_zoom < LIMITE_SUPERIORE_ZOOM) {
-                        aux_griglia.zoom = zoom * delta_zoom;
-                        aux_griglia.x = griglia_livello.getGriglia().x + (1 - delta_zoom)*(pos_x - griglia_livello.getGriglia().x);
-                        aux_griglia.y = griglia_livello.getGriglia().y + (1 - delta_zoom)*(pos_y - griglia_livello.getGriglia().y);
-                    } else {
-                        delta_zoom = DELTA_ZOOM;
-                        aux_griglia.zoom = LIMITE_SUPERIORE_ZOOM;
-                        aux_griglia.x = griglia_livello.getGriglia().x + (1 - (GLfloat) LIMITE_SUPERIORE_ZOOM / zoom)*(pos_x - griglia_livello.getGriglia().x);
-                        aux_griglia.y = griglia_livello.getGriglia().y + (1 - (GLfloat) LIMITE_SUPERIORE_ZOOM / zoom)*(pos_y - griglia_livello.getGriglia().y);
+                    if (zoom < max_zoom) {
+                        if (zoom * delta_zoom < max_zoom) {
+                            aux_griglia.zoom = zoom * delta_zoom;
+                            aux_griglia.x = griglia_livello.getGriglia().x + (1 - delta_zoom)*(pos_x - griglia_livello.getGriglia().x);
+                            aux_griglia.y = griglia_livello.getGriglia().y + (1 - delta_zoom)*(pos_y - griglia_livello.getGriglia().y);
+                            delta_zoom *= INCREMENTO_DELTA_ZOOM;
+                        } else {
+                            delta_zoom = DELTA_ZOOM;
+                            aux_griglia.zoom = max_zoom;
+                            aux_griglia.x = griglia_livello.getGriglia().x + (1 - (GLfloat) max_zoom / zoom)*(pos_x - griglia_livello.getGriglia().x);
+                            aux_griglia.y = griglia_livello.getGriglia().y + (1 - (GLfloat) max_zoom / zoom)*(pos_y - griglia_livello.getGriglia().y);
+                        }
+                        mouvi_zoom = true;
                     }
-                    delta_zoom *= INCREMENTO_DELTA_ZOOM;
                 } else {
                     GLfloat zoom = griglia_livello.getGriglia().zoom;
-                    if (zoom / delta_zoom > LIMITE_INFERIORE_ZOOM) {
-                        aux_griglia.zoom = zoom / delta_zoom;
-                        aux_griglia.x = griglia_livello.getGriglia().x + ((delta_zoom - 1) / delta_zoom)*(pos_x - griglia_livello.getGriglia().x);
-                        aux_griglia.y = griglia_livello.getGriglia().y + ((delta_zoom - 1) / delta_zoom)*(pos_y - griglia_livello.getGriglia().y);
-                    } else {
-                        delta_zoom = DELTA_ZOOM;
-                        aux_griglia.zoom = LIMITE_INFERIORE_ZOOM;
-                        aux_griglia.x = griglia_livello.getGriglia().x + (((zoom / (GLfloat) LIMITE_INFERIORE_ZOOM) - 1) / (zoom / (GLfloat) LIMITE_INFERIORE_ZOOM))*(pos_x - griglia_livello.getGriglia().x);
-                        aux_griglia.y = griglia_livello.getGriglia().y + (((zoom / (GLfloat) LIMITE_INFERIORE_ZOOM) - 1) / (zoom / (GLfloat) LIMITE_INFERIORE_ZOOM))*(pos_y - griglia_livello.getGriglia().y);
+                    if (zoom > min_zoom) {
+                        if (zoom / delta_zoom > min_zoom) {
+                            aux_griglia.zoom = zoom / delta_zoom;
+                            aux_griglia.x = griglia_livello.getGriglia().x + ((delta_zoom - 1) / delta_zoom)*(pos_x - griglia_livello.getGriglia().x);
+                            aux_griglia.y = griglia_livello.getGriglia().y + ((delta_zoom - 1) / delta_zoom)*(pos_y - griglia_livello.getGriglia().y);
+                            delta_zoom *= INCREMENTO_DELTA_ZOOM;
+                        } else {
+                            delta_zoom = DELTA_ZOOM;
+                            aux_griglia.zoom = min_zoom;
+                            aux_griglia.x = griglia_livello.getGriglia().x + (((zoom / (GLfloat) min_zoom) - 1) / (zoom / (GLfloat) min_zoom))*(pos_x - griglia_livello.getGriglia().x);
+                            aux_griglia.y = griglia_livello.getGriglia().y + (((zoom / (GLfloat) min_zoom) - 1) / (zoom / (GLfloat) min_zoom))*(pos_y - griglia_livello.getGriglia().y);
+                        }
+                        mouvi_zoom = true;
                     }
-                    delta_zoom *= INCREMENTO_DELTA_ZOOM;
                 }
+            }
+            if (!bottone_destro && evento->button.button == SDL_BUTTON_MIDDLE && tipo_proiezione == PROSPETTICA) {
+                angolo_telecamera_x_iniziale = angolo_telecamera_x;
+                angolo_telecamera_y_iniziale = angolo_telecamera_y;
+                pos_x_iniziali = pos_x;
+                pos_y_iniziali = pos_y;
+                bottone_centrale = true;
             }
             break;
         case SDL_MOUSEMOTION:
@@ -196,10 +221,17 @@ int Livello::gestisciInput(SDL_Event *evento) {
             if (bottone_destro) {
                 griglia_livello.setGrigliaXY(aux_griglia.x + (pos_x - pos_x_iniziali), aux_griglia.y + (pos_y - pos_y_iniziali));
             }
+            if (bottone_centrale) {
+                angolo_telecamera_x = angolo_telecamera_x_iniziale + (pos_x_iniziali - pos_x);
+                angolo_telecamera_y = angolo_telecamera_y_iniziale + (pos_y_iniziali - pos_y);
+            }
             break;
         case SDL_MOUSEBUTTONUP:
             if (evento->button.button == SDL_BUTTON_RIGHT) {
                 bottone_destro = false;
+            }
+            if (evento->button.button == SDL_BUTTON_MIDDLE) {
+                bottone_centrale = false;
             }
             break;
         case SDL_VIDEORESIZE:

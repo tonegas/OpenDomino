@@ -21,6 +21,12 @@ public:
         y = y_aux;
         zoom = zoom_aux;
     }
+
+    PosXYZoom(const PosXYZoom & orig) {
+        x = orig.x;
+        y = orig.y;
+        zoom = orig.zoom;
+    }
 };
 
 class Griglia {

@@ -40,10 +40,11 @@ int Editor::aggiornaStato() {
 }
 
 void Editor::inizializzaEditor(Gioco *gioco_aux) {
-    tipo_proiezione = ASSIONOMETRICA;
+    //qui faccio così perchè se non sono diversi "tipo_proiezione=PROSPETTICA" e ASSIONOMETRICA non fa gli assegnamenti
+    tipo_proiezione = PROSPETTICA;
     gioco = gioco_aux;
 
-    setProiezione(tipo_proiezione, LARGHEZZA_FIN_EDITOR, ALTEZZA_FIN_EDITOR);
+    setProiezione(ASSIONOMETRICA, LARGHEZZA_FIN_EDITOR, ALTEZZA_FIN_EDITOR);
 
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, colorwhite);
@@ -368,8 +369,13 @@ int Editor::video() {
     }
 
     glPushMatrix();
+    if(tipo_proiezione == PROSPETTICA){
+        glRotatef(angolo_telecamera_y,1,0,0);
+        glRotatef(-angolo_telecamera_x,0,1,0);
+    }
     glTranslatef(griglia_livello.getGriglia().x, griglia_livello.getGriglia().y, 0);
     glScalef(griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom);
+
 
     stampaSuperficeBase();
     for (int i = 0; i < num_x_colonne; i++) {

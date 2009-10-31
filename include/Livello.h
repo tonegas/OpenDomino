@@ -12,13 +12,15 @@
 
 #define X_TELECAMERA 0
 #define Y_TELECAMERA 0
-#define H_TELECAMERA 150
+#define H_TELECAMERA 200
 #define FOVY    40
 #define ZNEAR   5
 #define ZFAR    700
 
-#define LIMITE_SUPERIORE_ZOOM 10
-#define LIMITE_INFERIORE_ZOOM 0.5
+#define MAX_ZOOM_ASSIONOMETRIA 23
+#define MIN_ZOOM_ASSIONOMETRIA 0.25
+#define MAX_ZOOM_PROSPETTICA 3
+#define MIN_ZOOM_PROSPETTICA 0.035
 #define DELTA_ZOOM 1.1
 #define INCREMENTO_DELTA_ZOOM 1.1
 
@@ -43,15 +45,27 @@ protected:
     //matrici dinamiche di pezzi e basi
     Griglia griglia_livello;
 
+    //flag che indica se è incorso un animazione sullo zoom
+    bool mouvi_zoom;
     //struttura ausiliaria per il movimento della griglia
     PosXYZoom aux_griglia;
 
     //proiezione della griglia a schermo
     Proiezione tipo_proiezione;
+    //massimo livello di zoom per la proiezione corrente
+    GLfloat max_zoom,min_zoom;
+    //struttura ausiliaria per il movimento della griglia
+    PosXYZoom griglia_assionometrica;
+    //struttura ausiliaria per il movimento della griglia
+    PosXYZoom griglia_prospettica;
+    //modifica degli angoli di vista della telecamera
+    GLfloat angolo_telecamera_x,angolo_telecamera_y;
+    GLfloat angolo_telecamera_x_iniziale,angolo_telecamera_y_iniziale;
+
 
     //per ora sono solo due bottoni ma penso che diventerà una struttura per gestire l'input in maniera
     //differente a seconda che il livello si editor partita o altro
-    bool bottone_sinistro, bottone_destro;
+    bool bottone_sinistro, bottone_destro, bottone_centrale;
 
     //variazione del delta di incremento dello zoom
     GLfloat delta_zoom;

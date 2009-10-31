@@ -56,18 +56,30 @@ Gioco::Gioco() {
 
     setWindowLA(LARGHEZZA_FIN, ALTEZZA_FIN);
 
-    glEnable(GL_LINE_SMOOTH);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+    //glBlendFunc(GL_SRC_ALPHA_SATURATE, GL_ONE);
+
+    glHint(GL_POINT_SMOOTH, GL_NICEST);
+    glHint(GL_LINE_SMOOTH, GL_NICEST);
+    //glHint(GL_POLYGON_SMOOTH, GL_NICEST);
+
+    glEnable(GL_POINT_SMOOTH);
+    glEnable(GL_LINE_SMOOTH);
+    //glEnable(GL_POLYGON_SMOOTH);
+
     glEnable(GL_DEPTH_TEST); //questa andrà attivata
 
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);
     glEnable(GL_LIGHTING);
     glEnable(GL_NORMALIZE);
+
+    //glEnable(GL_MULTISAMPLE);
     //se lo attivo sparisce anche le faccie laterali
     //glEnable(GL_CULL_FACE); //disattuva le faccie posteriori
+    
 
     domino_editor.inizializzaEditor(this);
 }
