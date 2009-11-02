@@ -6,6 +6,7 @@
  */
 
 #include "include/Domino.h"
+#include "include/Gioco.h"
 
 int main(int argc, char** argv) {
     Gioco domino;

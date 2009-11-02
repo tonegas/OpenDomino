@@ -5,7 +5,7 @@
  * Created on 30 ottobre 2009, 15.35
  */
 
-#include "../../include/Posizione.h"
+#include "../../include/pezzi/Pezzo.h"
 
 Pezzo::Pezzo():Elemento() {}
 

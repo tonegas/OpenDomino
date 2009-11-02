@@ -6,6 +6,7 @@
  */
 
 #include "../include/Livello.h"
+#include "../include/Gioco.h"
 
 using namespace std;
 
@@ -77,10 +78,10 @@ bool Livello::getMousePosGrigliaXY(int altezza_fin) {
                 glBegin(GL_QUADS);
                 {
                     glNormal3f(0.0, 0.0, 1.0);
-                    glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-                    glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-                    glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
-                    glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+                    glVertex3f(-ALTEZZA_PEZZO*10, -ALTEZZA_PEZZO*10, 0);
+                    glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO*10, -ALTEZZA_PEZZO*10, 0);
+                    glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO*10, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO*10, 0);
+                    glVertex3f(-ALTEZZA_PEZZO*10, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO*10, 0);
                 }
                 glEnd();
             }

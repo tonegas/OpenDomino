@@ -6,6 +6,7 @@
  */
 
 #include "../include/Editor.h"
+#include "../include/Gioco.h"
 
 using namespace std;
 

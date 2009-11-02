@@ -11,8 +11,6 @@
 #include "Domino.h"
 #include "Livello.h"
 
-#define FRAMERATE   50                  //frame per secondo massimi
-#define FRAMEMS     1000/FRAMERATE      //millisecondi per frame
 
 #define LARGHEZZA_FIN_EDITOR 1000
 #define ALTEZZA_FIN_EDITOR  1000

@@ -5,7 +5,7 @@
  * Created on 30 ottobre 2009, 15.45
  */
 
-#include "../../include/Posizione.h"
+#include "../../include/basi/Base.h"
 
 Base::Base() : Elemento(){}
 

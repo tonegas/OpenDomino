@@ -6,6 +6,9 @@
  */
 
 #include "../include/Domino.h"
+#include "../include/Posizione.h"
+#include "../include/pezzi/Pezzo.h"
+#include "../include/basi/Base.h"
 
     Posizione::Posizione() {
         selezione_pezzo = 0;

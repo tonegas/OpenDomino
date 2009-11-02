@@ -27,6 +27,7 @@ enum Stato {
 };
 
 class Editor;
+class Partita;
 
 class Gioco {
     //parametri finestra
