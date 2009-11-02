@@ -27,7 +27,7 @@ Griglia::Griglia(const Griglia& orig) {
     for (unsigned i = 0; i < num_x_colonne; i++) {
         for (unsigned j = 0; j < num_y_righe; j++) {
             if (orig.matrice_posizioni[i][j].occupata == true) {
-                if (orig.matrice_posizioni[i][j].tipo == ELEM_PEZZ0) {
+                if (orig.matrice_posizioni[i][j].tipo == ELEM_PEZZO) {
                     matrice_posizioni[i][j].elem = new Pezzo(*(Pezzo*)orig.matrice_posizioni[i][j].elem);
                 } else {
                     matrice_posizioni[i][j].elem = new Base(*(Base*)orig.matrice_posizioni[i][j].elem);
@@ -39,9 +39,9 @@ Griglia::Griglia(const Griglia& orig) {
 
 Griglia::~Griglia() {
     for (unsigned i = 0; i < num_x_colonne; i++) {
-        delete matrice_posizioni[i];
+        delete [] matrice_posizioni[i];
     }
-    delete matrice_posizioni;
+    delete [] matrice_posizioni;
 }
 
 PosXYZoom Griglia::getGriglia() {

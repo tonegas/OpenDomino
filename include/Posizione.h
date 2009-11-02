@@ -35,7 +35,7 @@ public:
 
     int getTipo();
 
-    void occupaPosizione(Elemento *elem_aux);
+    void occupaPosizione(Elemento *elem_aux,int tipo_aux);
 };
 
 #endif	/* _POSIZONE_H */

@@ -12,7 +12,7 @@
 #define ALTEZZA_PEZZO 8
 #define SPESSORE_PEZZO 2
 
-#define ELEM_PEZZ0 10
+#define ELEM_PEZZO 10
 
 #include "../Domino.h"
 

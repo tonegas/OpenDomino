@@ -16,6 +16,7 @@
 
     Posizione::~Posizione() {
         delete elem;
+        elem = NULL;
     }
 
     void Posizione::liberaPosizione() {
@@ -25,10 +26,9 @@
     }
 
     void Posizione::attivaSelezione(int tipo_aux) {
-        tipo = tipo_aux;
-        if (tipo == ELEM_PEZZ0)
+        if (tipo_aux == ELEM_PEZZO)
             selezione_pezzo = 1;
-        if (tipo == ELEM_BASE)
+        if (tipo_aux == ELEM_BASE)
             selezione_base = 1;
     }
 
@@ -36,7 +36,8 @@
         return tipo;
     }
 
-    void Posizione::occupaPosizione(Elemento *elem_aux) {
+    void Posizione::occupaPosizione(Elemento *elem_aux,int tipo_aux) {
         occupata = true;
+        tipo = tipo_aux;
         elem = elem_aux;
     }

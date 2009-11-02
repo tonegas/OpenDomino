@@ -27,12 +27,20 @@
 #define ELIMINA_PEZZI -1
 #define ELIMINA_BASI -2
 
+#define DAVANTI_PEZZO 3
+#define DAVANTI_BASE 4
+
 class Editor : public Livello {
     int num_x_colonne;
     int num_y_righe;
 
     bool posiziona_pezzi, posiziona_basi;
     int azione_continua;
+
+    int caratteristiche_selezione;
+    bool entrambi;
+    unsigned x_pezzo_selezionato,y_pezzo_selezionato;
+    unsigned x_base_selezionata,y_base_selezionata;
 
     GLfloat **cubo_selezione;
 
