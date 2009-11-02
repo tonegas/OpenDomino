@@ -60,7 +60,7 @@ bool Livello::getMousePosGrigliaXY(int altezza_fin) {
                 glRotatef(-angolo_telecamera_x, 0, 1, 0);
                 glTranslatef(griglia_livello.getGriglia().x, griglia_livello.getGriglia().y, 0);
                 glScalef(griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom);
-                glTranslatef(0.0, 0.0, POSIZIONE_SUPERFICE);
+                glTranslatef(0.0, 0.0, (GLfloat) POSIZIONE_SUPERFICE);
                 glBegin(GL_QUADS);
                 {
                     glNormal3f(0.0, 0.0, 1.0);
@@ -284,15 +284,15 @@ int Livello::gestisciInput(SDL_Event *evento) {
                 if (fabs(nuovo_angolo_x) < MAX_ANGOLO_TELECAMERA_XY) {
                     angolo_telecamera_x = nuovo_angolo_x;
                 } else {
-                    if(angolo_telecamera_x < 0)
+                    if (angolo_telecamera_x < 0)
                         angolo_telecamera_x = -MAX_ANGOLO_TELECAMERA_XY;
                     else
-                       angolo_telecamera_x = MAX_ANGOLO_TELECAMERA_XY;
+                        angolo_telecamera_x = MAX_ANGOLO_TELECAMERA_XY;
                 }
                 if (fabs(nuovo_angolo_y) < MAX_ANGOLO_TELECAMERA_XY) {
                     angolo_telecamera_y = nuovo_angolo_y;
                 } else {
-                    if(nuovo_angolo_y < 0)
+                    if (nuovo_angolo_y < 0)
                         angolo_telecamera_y = -MAX_ANGOLO_TELECAMERA_XY;
                     else
                         angolo_telecamera_y = MAX_ANGOLO_TELECAMERA_XY;

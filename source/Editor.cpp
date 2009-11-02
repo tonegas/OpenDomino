@@ -565,10 +565,17 @@ int Editor::mouseSelezione(int altezza_fin) {
             }
             glTranslatef(griglia_livello.getGriglia().x, griglia_livello.getGriglia().y, 0);
             glScalef(griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom);
-            glLoadName(1);
-            stampaPezzo(false, pos_x_griglia, pos_y_griglia, 0.0);
-            glLoadName(2);
-            stampaBase(false, pos_x_griglia, pos_y_griglia, 0.0);
+            int indice = 1;
+            for (int i = -1; i < 1; i++) {
+                for (int j = -1; j < 1; j++) {
+                    if (pos_x_griglia + i > 0 && pos_x_griglia + i < num_x_colonne && pos_y_griglia + j > 0 && pos_y_griglia + j < num_y_righe) {
+                        glLoadName(indice++);
+                        stampaPezzo(false, pos_x_griglia +i, pos_y_griglia+j, 0.0);
+                        glLoadName(indice++);
+                        stampaBase(false, pos_x_griglia+i, pos_y_griglia+j, 0.0);
+                    }
+                }
+            }
         }
         glPopMatrix();
         glMatrixMode(GL_PROJECTION);
@@ -578,28 +585,31 @@ int Editor::mouseSelezione(int altezza_fin) {
     hits = glRenderMode(GL_RENDER);
     if (hits > 0) // If There Were More Than 0 Hits
     {
-        /*VA SISTEMATA*/
-//        cout<<hits<<' ';
-//        for (int loop = 0; loop < hits; loop++) {
-//            cout<<buffer[loop * 4 + 3]<<' ';
-//            if (buffer[loop * 4 + 3] == 2) {
-//                for (int loop_int = loop; loop_int < hits; loop_int++){
-//                    cout<<buffer[loop_int * 4 + 3]<<'\n'<<flush;
-//                    if (buffer[loop_int * 4 + 3] == 1)
-//                        return 3;
-//                }
-//                return 2;
-//            }
-//            if (buffer[loop * 4 + 3] == 1) {
-//                for (int loop_int = loop; loop_int < hits; loop_int++){
-//                    cout<<buffer[loop_int * 4 + 3]<<'\n'<<flush;
-//                    if (buffer[loop_int * 4 + 3] == 2)
-//                        return 3;
-//                }
-//                return 1;
-//            }
-//        }
+        /*DA SISTEMARE BISOGNA DECIDERE UN VALORE DI RITORNO IN MANIERA CHE INDICHI BENE SOPRA COSA MI TROVO*/
+        switch (hits) {
+            case 2:
+                //ritorno il più vicino
+                cout << "2" << flush;
+                if (buffer[1] < buffer[5]) {
+                    return buffer[3];
+                } else {
+                    return buffer[7];
+                }
+                break;
+            case 1:
+                if (buffer[3] == POSIZIONA_PEZZI) {
+                    cout << "pezzo" << flush;
+                    return POSIZIONA_PEZZI;
+                }
+                if (buffer[3] == POSIZIONA_BASI) {
+                    cout << "base" << flush;
+                    return POSIZIONA_BASI;
+                }
+                break;
+        }
+        cout << "niente" << flush;
     }
+    cout << "\n" << flush;
     return 0;
 }
 
