@@ -9,6 +9,8 @@
 #define	_GIOCO_H
 
 #include "Domino.h"
+#include "Partita.h"
+#include "Editor.h"
 
 #define FRAMERATE   50                  //frame per secondo massimi
 #define FRAMEMS     1000/FRAMERATE      //millisecondi per frame
@@ -52,7 +54,12 @@ class Gioco {
     //Giocatore giocatore;
 
     //Oggetto editor per la gestione della grafica della partita
-    Editor domino_editor;
+    Editor domino_editor_costruisci;
+
+    //Oggetto partita derivato da livello
+    Partita domino_editor_test;
+
+    Livello *domino;
 
     //indica se il gioco deve smettere di ciclare
     bool alive;

@@ -9,12 +9,13 @@
 #define	_EDITOR_H
 
 #include "Domino.h"
+#include "Livello.h"
+
+#define FRAMERATE   50                  //frame per secondo massimi
+#define FRAMEMS     1000/FRAMERATE      //millisecondi per frame
 
 #define LARGHEZZA_FIN_EDITOR 1000
 #define ALTEZZA_FIN_EDITOR  1000
-
-#define GRIGLIA_EDITOR_Y 100
-#define GRIGLIA_EDITOR_X 100
 
 #define POSIZIONE_SUPERFICE -0.001
 

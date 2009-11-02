@@ -15,6 +15,7 @@
 #define ELEM_PEZZO 10
 
 #include "../Domino.h"
+#include "../Posizione.h"
 
 class Pezzo : public Elemento{
 public:

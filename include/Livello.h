@@ -9,6 +9,10 @@
 #define	_LIVELLO_H
 
 #include "Domino.h"
+#include "Griglia.h"
+
+#define GRIGLIA_EDITOR_Y 100
+#define GRIGLIA_EDITOR_X 100
 
 #define X_TELECAMERA 0
 #define Y_TELECAMERA 0
@@ -105,6 +109,8 @@ public:
 
     Livello(int num_x_colonne_aux, int num_y_righe_aux,int frame_rate);
 
+    Livello(const Livello &orig);
+
     bool getMousePosGrigliaXY(int larghezza_fin, int mouse_x_fin_aux, int mouse_y_fin_aux);
 
     bool getMousePosGrigliaXY(int larghezza_fin);
@@ -114,7 +120,8 @@ public:
     virtual int aggiornaStato();
 
     virtual int gestisciInput(SDL_Event *evento);
-    
+
+    virtual int video(){return 0;}
 };
 
 #endif	/* _LIVELLO_H */

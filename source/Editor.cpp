@@ -5,7 +5,7 @@
  * Created on 30 ottobre 2009, 23.37
  */
 
-#include "../include/Domino.h"
+#include "../include/Editor.h"
 
 using namespace std;
 
@@ -34,8 +34,8 @@ Editor::Editor(int num_y_righe_aux, int num_x_colonne_aux) : Livello(num_x_colon
 
 Editor::~Editor() {
     for (int i = 0; i < num_y_righe; i++)
-        delete cubo_selezione[i];
-    delete cubo_selezione;
+        delete []cubo_selezione[i];
+    delete []cubo_selezione;
 }
 
 int Editor::aggiornaStato() {
@@ -620,8 +620,6 @@ int Editor::mouseSelezione(int altezza_fin) {
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
     hits = glRenderMode(GL_RENDER);
-    //    x_pezzo_selezionato = x_base_selezionata = pos_x_griglia;
-    //    y_pezzo_selezionato = y_base_selezionata = pos_y_griglia;
     caratteristiche_selezione = 0;
     if (hits > 0) // If There Were More Than 0 Hits
     {

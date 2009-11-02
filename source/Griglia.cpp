@@ -5,7 +5,7 @@
  * Created on 30 ottobre 2009, 15.53
  */
 
-#include "../include/Domino.h"
+#include "../include/Griglia.h"
 
 Griglia::Griglia(int num_x_colonne_aux, int num_y_righe_aux) {
     num_y_righe = num_y_righe_aux;
@@ -77,10 +77,10 @@ void Griglia::setGrigliaXY(GLfloat x, GLfloat y) {
     griglia.y = y;
 }
 
-unsigned Griglia::getDimGrigliaX() {
+unsigned Griglia::getDimGrigliaX() const{
     return num_x_colonne;
 }
 
-unsigned Griglia::getDimGrigliaY() {
+unsigned Griglia::getDimGrigliaY() const{
     return num_y_righe;
 }

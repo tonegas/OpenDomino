@@ -15,13 +15,5 @@
 #include <iostream>
 #include <math.h>
 
-#include "Posizione.h"
-#include "pezzi/Pezzo.h"
-#include "basi/Base.h"
-#include "Griglia.h"
-#include "Livello.h"
-#include "Editor.h"
-#include "Gioco.h"
-
 #endif	/* _DOMINO_ */
 

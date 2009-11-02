@@ -9,6 +9,8 @@
 #define	_GRIGLIA_H
 
 #include "Domino.h"
+#include "pezzi/Pezzo.h"
+#include "basi/Base.h"
 
 class PosXYZoom {
 public:
@@ -58,9 +60,9 @@ public:
 
     void setGrigliaXY(GLfloat x, GLfloat y);
 
-    unsigned getDimGrigliaX();
+    unsigned getDimGrigliaX() const;
 
-    unsigned getDimGrigliaY();
+    unsigned getDimGrigliaY() const;
 };
 
 #endif	/* _GRIGLIA_H */

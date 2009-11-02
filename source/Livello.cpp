@@ -5,7 +5,7 @@
  * Created on 30 ottobre 2009, 16.03
  */
 
-#include "../include/Domino.h"
+#include "../include/Livello.h"
 
 using namespace std;
 
@@ -18,6 +18,20 @@ griglia_livello(num_x_colonne_aux, num_y_righe_aux) {
     angolo_telecamera_y = 0;
 
     frame_rate = frame_rate_aux;
+    delta_zoom = DELTA_ZOOM;
+    tempo_reset_delta_zoom = 0;
+    mouvi_zoom = false;
+}
+
+Livello::Livello(const Livello& orig) :
+griglia_livello(orig.griglia_livello.getDimGrigliaX(), orig.griglia_livello.getDimGrigliaY()) {
+    bottone_destro = orig.bottone_destro;
+    bottone_sinistro = orig.bottone_sinistro;
+    bottone_centrale = orig.bottone_centrale;
+    angolo_telecamera_x = orig.angolo_telecamera_x;
+    angolo_telecamera_y = orig.angolo_telecamera_y;
+
+    frame_rate = orig.frame_rate;
     delta_zoom = DELTA_ZOOM;
     tempo_reset_delta_zoom = 0;
     mouvi_zoom = false;
@@ -60,7 +74,6 @@ bool Livello::getMousePosGrigliaXY(int altezza_fin) {
                 glRotatef(-angolo_telecamera_x, 0, 1, 0);
                 glTranslatef(griglia_livello.getGriglia().x, griglia_livello.getGriglia().y, 0);
                 glScalef(griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom);
-                glTranslatef(0.0, 0.0, (GLfloat) POSIZIONE_SUPERFICE);
                 glBegin(GL_QUADS);
                 {
                     glNormal3f(0.0, 0.0, 1.0);

@@ -15,6 +15,7 @@
 #define ELEM_BASE 100
 
 #include "../Domino.h"
+#include "../Posizione.h"
 
 
 class Base : public Elemento{

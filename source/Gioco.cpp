@@ -5,7 +5,7 @@
  * Created on 30 ottobre 2009, 23.31
  */
 
-#include "../include/Domino.h"
+#include "../include/Gioco.h"
 
 Gioco::Gioco() {
     bpp = BPP_FIN;
@@ -83,9 +83,11 @@ Gioco::Gioco() {
     glEnable(GL_MULTISAMPLE);
     //se lo attivo sparisce anche le faccie laterali
     //glEnable(GL_CULL_FACE); //disattuva le faccie posteriori
-    
 
-    domino_editor.inizializzaEditor(this);
+    if(stato==EDITOR_COSTRUISCI){
+        domino = &domino_editor_costruisci;
+        domino_editor_costruisci.inizializzaEditor(this);
+    }
 }
 
 void Gioco::loop() {
@@ -98,9 +100,9 @@ void Gioco::loop() {
     while (alive) {
         inizio = SDL_GetTicks();
 
-        domino_editor.gestisciInput(&evento);
-        domino_editor.aggiornaStato();
-        domino_editor.video();
+        domino->gestisciInput(&evento);
+        domino->aggiornaStato();
+        domino->video();
         //    SDL_Flip(screen);
 
         fine = SDL_GetTicks();
