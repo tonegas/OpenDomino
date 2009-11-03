@@ -15,5 +15,7 @@
 #include <iostream>
 #include <math.h>
 
+using namespace std;
+
 #endif	/* _DOMINO_ */
 

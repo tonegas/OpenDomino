@@ -37,7 +37,6 @@ class Griglia {
     unsigned num_y_righe;
     unsigned num_x_colonne;
 public:
-
     Griglia(int num_x_colonne_aux, int num_y_righe_aux);
 
     Griglia(const Griglia& orig);

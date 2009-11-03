@@ -6,6 +6,7 @@
  */
 
 #include "../include/Editor.h"
+#include "../include/Partita.h"
 #include "../include/Gioco.h"
 
 using namespace std;
@@ -17,7 +18,9 @@ GLfloat colorwhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
 //GLfloat lightpos[] = {0, 0, 0, 1};
 GLfloat lightpos_ambient[] = {60, 120, 150, 0};
 
-Editor::Editor(int num_y_righe_aux, int num_x_colonne_aux) : Livello(num_x_colonne_aux, num_y_righe_aux, FRAMERATE) {
+Editor::Editor(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux)
+: Livello(gioco_aux, num_x_colonne_aux, num_y_righe_aux, FRAMERATE)
+, test(gioco_aux, num_x_colonne_aux, num_y_righe_aux) {
     num_y_righe = num_y_righe_aux;
     num_x_colonne = num_x_colonne_aux;
     posiziona_pezzi = true;
@@ -39,15 +42,9 @@ Editor::~Editor() {
     delete []cubo_selezione;
 }
 
-int Editor::aggiornaStato() {
-    Livello::aggiornaStato();
-    return 1;
-}
-
-void Editor::inizializzaEditor(Gioco *gioco_aux) {
+void Editor::inizializzaEditor() {
     //qui faccio così perchè se non sono diversi "tipo_proiezione=PROSPETTICA" e ASSIONOMETRICA non fa gli assegnamenti
     tipo_proiezione = PROSPETTICA;
-    gioco = gioco_aux;
 
     setProiezione(ASSIONOMETRICA, LARGHEZZA_FIN_EDITOR, ALTEZZA_FIN_EDITOR);
 
@@ -85,7 +82,7 @@ void Editor::stampaPezzo(bool wire, int x, int y, GLfloat attivo) {
     if (wire) {
         glDisable(GL_LIGHTING);
         GLfloat grandezza = attivo;
-        glTranslatef(SPESSORE_PEZZO * (1.0 -grandezza) / 2, ALTEZZA_PEZZO * (1.0 -grandezza) / 2, LARGHEZZA_PEZZO * (1.0 -grandezza) / 2);
+        glTranslatef(SPESSORE_PEZZO * (1.0 - grandezza) / 2, ALTEZZA_PEZZO * (1.0 - grandezza) / 2, LARGHEZZA_PEZZO * (1.0 - grandezza) / 2);
         glScalef(grandezza, grandezza, grandezza);
     }
     glColor4f(1.0f, 1.0f, 0.0f, attivo);
@@ -169,7 +166,7 @@ void Editor::stampaBase(bool wire, int x, int y, GLfloat attivo) {
     if (wire) {
         glDisable(GL_LIGHTING);
         GLfloat grandezza = attivo;
-        glTranslatef(SPESSORE_BASE * (1.0 -grandezza) / 2, ALTEZZA_BASE * (1.0 -grandezza) / 2, LARGHEZZA_BASE * (1.0 -grandezza) / 2);
+        glTranslatef(SPESSORE_BASE * (1.0 - grandezza) / 2, ALTEZZA_BASE * (1.0 - grandezza) / 2, LARGHEZZA_BASE * (1.0 - grandezza) / 2);
         glScalef(grandezza, grandezza, grandezza);
     }
     glColor4f(0.0f, 1.0f, 0.0f, attivo);
@@ -342,36 +339,31 @@ void Editor::stampaQuadrato(int x, int y, GLfloat attivo) {
     //    /* double buffering! */
 }
 
-int Editor::video() {
+int Editor::aggiornaStato() {
+    if(gioco->getStato() == EDITOR_TEST){
+        return test.aggiornaStato();
+    }else{
+        return aggiornaStatoEditor();
+    }
+}
 
-    //SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-    //SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1 );
-    //    if (cambio_zoom) {
-    //        h_finestra = 2.0*h_telecamera*tan(fovy/2.0/180.0*M_PI);
-    //        l_finestra = ((GLfloat)ALTEZZA_FIN/(GLfloat)LARGHEZZA_FIN)*h_finestra;
-    //
-    //        da_2d_a_3d = 2.0*h_telecamera*tan(fovy/2.0/180.0*M_PI) / (GLfloat)ALTEZZA_FIN;
-    //        glMatrixMode(GL_MODELVIEW);
-    //        glLoadIdentity();
-    //        gluLookAt(
-    //                0, 0, h_telecamera, /* eye  */
-    //                0, 0, 0.0, /* center  */
-    //                0.0, 1.0, 0.0); /* up is in positive Y direction */
-    //        cambio_zoom=false;
-    //    }
+int Editor::aggiornaStatoEditor(){
+    return Livello::aggiornaStato();
+}
 
-    /*
-     * GL_COLOR_BUFFER_BIT      Color buffers 		: Viene resa l’immagine (almeno 2, anche di piu’ per il rendering stereo.
-     * GL_DEPTH_BUFFER_BIT      Depth buffer		: Usato per eliminare le parti nascoste.
-     * GL_STENCIL_BUFFER_BIT    Stencil buffer 		: Usato per “ritagliare” aree dello schermo.
-     * GL_ACCUM_BUFFER_BIT      Accumulation buffer	: Accumula i risultati per effetti speciali come  Motion Blur, simulare il fuoco, ombre, ...
-     */
+int Editor::video(){
+    if(gioco->getStato() == EDITOR_TEST){
+        return test.video();
+    }else{
+        return videoEditor();
+    }
+}
 
-
+int Editor::videoEditor() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     Posizione* p_aux, *p_aux_pezzo, *p_aux_base;
-    ;
+
     SDL_GetMouseState(&mouse_x_fin, &mouse_y_fin);
     if (azione_continua == 0 && getMousePosGrigliaXY(gioco->getWindowA())) {
         //cubo_selezione[pos_x_griglia][pos_y_griglia] = 1;
@@ -442,7 +434,15 @@ int Editor::video() {
     return 1;
 }
 
-int Editor::gestisciInput(SDL_Event *evento) {
+int Editor::gestisciInput(SDL_Event *evento){
+    if(gioco->getStato() == EDITOR_TEST){
+        return test.gestisciInput(evento);
+    }else{
+        return gestisciInputEditor(evento);
+    }
+}
+
+int Editor::gestisciInputEditor(SDL_Event *evento) {
     SDL_PumpEvents();
     while (SDL_PollEvent(evento)) {
         if (Livello::gestisciInput(evento)) {
@@ -458,6 +458,9 @@ int Editor::gestisciInput(SDL_Event *evento) {
                             posiziona_pezzi = false;
                             posiziona_basi = true;
                             azione_continua = 0;
+                            break;
+                        case SDLK_F5:
+                            gioco->setStato(EDITOR_TEST);
                             break;
                         default:
                             break;

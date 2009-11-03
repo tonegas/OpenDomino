@@ -7,11 +7,12 @@
 
 #include "../include/Gioco.h"
 
-Gioco::Gioco() {
+Gioco::Gioco():domino_editor(this){
     bpp = BPP_FIN;
 
     fullscreen = false;
     stato = EDITOR_COSTRUISCI;
+    cambia_stato = false;
     alive = true;
     frame_ms = FRAMEMS;
 
@@ -85,8 +86,8 @@ Gioco::Gioco() {
     //glEnable(GL_CULL_FACE); //disattuva le faccie posteriori
 
     if(stato==EDITOR_COSTRUISCI){
-        domino = &domino_editor_costruisci;
-        domino_editor_costruisci.inizializzaEditor(this);
+        domino = &domino_editor;
+        domino_editor.inizializzaEditor();
     }
 }
 
@@ -98,12 +99,24 @@ void Gioco::loop() {
     while (SDL_PollEvent(&evento)) {
     }
     while (alive) {
+        if(cambia_stato){
+            switch(stato){
+                case EDITOR_COSTRUISCI: case EDITOR_TEST:
+                    domino = &domino_editor;
+                    break;
+                default:
+                    break;
+            }
+            cambia_stato = false;
+        }
         inizio = SDL_GetTicks();
 
         domino->gestisciInput(&evento);
+        //cout<<"dopo Input!!\n"<<flush;
         domino->aggiornaStato();
+        //cout<<"dopo Stato!!\n"<<flush;
         domino->video();
-        //    SDL_Flip(screen);
+        //cout<<"dopo Video!!\n"<<flush;
 
         fine = SDL_GetTicks();
         durata = fine - inizio;
@@ -123,6 +136,15 @@ void Gioco::loop() {
         //        stato();
         //        video();
     }
+}
+
+void Gioco::setStato(Stato stato_aux){
+    cambia_stato = true;
+    stato = stato_aux;
+}
+
+Stato Gioco::getStato(){
+    return stato;
 }
 
 void Gioco::gameExit() {

@@ -8,11 +8,43 @@
 #include "../include/Partita.h"
 #include "../include/Gioco.h"
 
-Partita::Partita(int num_y_righe_aux, int num_x_colonne_aux) : Livello(num_x_colonne_aux, num_y_righe_aux, FRAMERATE) {
+using namespace std;
+
+Partita::Partita(Gioco *gioco_aux, int num_y_righe_aux, int num_x_colonne_aux)
+: Livello(gioco_aux, num_x_colonne_aux, num_y_righe_aux, FRAMERATE) {
 }
 
-Partita::Partita(const Partita& orig):Livello(orig){}
+Partita::Partita(const Partita& orig) : Livello(orig) {
+}
 
-//Partita::~Partita() {
-//}
+int Partita::aggiornaStato() {
+    Livello::aggiornaStato();
+    return 1;
+}
+
+int Partita::gestisciInput(SDL_Event *evento) {
+    SDL_PumpEvents();
+    while (SDL_PollEvent(evento)) {
+        if (Livello::gestisciInput(evento)) {
+            switch (evento->type) {
+                case SDL_KEYDOWN:
+                    switch (evento->key.keysym.sym) {
+                        case SDLK_F6:
+                            gioco->setStato(EDITOR_COSTRUISCI);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    return 1;
+}
+
+
+    //Partita::~Partita() {
+    //}
 

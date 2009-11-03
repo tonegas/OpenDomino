@@ -107,7 +107,7 @@ protected:
 
 public:
 
-    Livello(int num_x_colonne_aux, int num_y_righe_aux,int frame_rate);
+    Livello(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux,int frame_rate);
 
     Livello(const Livello &orig);
 

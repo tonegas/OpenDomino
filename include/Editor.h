@@ -10,6 +10,7 @@
 
 #include "Domino.h"
 #include "Livello.h"
+#include "Partita.h"
 
 
 #define LARGHEZZA_FIN_EDITOR 1000
@@ -30,6 +31,8 @@
 #define DAVANTI_BASE 4
 
 class Editor : public Livello {
+    Partita test;
+
     int num_x_colonne;
     int num_y_righe;
 
@@ -44,18 +47,22 @@ class Editor : public Livello {
     GLfloat **cubo_selezione;
 
 public:
-
-    Editor(int num_y_righe_aux = GRIGLIA_EDITOR_Y, int num_x_colonne_aux = GRIGLIA_EDITOR_X);
-
+    Editor(Gioco *gioco_aux, int num_x_colonne_aux= GRIGLIA_EDITOR_X, int num_y_righe_aux= GRIGLIA_EDITOR_Y);
+    
     ~Editor();
 
-    void inizializzaEditor(Gioco *gioco_aux);
+    void inizializzaEditor();
 
     int mouseSelezione(int larghezza_fin);
 
     int aggiornaStato();
     int video();
     int gestisciInput(SDL_Event *evento);
+
+    int aggiornaStatoEditor();
+    int videoEditor();
+    int gestisciInputEditor(SDL_Event *evento);
+
 
     void stampaSuperficeBase();
     void stampaPezzo(bool wire, int x, int y, GLfloat attivo);

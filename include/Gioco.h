@@ -47,6 +47,8 @@ class Gioco {
 
     //stato del gioco
     Stato stato;
+    //flag che indica il cambiamento dello stato
+    bool cambia_stato;
 
     //variabile per la modifica della velocità di gioco
     int frame_ms;
@@ -55,11 +57,9 @@ class Gioco {
     //Giocatore giocatore;
 
     //Oggetto editor per la gestione della grafica della partita
-    Editor domino_editor_costruisci;
+    Editor domino_editor;
 
-    //Oggetto partita derivato da livello
-    Partita domino_editor_test;
-
+    //Puntatore a domino in eseguzione
     Livello *domino;
 
     //indica se il gioco deve smettere di ciclare
@@ -76,6 +76,10 @@ public:
     void setFrames(GLfloat frame_aux);
 
     int getFrames();
+
+    void setStato(Stato stato_aux);
+
+    Stato getStato();
 
     void setWindowLA(int larghezza_finestra_aux, int altezza_finestra_aux);
 

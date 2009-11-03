@@ -13,11 +13,11 @@
 
 class Partita :public Livello{
 public:
-    Partita(int num_y_righe_aux = GRIGLIA_EDITOR_Y, int num_x_colonne_aux = GRIGLIA_EDITOR_X);
+    Partita(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux);
     Partita(const Partita& orig);
+    int aggiornaStato();
+    int gestisciInput(SDL_Event *evento);
     //virtual ~Partita();
-private:
-
 };
 
 #endif	/* _PARTITA_H */

@@ -10,8 +10,10 @@
 
 using namespace std;
 
-Livello::Livello(int num_x_colonne_aux, int num_y_righe_aux, int frame_rate_aux) :
+Livello::Livello(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux, int frame_rate_aux) :
 griglia_livello(num_x_colonne_aux, num_y_righe_aux) {
+    gioco=gioco_aux;
+
     bottone_destro = false;
     bottone_sinistro = false;
     bottone_centrale = false;
@@ -26,6 +28,8 @@ griglia_livello(num_x_colonne_aux, num_y_righe_aux) {
 
 Livello::Livello(const Livello& orig) :
 griglia_livello(orig.griglia_livello.getDimGrigliaX(), orig.griglia_livello.getDimGrigliaY()) {
+    gioco = orig.gioco;
+
     bottone_destro = orig.bottone_destro;
     bottone_sinistro = orig.bottone_sinistro;
     bottone_centrale = orig.bottone_centrale;
