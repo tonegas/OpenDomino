@@ -22,6 +22,10 @@
         elem = NULL;
     }
 
+    Elemento* Posizione::getElem(){
+        return elem;
+    }
+
     void Posizione::liberaPosizione() {
         delete elem;
         occupata = 0;

@@ -11,9 +11,19 @@
 #include "Domino.h"
 
 class Elemento {
+protected:
+    int x,y;
 public:
-    Elemento(){};
-    Elemento(const Elemento& orig){};
+    Elemento(int x_aux,int y_aux){
+        x=x_aux;
+        y=y_aux;
+    };
+    Elemento(const Elemento& orig){
+        x=orig.x;
+        y=orig.y;
+    };
+    virtual void stampa(bool wire, int x, int y, GLfloat attivo){}
+    virtual void stampa(){}
     //virtual ~Elemento();
 };
 
@@ -28,6 +38,8 @@ public:
     Posizione();
 
     ~Posizione();
+
+    Elemento* getElem();
 
     void liberaPosizione();
 

@@ -13,12 +13,13 @@
 #include "Partita.h"
 
 
+#define GRIGLIA_EDITOR_Y 1000
+#define GRIGLIA_EDITOR_X 1000
+
 #define LARGHEZZA_FIN_EDITOR 1000
 #define ALTEZZA_FIN_EDITOR  1000
 
 #define POSIZIONE_SUPERFICE -0.001
-
-#define Z_PEZZO 2
 
 #define POSIZIONE_SUPERFICE -0.001
 
@@ -32,6 +33,9 @@
 
 class Editor : public Livello {
     Partita test;
+    
+    Pezzo aux_pezzo;
+    Base aux_base;
 
     int num_x_colonne;
     int num_y_righe;
@@ -44,7 +48,7 @@ class Editor : public Livello {
     unsigned x_pezzo_selezionato,y_pezzo_selezionato;
     unsigned x_base_selezionata,y_base_selezionata;
 
-    GLfloat **cubo_selezione;
+    //GLfloat **cubo_selezione;
 
 public:
     Editor(Gioco *gioco_aux, int num_x_colonne_aux= GRIGLIA_EDITOR_X, int num_y_righe_aux= GRIGLIA_EDITOR_Y);
@@ -65,8 +69,6 @@ public:
 
 
     void stampaSuperficeBase();
-    void stampaPezzo(bool wire, int x, int y, GLfloat attivo);
-    void stampaBase(bool wire, int x, int y, GLfloat attivo);
     void stampaQuadrato(int x, int y, GLfloat attivo);
 
 };

@@ -11,16 +11,16 @@
 
 using namespace std;
 
-GLfloat coloryellow[] = {1.0f, 1.0f, 0.0f, 1.0f};
 GLfloat colorblue [] = {0.0f, 0.0f, 1.0f, 1.0f};
-GLfloat colorgreen [] = {0.0f, 1.0f, 0.0f, 1.0f};
 GLfloat colorwhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
 //GLfloat lightpos[] = {0, 0, 0, 1};
 GLfloat lightpos_ambient[] = {60, 120, 150, 0};
 
 Editor::Editor(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux)
 : Livello(gioco_aux, num_x_colonne_aux, num_y_righe_aux, FRAMERATE)
-, test(gioco_aux, num_x_colonne_aux, num_y_righe_aux) {
+, test(gioco_aux, num_x_colonne_aux, num_y_righe_aux)
+, aux_pezzo(-1, -1)
+, aux_base(-1, -1) {
     num_y_righe = num_y_righe_aux;
     num_x_colonne = num_x_colonne_aux;
     posiziona_pezzi = true;
@@ -28,18 +28,18 @@ Editor::Editor(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux)
     caratteristiche_selezione = 0;
     entrambi = false;
 
-    cubo_selezione = new GLfloat*[num_x_colonne];
-    for (int i = 0; i < num_x_colonne; i++)
-        cubo_selezione[i] = new GLfloat[num_y_righe];
-    for (int i = 0; i < num_x_colonne; i++)
-        for (int j = 0; j < num_y_righe; j++)
-            cubo_selezione[i][j] = 0;
+//    cubo_selezione = new GLfloat*[num_x_colonne];
+//    for (int i = 0; i < num_x_colonne; i++)
+//        cubo_selezione[i] = new GLfloat[num_y_righe];
+//    for (int i = 0; i < num_x_colonne; i++)
+//        for (int j = 0; j < num_y_righe; j++)
+//            cubo_selezione[i][j] = 0;
 }
 
 Editor::~Editor() {
-    for (int i = 0; i < num_y_righe; i++)
-        delete []cubo_selezione[i];
-    delete []cubo_selezione;
+//    for (int i = 0; i < num_y_righe; i++)
+//        delete []cubo_selezione[i];
+//    delete []cubo_selezione;
 }
 
 void Editor::inizializzaEditor() {
@@ -65,173 +65,6 @@ void Editor::stampaSuperficeBase() {
     glVertex3f(-ALTEZZA_PEZZO, num_y_righe * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
     glEnd();
 
-    glPopMatrix();
-}
-
-void Editor::stampaPezzo(bool wire, int x, int y, GLfloat attivo) {
-
-    GLfloat xf = (GLfloat) x;
-    GLfloat yf = (GLfloat) y;
-
-    GLfloat sposto_x = ((GLfloat) ALTEZZA_PEZZO) * xf + ((GLfloat) ALTEZZA_PEZZO / 2.0)-((GLfloat) SPESSORE_PEZZO / 2.0);
-    GLfloat sposto_y = ((GLfloat) ALTEZZA_PEZZO) * yf;
-
-    glPushMatrix();
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, coloryellow);
-    glTranslatef(sposto_x, sposto_y, Z_PEZZO);
-    if (wire) {
-        glDisable(GL_LIGHTING);
-        GLfloat grandezza = attivo;
-        glTranslatef(SPESSORE_PEZZO * (1.0 - grandezza) / 2, ALTEZZA_PEZZO * (1.0 - grandezza) / 2, LARGHEZZA_PEZZO * (1.0 - grandezza) / 2);
-        glScalef(grandezza, grandezza, grandezza);
-    }
-    glColor4f(1.0f, 1.0f, 0.0f, attivo);
-    glLineWidth(1.5);
-    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
-    {
-        glNormal3f(0.0, 0.0, -1.0);
-        glVertex3f(0.0, 0.0, 0.0);
-        glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
-        glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, 0.0);
-        glVertex3f(SPESSORE_PEZZO, 0.0, 0.0);
-        glVertex3f(0.0, 0.0, 0.0);
-    }
-    glEnd();
-    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
-    {
-        glNormal3f(1.0, 0.0, 0.0);
-        glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, 0.0);
-        glVertex3f(SPESSORE_PEZZO, 0.0, 0.0);
-        glVertex3f(SPESSORE_PEZZO, 0.0, LARGHEZZA_PEZZO);
-        glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
-        glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, 0.0);
-    }
-    glEnd();
-    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
-    {
-        glNormal3f(0.0, 0.0, 1.0);
-        glVertex3f(SPESSORE_PEZZO, 0.0, LARGHEZZA_PEZZO);
-        glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
-        glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
-        glVertex3f(0.0, 0.0, LARGHEZZA_PEZZO);
-        glVertex3f(SPESSORE_PEZZO, 0.0, LARGHEZZA_PEZZO);
-    }
-    glEnd();
-    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
-    {
-        glNormal3f(-1.0, 0.0, 0.0);
-        glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
-        glVertex3f(0.0, 0.0, LARGHEZZA_PEZZO);
-        glVertex3f(0.0, 0.0, 0.0);
-        glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
-        glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
-    }
-    glEnd();
-    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
-    {
-        glNormal3f(0.0, 1.0, 0.0);
-        glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
-        glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
-        glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, 0.0);
-        glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
-        glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
-    }
-    glEnd();
-    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
-    {
-        glNormal3f(0.0, -1.0, 0.0);
-        glVertex3f(0.0, 0.0, 0.0);
-        glVertex3f(SPESSORE_PEZZO, 0.0, 0.0);
-        glVertex3f(SPESSORE_PEZZO, 0.0, LARGHEZZA_PEZZO);
-        glVertex3f(0.0, 0.0, LARGHEZZA_PEZZO);
-        glVertex3f(0.0, 0.0, 0.0);
-    }
-    glEnd();
-    if (wire)glEnable(GL_LIGHTING);
-    glPopMatrix();
-}
-
-void Editor::stampaBase(bool wire, int x, int y, GLfloat attivo) {
-
-
-    GLfloat xf = (GLfloat) x;
-    GLfloat yf = (GLfloat) y;
-
-    GLfloat sposto_x = ((GLfloat) ALTEZZA_PEZZO) * xf;
-    GLfloat sposto_y = ((GLfloat) ALTEZZA_PEZZO) * yf;
-
-    glPushMatrix();
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, colorgreen);
-    glTranslatef(sposto_x, sposto_y + ALTEZZA_PEZZO - ALTEZZA_BASE, 0.0);
-    if (wire) {
-        glDisable(GL_LIGHTING);
-        GLfloat grandezza = attivo;
-        glTranslatef(SPESSORE_BASE * (1.0 - grandezza) / 2, ALTEZZA_BASE * (1.0 - grandezza) / 2, LARGHEZZA_BASE * (1.0 - grandezza) / 2);
-        glScalef(grandezza, grandezza, grandezza);
-    }
-    glColor4f(0.0f, 1.0f, 0.0f, attivo);
-    glLineWidth(1.5);
-    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
-    {
-        glNormal3f(0.0, 0.0, -1.0);
-        glVertex3f(0.0, 0.0, 0.0);
-        glVertex3f(0.0, ALTEZZA_BASE, 0.0);
-        glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, 0.0);
-        glVertex3f(SPESSORE_BASE, 0.0, 0.0);
-        glVertex3f(0.0, 0.0, 0.0);
-    }
-    glEnd();
-    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
-    {
-        glNormal3f(1.0, 0.0, 0.0);
-        glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, 0.0);
-        glVertex3f(SPESSORE_BASE, 0.0, 0.0);
-        glVertex3f(SPESSORE_BASE, 0.0, LARGHEZZA_BASE);
-        glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, LARGHEZZA_BASE);
-        glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, 0.0);
-    }
-    glEnd();
-    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
-    {
-        glNormal3f(0.0, 0.0, 1.0);
-        glVertex3f(SPESSORE_BASE, 0.0, LARGHEZZA_BASE);
-        glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, LARGHEZZA_BASE);
-        glVertex3f(0.0, ALTEZZA_BASE, LARGHEZZA_BASE);
-        glVertex3f(0.0, 0.0, LARGHEZZA_BASE);
-        glVertex3f(SPESSORE_BASE, 0.0, LARGHEZZA_BASE);
-    }
-    glEnd();
-    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
-    {
-        glNormal3f(-1.0, 0.0, 0.0);
-        glVertex3f(0.0, ALTEZZA_BASE, LARGHEZZA_BASE);
-        glVertex3f(0.0, 0.0, LARGHEZZA_BASE);
-        glVertex3f(0.0, 0.0, 0.0);
-        glVertex3f(0.0, ALTEZZA_BASE, 0.0);
-        glVertex3f(0.0, ALTEZZA_BASE, LARGHEZZA_BASE);
-    }
-    glEnd();
-    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
-    {
-        glNormal3f(0.0, 1.0, 0.0);
-        glVertex3f(0.0, ALTEZZA_BASE, LARGHEZZA_BASE);
-        glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, LARGHEZZA_BASE);
-        glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, 0.0);
-        glVertex3f(0.0, ALTEZZA_BASE, 0.0);
-        glVertex3f(0.0, ALTEZZA_BASE, LARGHEZZA_BASE);
-    }
-    glEnd();
-    glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
-    {
-        glNormal3f(0.0, -1.0, 0.0);
-        glVertex3f(0.0, 0.0, 0.0);
-        glVertex3f(SPESSORE_BASE, 0.0, 0.0);
-        glVertex3f(SPESSORE_BASE, 0.0, LARGHEZZA_BASE);
-        glVertex3f(0.0, 0.0, LARGHEZZA_BASE);
-        glVertex3f(0.0, 0.0, 0.0);
-    }
-    glEnd();
-    if (wire)glEnable(GL_LIGHTING);
     glPopMatrix();
 }
 
@@ -340,21 +173,21 @@ void Editor::stampaQuadrato(int x, int y, GLfloat attivo) {
 }
 
 int Editor::aggiornaStato() {
-    if(gioco->getStato() == EDITOR_TEST){
+    if (gioco->getStato() == EDITOR_TEST) {
         return test.aggiornaStato();
-    }else{
+    } else {
         return aggiornaStatoEditor();
     }
 }
 
-int Editor::aggiornaStatoEditor(){
+int Editor::aggiornaStatoEditor() {
     return Livello::aggiornaStato();
 }
 
-int Editor::video(){
-    if(gioco->getStato() == EDITOR_TEST){
+int Editor::video() {
+    if (gioco->getStato() == EDITOR_TEST) {
         return test.video();
-    }else{
+    } else {
         return videoEditor();
     }
 }
@@ -412,18 +245,18 @@ int Editor::videoEditor() {
             //                cubo_selezione[i][j] -= 0.05;
             //            }
             if (p_aux->selezione_pezzo > 0) {
-                stampaPezzo(true, i, j, p_aux->selezione_pezzo);
+                aux_pezzo.stampa(true, i, j, p_aux->selezione_pezzo);
                 p_aux->selezione_pezzo -= 0.05;
             }
             if (p_aux->selezione_base > 0) {
-                stampaBase(true, i, j, p_aux->selezione_base);
+                aux_base.stampa(true, i, j, p_aux->selezione_base);
                 p_aux->selezione_base -= 0.05;
             }
             if (p_aux->occupata == 1 && p_aux->tipo == ELEM_PEZZO) {
-                stampaPezzo(false, i, j, 0.0);
+                p_aux->getElem()->stampa();
             }
             if (p_aux->occupata == 1 && p_aux->tipo == ELEM_BASE) {
-                stampaBase(false, i, j, 0.0);
+                p_aux->getElem()->stampa();
             }
         }
     }
@@ -434,10 +267,10 @@ int Editor::videoEditor() {
     return 1;
 }
 
-int Editor::gestisciInput(SDL_Event *evento){
-    if(gioco->getStato() == EDITOR_TEST){
+int Editor::gestisciInput(SDL_Event *evento) {
+    if (gioco->getStato() == EDITOR_TEST) {
         return test.gestisciInput(evento);
-    }else{
+    } else {
         return gestisciInputEditor(evento);
     }
 }
@@ -481,7 +314,7 @@ int Editor::gestisciInputEditor(SDL_Event *evento) {
                                         azione_continua = ELIMINA_PEZZI;
                                     }
                                 } else {
-                                    p_aux_pezzo->occupaPosizione(new Pezzo, ELEM_PEZZO);
+                                    p_aux_pezzo->occupaPosizione(new Pezzo(x_pezzo_selezionato, y_pezzo_selezionato), ELEM_PEZZO);
                                     azione_continua = POSIZIONA_PEZZI;
                                 }
                             }
@@ -493,7 +326,7 @@ int Editor::gestisciInputEditor(SDL_Event *evento) {
                                         azione_continua = ELIMINA_BASI;
                                     }
                                 } else {
-                                    p_aux_base->occupaPosizione(new Base, ELEM_BASE);
+                                    p_aux_base->occupaPosizione(new Base(x_base_selezionata, y_base_selezionata), ELEM_BASE);
                                     azione_continua = POSIZIONA_BASI;
                                 }
                             }
@@ -511,13 +344,13 @@ int Editor::gestisciInputEditor(SDL_Event *evento) {
                         switch (azione_continua) {
                             case POSIZIONA_PEZZI:
                                 if ((caratteristiche_selezione == DAVANTI_PEZZO || entrambi) && !p_aux_pezzo->occupata) {
-                                    p_aux_pezzo->occupaPosizione(new Pezzo, ELEM_PEZZO);
+                                    p_aux_pezzo->occupaPosizione(new Pezzo(x_pezzo_selezionato, y_pezzo_selezionato), ELEM_PEZZO);
                                     p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
                                 }
                                 break;
                             case POSIZIONA_BASI:
                                 if ((caratteristiche_selezione == DAVANTI_BASE || entrambi) && !p_aux_base->occupata) {
-                                    p_aux_base->occupaPosizione(new Base, ELEM_BASE);
+                                    p_aux_base->occupaPosizione(new Base(x_base_selezionata, y_base_selezionata), ELEM_BASE);
                                     p_aux_base->attivaSelezione(ELEM_BASE);
                                 }
                                 break;
@@ -602,16 +435,16 @@ int Editor::mouseSelezione(int altezza_fin) {
                         if (griglia_livello.getPosizione(pos_x_griglia + i, pos_y_griglia + j)->occupata) {
                             if (griglia_livello.getPosizione(pos_x_griglia + i, pos_y_griglia + j)->tipo == ELEM_PEZZO) {
                                 glLoadName((i + 1) * 3 + (j + 1) + 1);
-                                stampaPezzo(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
+                                aux_pezzo.stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
                             } else {
                                 glLoadName(11 + (i + 1) * 3 + (j + 1));
-                                stampaBase(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
+                                aux_base.stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
                             }
                         } else {
                             glLoadName((i + 1) * 3 + (j + 1) + 1);
-                            stampaPezzo(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
+                            aux_pezzo.stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
                             glLoadName(11 + (i + 1) * 3 + (j + 1));
-                            stampaBase(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
+                            aux_base.stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
                         }
                         indice++;
                     }

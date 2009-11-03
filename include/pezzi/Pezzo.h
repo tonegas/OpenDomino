@@ -14,13 +14,17 @@
 
 #define ELEM_PEZZO 10
 
+#define Z_PEZZO 2
+
 #include "../Domino.h"
 #include "../Posizione.h"
 
 class Pezzo : public Elemento{
 public:
-    Pezzo();
+    Pezzo(int x_aux,int y_aux);
     Pezzo(const Pezzo& orig);
+    void stampa();
+    void stampa(bool wire, int x, int y, GLfloat attivo);
 };
 
 #endif	/* _PEZZO_H */

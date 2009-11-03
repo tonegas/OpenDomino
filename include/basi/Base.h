@@ -20,8 +20,10 @@
 
 class Base : public Elemento{
 public:
-    Base();
+    Base(int x_aux,int y_aux);
     Base(const Base& orig);
+    void stampa(bool wire, int x, int y, GLfloat attivo);
+    void stampa();
 };
 
 #endif	/* _BASE_H */

@@ -11,9 +11,6 @@
 #include "Domino.h"
 #include "Griglia.h"
 
-#define GRIGLIA_EDITOR_Y 100
-#define GRIGLIA_EDITOR_X 100
-
 #define X_TELECAMERA 0
 #define Y_TELECAMERA 0
 #define H_TELECAMERA 200
