@@ -32,6 +32,10 @@ enum Proiezione {
     ASSIONOMETRICA, PROSPETTICA
 };
 
+enum Selezione {
+    NIENTE, DAVANTI_PEZZO, DAVANTI_BASE
+};
+
 const GLfloat cavalier[] = {
     1, 0, 0, 0,
     0, 1, 0, 0,
@@ -44,66 +48,72 @@ class Gioco;
 class Livello {
 protected:
     //puntatore al gioco per interagire sulle funzionidi gioco
-    Gioco *gioco;//ok
+    Gioco *gioco; //ok
 
-    Pezzo aux_pezzo;//da soli al valre di default
-    Base aux_base;//da soli al valre di default
+    Pezzo aux_pezzo; //da soli al valre di default
+    Base aux_base; //da soli al valre di default
 
     //matrici dinamiche di pezzi e basi
-    Griglia griglia_livello;//ok
+    Griglia griglia_livello; //ok
 
     //flag che indica se è incorso un animazione sullo zoom
-    bool mouvi_zoom;//inizializzati nella setProiezione
+    bool mouvi_zoom; //inizializzati nella setProiezione
     //struttura ausiliaria per il movimento della griglia
-    PosXYZoom aux_griglia;//ok
+    PosXYZoom aux_griglia; //ok
 
     //proiezione della griglia a schermo
-    Proiezione tipo_proiezione;//inizializzati nella setProiezione
+    Proiezione tipo_proiezione; //inizializzati nella setProiezione
     //massimo livello di zoom per la proiezione corrente
-    GLfloat max_zoom, min_zoom;//inizializzati nella setProiezione
+    GLfloat max_zoom, min_zoom; //inizializzati nella setProiezione
     //struttura ausiliaria per il movimento della griglia
-    PosXYZoom griglia_assionometrica;//ok
+    PosXYZoom griglia_assionometrica; //ok
     //struttura ausiliaria per il movimento della griglia
-    PosXYZoom griglia_prospettica;//ok
+    PosXYZoom griglia_prospettica; //ok
     //modifica degli angoli di vista della telecamera
-    GLfloat angolo_telecamera_x, angolo_telecamera_y;//ok
-    GLfloat angolo_telecamera_x_iniziale, angolo_telecamera_y_iniziale;//si inizializzano prima di usarli nella funzione di imput
+    GLfloat angolo_telecamera_x, angolo_telecamera_y; //ok
+    GLfloat angolo_telecamera_x_iniziale, angolo_telecamera_y_iniziale; //si inizializzano prima di usarli nella funzione di imput
 
 
     //per ora sono solo due bottoni ma penso che diventerà una struttura per gestire l'input in maniera
     //differente a seconda che il livello si editor partita o altro
-    bool bottone_sinistro, bottone_destro, bottone_centrale;//ok
+    bool bottone_sinistro, bottone_destro, bottone_centrale; //ok
 
     //variazione del delta di incremento dello zoom
-    GLfloat delta_zoom;//ok
+    GLfloat delta_zoom; //ok
     //tempo per il reset del delta_zoom
-    int tempo_reset_delta_zoom;//ok
+    int tempo_reset_delta_zoom; //ok
     //velocita di frame rate per temporizzare le cose
-    int frame_rate;//ok
+    int frame_rate; //ok
 
     //matrici per il recupero dell'input del muose
     //inizializzate della classe che deriva livello
-    GLdouble matrice_model[16];//inizializzati nella setProiezione
+    GLdouble matrice_model[16]; //inizializzati nella setProiezione
     //coordinate sono riferite alla griglia
-    GLdouble matrice_model_griglia[16];//inizializzata dalla funzione video
-    GLdouble matrice_proj[16];//inizializzati nella setProiezione
-    GLint matrice_view[4];//inizializzati nella setProiezione
+    GLdouble matrice_model_griglia[16]; //inizializzata dalla funzione video
+    GLdouble matrice_proj[16]; //inizializzati nella setProiezione
+    GLint matrice_view[4]; //inizializzati nella setProiezione
 
     //posizione z della superfice base di sfondo
-    GLdouble superfice_z;//inizializzati nella setProiezione
+    GLdouble superfice_z; //inizializzati nella setProiezione
 
     //posizione 3d del mouse
-    GLdouble pos_x, pos_y, pos_z;//si inizializzano nella getMousePosGrigliaXY
+    GLdouble pos_x, pos_y, pos_z; //si inizializzano nella getMousePosGrigliaXY
     //posizione 3d iniziali del mouse per lo spostamento della griglia
-    GLdouble pos_x_iniziali, pos_y_iniziali;//questi si inizializzano da soli quando premo
+    GLdouble pos_x_iniziali, pos_y_iniziali; //questi si inizializzano da soli quando premo
 
     //indice sulla griglia del mouse
-    int pos_x_griglia, pos_y_griglia;//si inizializzano nella getMousePosGrigliaXY
+    int pos_x_griglia, pos_y_griglia; //si inizializzano nella getMousePosGrigliaXY
     //indicatore booleano che indica se l'indice sulla griglia è più o meno sensato
-    bool pos_griglia_ok;//si inizializzano nella getMousePosGrigliaXY
+    bool pos_griglia_ok; //si inizializzano nella getMousePosGrigliaXY
 
     //posizione 2d del mouse sulla finestra
-    int mouse_x_fin, mouse_y_fin;//si inizializzano nella getMousePosGrigliaXY
+    int mouse_x_fin, mouse_y_fin; //si inizializzano nella getMousePosGrigliaXY
+
+    //variabili per la selezione dei pezzi
+    Selezione caratteristiche_selezione;
+    bool entrambi;
+    unsigned x_pezzo_selezionato, y_pezzo_selezionato;
+    unsigned x_base_selezionata, y_base_selezionata;
 
 public:
 
@@ -114,6 +124,8 @@ public:
     bool getMousePosGrigliaXY(int altezza_fin, int mouse_x_fin_aux, int mouse_y_fin_aux);
 
     bool getMousePosGrigliaXY(int altezza_fin);
+
+    int mouseSelezione(int altezza_fin);
 
     void setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin, bool reset = false);
 

@@ -35,7 +35,6 @@ Griglia::Griglia(const Griglia& orig) {
             }
         }
     }
-    //cout<<griglia.x<<" "<<griglia.y<<" "<<griglia.zoom<<'\n'<<flush;
 }
 
 Griglia::~Griglia() {

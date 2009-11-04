@@ -75,7 +75,7 @@ public:
 
     void gameExit();
 
-    void setFrames(GLfloat frame_aux);
+    void setFrames(int frame_aux);
 
     int getFrames() const;
 

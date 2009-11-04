@@ -21,11 +21,10 @@ Partita::Partita(const Livello& orig) : Livello(orig) {
 }
 
 int Partita::aggiornaStato() {
-    Livello::aggiornaStato();
-    return 1;
+    return Livello::aggiornaStato();
 }
 
-int Partita::gestisciInput(SDL_Event *evento) {
+int Partita::gestisciInput(SDL_Event * evento) {
     SDL_PumpEvents();
     while (SDL_PollEvent(evento)) {
         if (Livello::gestisciInput(evento)) {
@@ -39,6 +38,28 @@ int Partita::gestisciInput(SDL_Event *evento) {
                             break;
                     }
                     break;
+                case SDL_MOUSEMOTION:
+                    if (getMousePosGrigliaXY(gioco->getWindowA(), evento->button.x, evento->button.y)) {
+                        mouseSelezione(gioco->getWindowA());
+                        if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {
+                            Posizione *p_aux_pezzo = griglia_livello.getPosizione(x_pezzo_selezionato, y_pezzo_selezionato);
+                            if (p_aux_pezzo->occupata) {
+                                p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
+                            }
+                        }
+                    }
+                    break;
+                case SDL_MOUSEBUTTONDOWN:
+                    if (evento->button.button == SDL_BUTTON_LEFT && getMousePosGrigliaXY(gioco->getWindowA(), evento->button.x, evento->button.y)) {
+                        mouseSelezione(gioco->getWindowA());
+                        if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {
+                            Posizione *p_aux_pezzo = griglia_livello.getPosizione(x_pezzo_selezionato, y_pezzo_selezionato);
+                            if (p_aux_pezzo->occupata) {
+                                griglia_livello.getPezzo(x_pezzo_selezionato, y_pezzo_selezionato).setStato(CADE_DESTRA);
+                            }
+                        }
+                    }
+                    break;
                 default:
                     break;
             }
@@ -47,11 +68,21 @@ int Partita::gestisciInput(SDL_Event *evento) {
     return 1;
 }
 
-int Partita::video(){
+int Partita::video() {
+    SDL_GetMouseState(&mouse_x_fin, &mouse_y_fin);
+    if (getMousePosGrigliaXY(gioco->getWindowA())) {
+        mouseSelezione(gioco->getWindowA());
+        if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {
+            Posizione *p_aux_pezzo = griglia_livello.getPosizione(x_pezzo_selezionato, y_pezzo_selezionato);
+            if (p_aux_pezzo->occupata) {
+                p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
+            }
+        }
+    }
     return Livello::video();
 }
 
 
-    //Partita::~Partita() {
-    //}
+//Partita::~Partita() {
+//}
 

@@ -12,7 +12,7 @@
 using namespace std;
 
 Editor::Editor(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux)
-: Livello(gioco_aux, num_x_colonne_aux, num_y_righe_aux, FRAMERATE){
+: Livello(gioco_aux, num_x_colonne_aux, num_y_righe_aux, FRAMERATE) {
     test_partita_allocata = false;
     test = NULL;
     tipo_proiezione = ASSIONOMETRICA;
@@ -20,7 +20,6 @@ Editor::Editor(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux)
     num_x_colonne = num_x_colonne_aux;
     posiziona_pezzi = true;
     azione_continua = 0;
-    caratteristiche_selezione = 0;
     entrambi = false;
 
     //    cubo_selezione = new GLfloat*[num_x_colonne];
@@ -167,29 +166,31 @@ int Editor::videoEditor() {
     Posizione *p_aux_pezzo, *p_aux_base;
     SDL_GetMouseState(&mouse_x_fin, &mouse_y_fin);
     if (azione_continua == 0 && getMousePosGrigliaXY(gioco->getWindowA())) {
-//        //cubo_selezione[pos_x_griglia][pos_y_griglia] = 1;
-//        if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi)
-//            
-//        if (caratteristiche_selezione == DAVANTI_BASE || entrambi)
-//
-//
+        //        //cubo_selezione[pos_x_griglia][pos_y_griglia] = 1;
+        //        if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi)
+        //
+        //        if (caratteristiche_selezione == DAVANTI_BASE || entrambi)
+        //
+        //
         if (caratteristiche_selezione == DAVANTI_PEZZO) {
             p_aux_pezzo = griglia_livello.getPosizione(x_pezzo_selezionato, y_pezzo_selezionato);
-            if (p_aux_pezzo->occupata) {
-                if (p_aux_pezzo->tipo == ELEM_PEZZO)
-                    p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
-            } else {
-                p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
-            }
+            p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
+            //            if (p_aux_pezzo->occupata) {
+            //                if (p_aux_pezzo->tipo == ELEM_PEZZO)
+            //                    p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
+            //            } else {
+            //                p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
+            //            }
         }
         if (caratteristiche_selezione == DAVANTI_BASE) {
             p_aux_base = griglia_livello.getPosizione(x_base_selezionata, y_base_selezionata);
-            if (p_aux_base->occupata) {
-                if (p_aux_base->tipo == ELEM_BASE)
-                    p_aux_base->attivaSelezione(ELEM_BASE);
-            } else {
-                p_aux_base->attivaSelezione(ELEM_BASE);
-            }
+            p_aux_base->attivaSelezione(ELEM_BASE);
+            //            if (p_aux_base->occupata) {
+            //                if (p_aux_base->tipo == ELEM_BASE)
+            //                    p_aux_base->attivaSelezione(ELEM_BASE);
+            //            } else {
+            //                p_aux_base->attivaSelezione(ELEM_BASE);
+            //            }
         }
     }
     return Livello::video();
@@ -236,34 +237,31 @@ int Editor::gestisciInputEditor(SDL_Event *evento) {
                     }
                     break;
                 case SDL_MOUSEBUTTONDOWN:
-                    getMousePosGrigliaXY(gioco->getWindowA(), evento->button.x, evento->button.y);
-                    if (evento->button.button == SDL_BUTTON_LEFT) {
-                        if (pos_griglia_ok) {
-                            mouseSelezione(gioco->getWindowA());
-                            Posizione *p_aux_pezzo, *p_aux_base;
-                            if (caratteristiche_selezione == DAVANTI_PEZZO) {
-                                p_aux_pezzo = griglia_livello.getPosizione(x_pezzo_selezionato, y_pezzo_selezionato);
-                                if (p_aux_pezzo->occupata) {
-                                    if (p_aux_pezzo->tipo == ELEM_PEZZO) {
-                                        p_aux_pezzo->liberaPosizione();
-                                        azione_continua = ELIMINA_PEZZI;
-                                    }
-                                } else {
-                                    p_aux_pezzo->occupaPosizione(new Pezzo(x_pezzo_selezionato, y_pezzo_selezionato), ELEM_PEZZO);
-                                    azione_continua = POSIZIONA_PEZZI;
-                                }
+                    if (evento->button.button == SDL_BUTTON_LEFT && getMousePosGrigliaXY(gioco->getWindowA(), evento->button.x, evento->button.y)) {
+                        mouseSelezione(gioco->getWindowA());
+                        Posizione *p_aux_pezzo, *p_aux_base;
+                        if (caratteristiche_selezione == DAVANTI_PEZZO) {
+                            p_aux_pezzo = griglia_livello.getPosizione(x_pezzo_selezionato, y_pezzo_selezionato);
+                            if (p_aux_pezzo->occupata) {
+                                //if (p_aux_pezzo->tipo == ELEM_PEZZO) {
+                                p_aux_pezzo->liberaPosizione();
+                                azione_continua = ELIMINA_PEZZI;
+                                //}
+                            } else {
+                                p_aux_pezzo->occupaPosizione(new Pezzo(x_pezzo_selezionato, y_pezzo_selezionato), ELEM_PEZZO);
+                                azione_continua = POSIZIONA_PEZZI;
                             }
-                            if (caratteristiche_selezione == DAVANTI_BASE) {
-                                p_aux_base = griglia_livello.getPosizione(x_base_selezionata, y_base_selezionata);
-                                if (p_aux_base->occupata) {
-                                    if (p_aux_base->tipo == ELEM_BASE) {
-                                        p_aux_base->liberaPosizione();
-                                        azione_continua = ELIMINA_BASI;
-                                    }
-                                } else {
-                                    p_aux_base->occupaPosizione(new Base(x_base_selezionata, y_base_selezionata), ELEM_BASE);
-                                    azione_continua = POSIZIONA_BASI;
-                                }
+                        }
+                        if (caratteristiche_selezione == DAVANTI_BASE) {
+                            p_aux_base = griglia_livello.getPosizione(x_base_selezionata, y_base_selezionata);
+                            if (p_aux_base->occupata) {
+                                //if (p_aux_base->tipo == ELEM_BASE) {
+                                p_aux_base->liberaPosizione();
+                                azione_continua = ELIMINA_BASI;
+                                //}
+                            } else {
+                                p_aux_base->occupaPosizione(new Base(x_base_selezionata, y_base_selezionata), ELEM_BASE);
+                                azione_continua = POSIZIONA_BASI;
                             }
                         }
                     }
@@ -304,16 +302,16 @@ int Editor::gestisciInputEditor(SDL_Event *evento) {
                             default:
                                 if (caratteristiche_selezione == DAVANTI_PEZZO) {
                                     if (p_aux_pezzo->occupata) {
-                                        if (p_aux_pezzo->tipo == ELEM_PEZZO)
-                                            p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
+                                        //if (p_aux_pezzo->tipo == ELEM_PEZZO)
+                                        p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
                                     } else {
                                         p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
                                     }
                                 }
                                 if (caratteristiche_selezione == DAVANTI_BASE) {
                                     if (p_aux_base->occupata) {
-                                        if (p_aux_base->tipo == ELEM_BASE)
-                                            p_aux_base->attivaSelezione(ELEM_BASE);
+                                        //if (p_aux_base->tipo == ELEM_BASE)
+                                        p_aux_base->attivaSelezione(ELEM_BASE);
                                     } else {
                                         p_aux_base->attivaSelezione(ELEM_BASE);
                                     }
@@ -335,92 +333,5 @@ int Editor::gestisciInputEditor(SDL_Event *evento) {
     return 1;
 }
 
-int Editor::mouseSelezione(int altezza_fin) {
-    GLuint buffer[512]; // Set Up A Selection Buffer
-    GLint hits = 0;
-    glSelectBuffer(512, buffer);
-    glRenderMode(GL_SELECT);
-    glInitNames();
-    glPushName(0);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    {
-        glLoadIdentity();
-        gluPickMatrix((GLdouble) mouse_x_fin, (GLdouble) (altezza_fin - mouse_y_fin), 1.0f, 1.0f, matrice_view);
-        if (tipo_proiezione == PROSPETTICA) {
-            gluPerspective(FOVY, (GLfloat) (matrice_view[2] - matrice_view[0]) / (GLfloat) (matrice_view[3] - matrice_view[1]), ZNEAR, ZFAR);
-        } else {
-            glOrtho(0, (GLfloat) (matrice_view[2] - matrice_view[0]), 0, (GLfloat) altezza_fin, ZNEAR, ZFAR);
-            glMultMatrixf(cavalier);
-        }
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        {
 
-            if (tipo_proiezione == PROSPETTICA) {
-                glRotatef(angolo_telecamera_y, 1, 0, 0);
-                glRotatef(-angolo_telecamera_x, 0, 1, 0);
-            }
-            glTranslatef(griglia_livello.getGriglia().x, griglia_livello.getGriglia().y, 0);
-            glScalef(griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom);
-            int indice = 1;
-            for (int i = -1; i < 2; i++) {
-                for (int j = -1; j < 2; j++) {
-                    if ((int) pos_x_griglia + i > 0 && (int) pos_x_griglia + i < num_x_colonne && (int) pos_y_griglia + j > 0 && (int) pos_y_griglia + j < num_y_righe) {
-                        if (griglia_livello.getPosizione(pos_x_griglia + i, pos_y_griglia + j)->occupata) {
-                            if (griglia_livello.getPosizione(pos_x_griglia + i, pos_y_griglia + j)->tipo == ELEM_PEZZO) {
-                                glLoadName((i + 1) * 3 + (j + 1) + 1);
-                                aux_pezzo.stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
-                            } else {
-                                glLoadName(11 + (i + 1) * 3 + (j + 1));
-                                aux_base.stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
-                            }
-                        } else {
-                            glLoadName((i + 1) * 3 + (j + 1) + 1);
-                            aux_pezzo.stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
-                            glLoadName(11 + (i + 1) * 3 + (j + 1));
-                            aux_base.stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
-                        }
-                        indice++;
-                    }
-                }
-            }
-        }
-        glPopMatrix();
-        glMatrixMode(GL_PROJECTION);
-    }
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    hits = glRenderMode(GL_RENDER);
-    caratteristiche_selezione = 0;
-    if (hits > 0) // If There Were More Than 0 Hits
-    {
-        unsigned distanza = -1;
-        entrambi = false;
-        for (int loop = 0; loop < hits; loop++) {
-            if (buffer[loop * 4 + 3] < 10) {
-                if (distanza > buffer[loop * 4 + 1]) {
-                    if (caratteristiche_selezione == DAVANTI_BASE) {
-                        entrambi = true;
-                    }
-                    caratteristiche_selezione = DAVANTI_PEZZO;
-                    distanza = buffer[loop * 4 + 1];
-                    x_pezzo_selezionato = pos_x_griglia + ((buffer[loop * 4 + 3] - 1) / 3 - 1);
-                    y_pezzo_selezionato = pos_y_griglia + ((buffer[loop * 4 + 3] - 1) % 3 - 1);
-                }
-            } else {
-                if (distanza > buffer[loop * 4 + 1]) {
-                    if (caratteristiche_selezione == DAVANTI_PEZZO) {
-                        entrambi = true;
-                    }
-                    caratteristiche_selezione = DAVANTI_BASE;
-                    distanza = buffer[loop * 4 + 1];
-                    x_base_selezionata = pos_x_griglia + ((buffer[loop * 4 + 3] - 11) / 3 - 1);
-                    y_base_selezionata = pos_y_griglia + ((buffer[loop * 4 + 3] - 11) % 3 - 1);
-                }
-            }
-        }
-    }
-    return 0;
-}
 

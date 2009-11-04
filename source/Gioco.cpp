@@ -101,11 +101,6 @@ void Gioco::loop() {
     }
     while (alive) {
         if(cambia_stato){
-//            switch(stato){
-//                case EDITOR_COSTRUISCI:
-//                    break;
-//                    case EDITOR_
-//            }
             stato = stato_temporaneo;
             cambia_stato = false;
             domino->inizializza();
@@ -122,8 +117,11 @@ void Gioco::loop() {
         fine = SDL_GetTicks();
         durata = fine - inizio;
         aspetto = frame_ms - durata;
-        if (aspetto > 0)
+        if (aspetto > 0){
             SDL_Delay(aspetto);
+        }else{
+            cout<<"A PALLA"<<'\n'<<flush;
+        }
         //            else
         //                cout << "H" << flush;
 
@@ -152,7 +150,7 @@ void Gioco::gameExit() {
     alive = false;
 }
 
-void Gioco::setFrames(GLfloat frame_aux) {
+void Gioco::setFrames(int frame_aux) {
     frame_ms = frame_aux;
 }
 
