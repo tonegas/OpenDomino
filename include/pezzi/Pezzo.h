@@ -21,7 +21,7 @@
 
 class Pezzo : public Elemento{
 public:
-    Pezzo(int x_aux,int y_aux);
+    Pezzo(int x_aux = -1,int y_aux = -1);
     Pezzo(const Pezzo& orig);
     void stampa();
     void stampa(bool wire, int x, int y, GLfloat attivo);

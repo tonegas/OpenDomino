@@ -28,6 +28,7 @@ enum Stato {
 
 class Editor;
 class Partita;
+class Livello;
 
 class Gioco {
     //parametri finestra
@@ -47,6 +48,7 @@ class Gioco {
 
     //stato del gioco
     Stato stato;
+    Stato stato_temporaneo;
     //flag che indica il cambiamento dello stato
     bool cambia_stato;
 
@@ -75,11 +77,11 @@ public:
 
     void setFrames(GLfloat frame_aux);
 
-    int getFrames();
+    int getFrames() const;
 
     void setStato(Stato stato_aux);
 
-    Stato getStato();
+    Stato getStato() const;
 
     void setWindowLA(int larghezza_finestra_aux, int altezza_finestra_aux);
 
@@ -87,15 +89,15 @@ public:
 
     void resetFullScreen();
 
-    bool getFullScreen();
+    bool getFullScreen() const;
 
-    int getWindowL();
+    int getWindowL() const;
 
-    int getWindowA();
+    int getWindowA() const;
 
-    int getScreenL();
+    int getScreenL() const;
 
-    int getScreenA();
+    int getScreenA() const;
 };
 
 #endif	/* _GIOCO_H */

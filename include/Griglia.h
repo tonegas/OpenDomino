@@ -24,11 +24,15 @@ public:
         zoom = zoom_aux;
     }
 
-    PosXYZoom(const PosXYZoom & orig) {
+    PosXYZoom(const PosXYZoom &orig) {
         x = orig.x;
         y = orig.y;
         zoom = orig.zoom;
     }
+
+//    inline GLfloat getX() const {
+//        return x;
+//    }
 };
 
 class Griglia {
@@ -44,10 +48,6 @@ public:
     ~Griglia();
 
     PosXYZoom getGriglia();
-
-//    bool posizioneOccupata(int i, int j);
-//
-//    int getTipoPosizione(int i, int j);
 
     Posizione* getPosizione(int i, int j);
 

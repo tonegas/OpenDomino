@@ -17,6 +17,9 @@ Partita::Partita(Gioco *gioco_aux, int num_y_righe_aux, int num_x_colonne_aux)
 Partita::Partita(const Partita& orig) : Livello(orig) {
 }
 
+Partita::Partita(const Livello& orig) : Livello(orig) {
+}
+
 int Partita::aggiornaStato() {
     Livello::aggiornaStato();
     return 1;
@@ -42,6 +45,10 @@ int Partita::gestisciInput(SDL_Event *evento) {
         }
     }
     return 1;
+}
+
+int Partita::video(){
+    return Livello::video();
 }
 
 

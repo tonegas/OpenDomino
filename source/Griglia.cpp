@@ -28,13 +28,14 @@ Griglia::Griglia(const Griglia& orig) {
         for (unsigned j = 0; j < num_y_righe; j++) {
             if (orig.matrice_posizioni[i][j].occupata == true) {
                 if (orig.matrice_posizioni[i][j].tipo == ELEM_PEZZO) {
-                    matrice_posizioni[i][j].elem = new Pezzo(*(Pezzo*)orig.matrice_posizioni[i][j].elem);
+                    matrice_posizioni[i][j].occupaPosizione(new Pezzo(i, j), ELEM_PEZZO);
                 } else {
-                    matrice_posizioni[i][j].elem = new Base(*(Base*)orig.matrice_posizioni[i][j].elem);
+                    matrice_posizioni[i][j].occupaPosizione(new Base(i, j), ELEM_BASE);
                 }
             }
         }
     }
+    //cout<<griglia.x<<" "<<griglia.y<<" "<<griglia.zoom<<'\n'<<flush;
 }
 
 Griglia::~Griglia() {
@@ -47,14 +48,6 @@ Griglia::~Griglia() {
 PosXYZoom Griglia::getGriglia() {
     return griglia;
 }
-
-//bool Griglia::posizioneOccupata(int i,int j){
-//    return matrice_posizioni[i][j].occupata;
-//}
-//
-//int Griglia::getTipoPosizione(int i, int j){
-//    return matrice_posizioni[i][j].elem->getTipo();
-//}
 
 Posizione* Griglia::getPosizione(int i, int j){
     return &matrice_posizioni[i][j];

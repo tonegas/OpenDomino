@@ -32,10 +32,8 @@
 #define DAVANTI_BASE 4
 
 class Editor : public Livello {
-    Partita test;
-    
-    Pezzo aux_pezzo;
-    Base aux_base;
+    bool test_partita_allocata;
+    Partita *test;
 
     int num_x_colonne;
     int num_y_righe;
@@ -55,10 +53,9 @@ public:
     
     ~Editor();
 
-    void inizializzaEditor();
-
     int mouseSelezione(int larghezza_fin);
 
+    int inizializza();
     int aggiornaStato();
     int video();
     int gestisciInput(SDL_Event *evento);

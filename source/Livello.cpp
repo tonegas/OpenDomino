@@ -12,11 +12,12 @@ using namespace std;
 
 Livello::Livello(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux, int frame_rate_aux) :
 griglia_livello(num_x_colonne_aux, num_y_righe_aux) {
-    gioco=gioco_aux;
+    gioco = gioco_aux;
 
     bottone_destro = false;
     bottone_sinistro = false;
     bottone_centrale = false;
+
     angolo_telecamera_x = 0;
     angolo_telecamera_y = 0;
 
@@ -27,12 +28,13 @@ griglia_livello(num_x_colonne_aux, num_y_righe_aux) {
 }
 
 Livello::Livello(const Livello& orig) :
-griglia_livello(orig.griglia_livello.getDimGrigliaX(), orig.griglia_livello.getDimGrigliaY()) {
+griglia_livello(orig.griglia_livello) {
     gioco = orig.gioco;
 
     bottone_destro = orig.bottone_destro;
     bottone_sinistro = orig.bottone_sinistro;
     bottone_centrale = orig.bottone_centrale;
+
     angolo_telecamera_x = orig.angolo_telecamera_x;
     angolo_telecamera_y = orig.angolo_telecamera_y;
 
@@ -40,12 +42,19 @@ griglia_livello(orig.griglia_livello.getDimGrigliaX(), orig.griglia_livello.getD
     delta_zoom = DELTA_ZOOM;
     tempo_reset_delta_zoom = 0;
     mouvi_zoom = false;
+
+    aux_griglia = orig.aux_griglia;
+    griglia_assionometrica = orig.griglia_assionometrica;
+    griglia_prospettica = orig.griglia_prospettica;
+    tipo_proiezione = orig.tipo_proiezione;
+
+    inizializza();
 }
 
-bool Livello::getMousePosGrigliaXY(int larghezza_fin, int mouse_x_fin_aux, int mouse_y_fin_aux) {
+bool Livello::getMousePosGrigliaXY(int altezza_fin, int mouse_x_fin_aux, int mouse_y_fin_aux) {
     mouse_x_fin = mouse_x_fin_aux;
     mouse_y_fin = mouse_y_fin_aux;
-    return getMousePosGrigliaXY(larghezza_fin);
+    return getMousePosGrigliaXY(altezza_fin);
 }
 
 bool Livello::getMousePosGrigliaXY(int altezza_fin) {
@@ -82,10 +91,10 @@ bool Livello::getMousePosGrigliaXY(int altezza_fin) {
                 glBegin(GL_QUADS);
                 {
                     glNormal3f(0.0, 0.0, 1.0);
-                    glVertex3f(-ALTEZZA_PEZZO*10, -ALTEZZA_PEZZO*10, 0);
-                    glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO*10, -ALTEZZA_PEZZO*10, 0);
-                    glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO*10, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO*10, 0);
-                    glVertex3f(-ALTEZZA_PEZZO*10, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO*10, 0);
+                    glVertex3f(-ALTEZZA_PEZZO * 10, -ALTEZZA_PEZZO * 10, 0);
+                    glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO * 10, -ALTEZZA_PEZZO * 10, 0);
+                    glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO * 10, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO * 10, 0);
+                    glVertex3f(-ALTEZZA_PEZZO * 10, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO * 10, 0);
                 }
                 glEnd();
             }
@@ -116,7 +125,12 @@ bool Livello::getMousePosGrigliaXY(int altezza_fin) {
     return pos_griglia_ok;
 }
 
-void Livello::setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin) {
+int Livello::inizializza() {
+    setProiezione(tipo_proiezione, gioco->getWindowL(), gioco->getWindowA(), true);
+    return 1;
+}
+
+void Livello::setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin, bool reset) {
     glViewport(0, 0, (GLint) larghezza_fin, (GLint) altezza_fin);
     switch (tipo) {
         case ASSIONOMETRICA:
@@ -133,6 +147,11 @@ void Livello::setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin)
                     0.0, 0.0, H_TELECAMERA, /* eye  */
                     0.0, 0.0, 0.0, /* center  */
                     0.0, 1.0, 0.0); /* up is in positive Y direction */
+            if (reset) {
+                max_zoom = MAX_ZOOM_ASSIONOMETRIA;
+                min_zoom = MIN_ZOOM_ASSIONOMETRIA;
+                tipo_proiezione = tipo;
+            }
             if (tipo_proiezione != tipo) {
                 griglia_prospettica = griglia_livello.getGriglia();
                 griglia_livello.setGrigliaXY(griglia_assionometrica.x, griglia_assionometrica.y);
@@ -153,6 +172,11 @@ void Livello::setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin)
                     0.0, 0.0, H_TELECAMERA, /* eye  */
                     0.0, 0.0, 0.0, /* center  */
                     0.0, 1.0, 0.0); /* up is in positive Y direction */
+            if (reset) {
+                max_zoom = MAX_ZOOM_PROSPETTICA;
+                min_zoom = MIN_ZOOM_PROSPETTICA;
+                tipo_proiezione = tipo;
+            }
             if (tipo_proiezione != tipo) {
                 griglia_assionometrica = griglia_livello.getGriglia();
                 griglia_livello.setGrigliaXY(griglia_prospettica.x, griglia_prospettica.y);
@@ -233,6 +257,11 @@ int Livello::gestisciInput(SDL_Event *evento) {
                         //setProiezione(tipo_proiezione, gioco->getScreenA(), gioco->getScreenL());
                     }
                     break;
+                case SDLK_F6:
+                    break;
+                case SDLK_i:
+                    cout << tipo_proiezione << ' ' << griglia_livello.getGriglia().x << ' ' << griglia_livello.getGriglia().y << ' ' << griglia_livello.getGriglia().zoom << '\n' << flush;
+                    break;
                 default:
                     break;
 
@@ -294,6 +323,7 @@ int Livello::gestisciInput(SDL_Event *evento) {
         case SDL_MOUSEMOTION:
             getMousePosGrigliaXY(gioco->getWindowA(), evento->button.x, evento->button.y);
             if (bottone_destro) {
+                //cout << pos_x_iniziali << ' ' << pos_x << ' ' << aux_griglia.x << '\n';
                 griglia_livello.setGrigliaXY(aux_griglia.x + (pos_x - pos_x_iniziali), aux_griglia.y + (pos_y - pos_y_iniziali));
             }
             if (bottone_centrale) {
@@ -332,4 +362,73 @@ int Livello::gestisciInput(SDL_Event *evento) {
             break;
     }
     return 1;
+}
+
+int Livello::video() {
+    static GLfloat lightpos_ambient[] = {60, 120, 150, 0};
+    static GLfloat colorwhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
+    Posizione* p_aux;
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glPushMatrix();
+    if (tipo_proiezione == PROSPETTICA) {
+        glRotatef(angolo_telecamera_y, 1, 0, 0);
+        glRotatef(-angolo_telecamera_x, 0, 1, 0);
+    }
+    glTranslatef(griglia_livello.getGriglia().x, griglia_livello.getGriglia().y, 0);
+    glScalef(griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom);
+    glGetDoublev(GL_MODELVIEW_MATRIX, matrice_model_griglia);
+
+    //glLightfv(GL_LIGHT0, GL_DIFFUSE, colorwhite);
+    //glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, colorwhite);
+    glLightfv(GL_LIGHT1, GL_POSITION, lightpos_ambient);
+
+    stampaSuperficeBase();
+    for (unsigned i = 0; i < griglia_livello.getDimGrigliaX(); i++) {
+        for (unsigned j = 0; j < griglia_livello.getDimGrigliaY(); j++) {
+            p_aux = griglia_livello.getPosizione(i, j);
+            //            if (cubo_selezione[i][j] > 0) {
+            //                stampaQuadrato(i, j, cubo_selezione[i][j]);
+            //                cubo_selezione[i][j] -= 0.05;
+            //            }
+            if (p_aux->selezione_pezzo > 0) {
+                aux_pezzo.stampa(true, i, j, p_aux->selezione_pezzo);
+                p_aux->selezione_pezzo -= 0.05;
+            }
+            if (p_aux->selezione_base > 0) {
+                aux_base.stampa(true, i, j, p_aux->selezione_base);
+                p_aux->selezione_base -= 0.05;
+            }
+            if (p_aux->occupata == 1 && p_aux->tipo == ELEM_PEZZO) {
+                p_aux->getElem()->stampa();
+            }
+            if (p_aux->occupata == 1 && p_aux->tipo == ELEM_BASE) {
+                p_aux->getElem()->stampa();
+            }
+        }
+    }
+
+    glPopMatrix();
+    SDL_GL_SwapBuffers();
+    return 1;
+}
+
+void Livello::stampaSuperficeBase() {
+    static GLfloat colorblue [] = {0.0f, 0.0f, 1.0f, 1.0f};
+    glPushMatrix();
+
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, colorblue);
+    glTranslatef(0.0, 0.0, POSIZIONE_SUPERFICE);
+    glColor3f(1.0f, 1.0f, 0.0f);
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(0.0, 0.0, 1.0);
+        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+    }
+    glEnd();
+
+    glPopMatrix();
 }

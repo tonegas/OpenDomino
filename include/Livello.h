@@ -44,81 +44,88 @@ class Gioco;
 class Livello {
 protected:
     //puntatore al gioco per interagire sulle funzionidi gioco
-    Gioco *gioco;
+    Gioco *gioco;//ok
+
+    Pezzo aux_pezzo;//da soli al valre di default
+    Base aux_base;//da soli al valre di default
 
     //matrici dinamiche di pezzi e basi
-    Griglia griglia_livello;
+    Griglia griglia_livello;//ok
 
     //flag che indica se è incorso un animazione sullo zoom
-    bool mouvi_zoom;
+    bool mouvi_zoom;//inizializzati nella setProiezione
     //struttura ausiliaria per il movimento della griglia
-    PosXYZoom aux_griglia;
+    PosXYZoom aux_griglia;//ok
 
     //proiezione della griglia a schermo
-    Proiezione tipo_proiezione;
+    Proiezione tipo_proiezione;//inizializzati nella setProiezione
     //massimo livello di zoom per la proiezione corrente
-    GLfloat max_zoom,min_zoom;
+    GLfloat max_zoom, min_zoom;//inizializzati nella setProiezione
     //struttura ausiliaria per il movimento della griglia
-    PosXYZoom griglia_assionometrica;
+    PosXYZoom griglia_assionometrica;//ok
     //struttura ausiliaria per il movimento della griglia
-    PosXYZoom griglia_prospettica;
+    PosXYZoom griglia_prospettica;//ok
     //modifica degli angoli di vista della telecamera
-    GLfloat angolo_telecamera_x,angolo_telecamera_y;
-    GLfloat angolo_telecamera_x_iniziale,angolo_telecamera_y_iniziale;
+    GLfloat angolo_telecamera_x, angolo_telecamera_y;//ok
+    GLfloat angolo_telecamera_x_iniziale, angolo_telecamera_y_iniziale;//si inizializzano prima di usarli nella funzione di imput
 
 
     //per ora sono solo due bottoni ma penso che diventerà una struttura per gestire l'input in maniera
     //differente a seconda che il livello si editor partita o altro
-    bool bottone_sinistro, bottone_destro, bottone_centrale;
+    bool bottone_sinistro, bottone_destro, bottone_centrale;//ok
 
     //variazione del delta di incremento dello zoom
-    GLfloat delta_zoom;
+    GLfloat delta_zoom;//ok
     //tempo per il reset del delta_zoom
-    int tempo_reset_delta_zoom;
+    int tempo_reset_delta_zoom;//ok
     //velocita di frame rate per temporizzare le cose
-    int frame_rate;
+    int frame_rate;//ok
 
     //matrici per il recupero dell'input del muose
     //inizializzate della classe che deriva livello
-    GLdouble matrice_model[16];
+    GLdouble matrice_model[16];//inizializzati nella setProiezione
     //coordinate sono riferite alla griglia
-    GLdouble matrice_model_griglia[16];
-    GLdouble matrice_proj[16];
-    GLint matrice_view[4];
+    GLdouble matrice_model_griglia[16];//inizializzata dalla funzione video
+    GLdouble matrice_proj[16];//inizializzati nella setProiezione
+    GLint matrice_view[4];//inizializzati nella setProiezione
 
     //posizione z della superfice base di sfondo
-    GLdouble superfice_z;
+    GLdouble superfice_z;//inizializzati nella setProiezione
 
     //posizione 3d del mouse
-    GLdouble pos_x, pos_y, pos_z;
+    GLdouble pos_x, pos_y, pos_z;//si inizializzano nella getMousePosGrigliaXY
     //posizione 3d iniziali del mouse per lo spostamento della griglia
-    GLdouble pos_x_iniziali, pos_y_iniziali;
+    GLdouble pos_x_iniziali, pos_y_iniziali;//questi si inizializzano da soli quando premo
 
     //indice sulla griglia del mouse
-    int pos_x_griglia, pos_y_griglia;
+    int pos_x_griglia, pos_y_griglia;//si inizializzano nella getMousePosGrigliaXY
     //indicatore booleano che indica se l'indice sulla griglia è più o meno sensato
-    bool pos_griglia_ok;
+    bool pos_griglia_ok;//si inizializzano nella getMousePosGrigliaXY
 
     //posizione 2d del mouse sulla finestra
-    int mouse_x_fin, mouse_y_fin;
+    int mouse_x_fin, mouse_y_fin;//si inizializzano nella getMousePosGrigliaXY
 
 public:
 
-    Livello(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux,int frame_rate);
+    Livello(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux, int frame_rate);
 
     Livello(const Livello &orig);
 
-    bool getMousePosGrigliaXY(int larghezza_fin, int mouse_x_fin_aux, int mouse_y_fin_aux);
+    bool getMousePosGrigliaXY(int altezza_fin, int mouse_x_fin_aux, int mouse_y_fin_aux);
 
-    bool getMousePosGrigliaXY(int larghezza_fin);
+    bool getMousePosGrigliaXY(int altezza_fin);
 
-    void setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin);
+    void setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin, bool reset = false);
+
+    void stampaSuperficeBase();
 
     virtual int aggiornaStato();
 
     virtual int gestisciInput(SDL_Event *evento);
 
-    virtual int video(){return 0;}
+    virtual int video();
+
+    int inizializza();
 };
 
 #endif	/* _LIVELLO_H */

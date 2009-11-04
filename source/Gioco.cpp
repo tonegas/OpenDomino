@@ -82,12 +82,13 @@ Gioco::Gioco():domino_editor(this){
     glEnable(GL_NORMALIZE);
 
     glEnable(GL_MULTISAMPLE);
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
     //se lo attivo sparisce anche le faccie laterali
     //glEnable(GL_CULL_FACE); //disattuva le faccie posteriori
 
     if(stato==EDITOR_COSTRUISCI){
         domino = &domino_editor;
-        domino_editor.inizializzaEditor();
+        domino->inizializza();
     }
 }
 
@@ -100,14 +101,14 @@ void Gioco::loop() {
     }
     while (alive) {
         if(cambia_stato){
-            switch(stato){
-                case EDITOR_COSTRUISCI: case EDITOR_TEST:
-                    domino = &domino_editor;
-                    break;
-                default:
-                    break;
-            }
+//            switch(stato){
+//                case EDITOR_COSTRUISCI:
+//                    break;
+//                    case EDITOR_
+//            }
+            stato = stato_temporaneo;
             cambia_stato = false;
+            domino->inizializza();
         }
         inizio = SDL_GetTicks();
 
@@ -140,10 +141,10 @@ void Gioco::loop() {
 
 void Gioco::setStato(Stato stato_aux){
     cambia_stato = true;
-    stato = stato_aux;
+    stato_temporaneo = stato_aux;
 }
 
-Stato Gioco::getStato(){
+Stato Gioco::getStato() const{
     return stato;
 }
 
@@ -155,7 +156,7 @@ void Gioco::setFrames(GLfloat frame_aux) {
     frame_ms = frame_aux;
 }
 
-int Gioco::getFrames() {
+int Gioco::getFrames() const{
     return frame_ms;
 }
 
@@ -183,23 +184,23 @@ void Gioco::resetFullScreen() {
     //        setWindowLA(larghezza_finestra, altezza_finestra);
 }
 
-bool Gioco::getFullScreen() {
+bool Gioco::getFullScreen() const{
     return fullscreen;
 }
 
-int Gioco::getWindowL() {
+int Gioco::getWindowL() const{
     return larghezza_finestra;
 }
 
-int Gioco::getWindowA() {
+int Gioco::getWindowA() const{
     return altezza_finestra;
 }
 
-int Gioco::getScreenL() {
+int Gioco::getScreenL() const{
     return videoInfo->current_w;
 }
 
-int Gioco::getScreenA() {
+int Gioco::getScreenA() const{
     return videoInfo->current_h;
 }
 

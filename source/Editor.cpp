@@ -11,16 +11,11 @@
 
 using namespace std;
 
-GLfloat colorblue [] = {0.0f, 0.0f, 1.0f, 1.0f};
-GLfloat colorwhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
-//GLfloat lightpos[] = {0, 0, 0, 1};
-GLfloat lightpos_ambient[] = {60, 120, 150, 0};
-
 Editor::Editor(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux)
-: Livello(gioco_aux, num_x_colonne_aux, num_y_righe_aux, FRAMERATE)
-, test(gioco_aux, num_x_colonne_aux, num_y_righe_aux)
-, aux_pezzo(-1, -1)
-, aux_base(-1, -1) {
+: Livello(gioco_aux, num_x_colonne_aux, num_y_righe_aux, FRAMERATE){
+    test_partita_allocata = false;
+    test = NULL;
+    tipo_proiezione = ASSIONOMETRICA;
     num_y_righe = num_y_righe_aux;
     num_x_colonne = num_x_colonne_aux;
     posiziona_pezzi = true;
@@ -28,44 +23,20 @@ Editor::Editor(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux)
     caratteristiche_selezione = 0;
     entrambi = false;
 
-//    cubo_selezione = new GLfloat*[num_x_colonne];
-//    for (int i = 0; i < num_x_colonne; i++)
-//        cubo_selezione[i] = new GLfloat[num_y_righe];
-//    for (int i = 0; i < num_x_colonne; i++)
-//        for (int j = 0; j < num_y_righe; j++)
-//            cubo_selezione[i][j] = 0;
+    //    cubo_selezione = new GLfloat*[num_x_colonne];
+    //    for (int i = 0; i < num_x_colonne; i++)
+    //        cubo_selezione[i] = new GLfloat[num_y_righe];
+    //    for (int i = 0; i < num_x_colonne; i++)
+    //        for (int j = 0; j < num_y_righe; j++)
+    //            cubo_selezione[i][j] = 0;
 }
 
 Editor::~Editor() {
-//    for (int i = 0; i < num_y_righe; i++)
-//        delete []cubo_selezione[i];
-//    delete []cubo_selezione;
-}
-
-void Editor::inizializzaEditor() {
-    //qui faccio così perchè se non sono diversi "tipo_proiezione=PROSPETTICA" e ASSIONOMETRICA non fa gli assegnamenti
-    tipo_proiezione = PROSPETTICA;
-
-    setProiezione(ASSIONOMETRICA, LARGHEZZA_FIN_EDITOR, ALTEZZA_FIN_EDITOR);
-
-    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
-}
-
-void Editor::stampaSuperficeBase() {
-    glPushMatrix();
-
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, colorblue);
-    glTranslatef(0.0, 0.0, POSIZIONE_SUPERFICE);
-    glColor3f(1.0f, 1.0f, 0.0f);
-    glBegin(GL_QUADS);
-    glNormal3f(0.0, 0.0, 1.0);
-    glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-    glVertex3f(num_x_colonne * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-    glVertex3f(num_x_colonne * ALTEZZA_PEZZO + ALTEZZA_PEZZO, num_y_righe * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
-    glVertex3f(-ALTEZZA_PEZZO, num_y_righe * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
-    glEnd();
-
-    glPopMatrix();
+    if (test_partita_allocata)
+        delete test;
+    //    for (int i = 0; i < num_y_righe; i++)
+    //        delete []cubo_selezione[i];
+    //    delete []cubo_selezione;
 }
 
 void Editor::stampaQuadrato(int x, int y, GLfloat attivo) {
@@ -174,7 +145,7 @@ void Editor::stampaQuadrato(int x, int y, GLfloat attivo) {
 
 int Editor::aggiornaStato() {
     if (gioco->getStato() == EDITOR_TEST) {
-        return test.aggiornaStato();
+        return test->aggiornaStato();
     } else {
         return aggiornaStatoEditor();
     }
@@ -186,25 +157,24 @@ int Editor::aggiornaStatoEditor() {
 
 int Editor::video() {
     if (gioco->getStato() == EDITOR_TEST) {
-        return test.video();
+        return test->video();
     } else {
         return videoEditor();
     }
 }
 
 int Editor::videoEditor() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-    Posizione* p_aux, *p_aux_pezzo, *p_aux_base;
-
+    Posizione *p_aux_pezzo, *p_aux_base;
     SDL_GetMouseState(&mouse_x_fin, &mouse_y_fin);
     if (azione_continua == 0 && getMousePosGrigliaXY(gioco->getWindowA())) {
-        //cubo_selezione[pos_x_griglia][pos_y_griglia] = 1;
-        if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi)
-            p_aux_pezzo = griglia_livello.getPosizione(x_pezzo_selezionato, y_pezzo_selezionato);
-        if (caratteristiche_selezione == DAVANTI_BASE || entrambi)
-            p_aux_base = griglia_livello.getPosizione(x_base_selezionata, y_base_selezionata);
+//        //cubo_selezione[pos_x_griglia][pos_y_griglia] = 1;
+//        if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi)
+//            
+//        if (caratteristiche_selezione == DAVANTI_BASE || entrambi)
+//
+//
         if (caratteristiche_selezione == DAVANTI_PEZZO) {
+            p_aux_pezzo = griglia_livello.getPosizione(x_pezzo_selezionato, y_pezzo_selezionato);
             if (p_aux_pezzo->occupata) {
                 if (p_aux_pezzo->tipo == ELEM_PEZZO)
                     p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
@@ -213,6 +183,7 @@ int Editor::videoEditor() {
             }
         }
         if (caratteristiche_selezione == DAVANTI_BASE) {
+            p_aux_base = griglia_livello.getPosizione(x_base_selezionata, y_base_selezionata);
             if (p_aux_base->occupata) {
                 if (p_aux_base->tipo == ELEM_BASE)
                     p_aux_base->attivaSelezione(ELEM_BASE);
@@ -221,55 +192,12 @@ int Editor::videoEditor() {
             }
         }
     }
-
-    glPushMatrix();
-    if (tipo_proiezione == PROSPETTICA) {
-        glRotatef(angolo_telecamera_y, 1, 0, 0);
-        glRotatef(-angolo_telecamera_x, 0, 1, 0);
-    }
-    glTranslatef(griglia_livello.getGriglia().x, griglia_livello.getGriglia().y, 0);
-    glScalef(griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom);
-    glGetDoublev(GL_MODELVIEW_MATRIX, matrice_model_griglia);
-
-    //glLightfv(GL_LIGHT0, GL_DIFFUSE, colorwhite);
-    //glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, colorwhite);
-    glLightfv(GL_LIGHT1, GL_POSITION, lightpos_ambient);
-
-    stampaSuperficeBase();
-    for (int i = 0; i < num_x_colonne; i++) {
-        for (int j = 0; j < num_y_righe; j++) {
-            p_aux = griglia_livello.getPosizione(i, j);
-            //            if (cubo_selezione[i][j] > 0) {
-            //                stampaQuadrato(i, j, cubo_selezione[i][j]);
-            //                cubo_selezione[i][j] -= 0.05;
-            //            }
-            if (p_aux->selezione_pezzo > 0) {
-                aux_pezzo.stampa(true, i, j, p_aux->selezione_pezzo);
-                p_aux->selezione_pezzo -= 0.05;
-            }
-            if (p_aux->selezione_base > 0) {
-                aux_base.stampa(true, i, j, p_aux->selezione_base);
-                p_aux->selezione_base -= 0.05;
-            }
-            if (p_aux->occupata == 1 && p_aux->tipo == ELEM_PEZZO) {
-                p_aux->getElem()->stampa();
-            }
-            if (p_aux->occupata == 1 && p_aux->tipo == ELEM_BASE) {
-                p_aux->getElem()->stampa();
-            }
-        }
-    }
-
-    glPopMatrix();
-    SDL_GL_SwapBuffers();
-
-    return 1;
+    return Livello::video();
 }
 
 int Editor::gestisciInput(SDL_Event *evento) {
     if (gioco->getStato() == EDITOR_TEST) {
-        return test.gestisciInput(evento);
+        return test->gestisciInput(evento);
     } else {
         return gestisciInputEditor(evento);
     }
@@ -294,6 +222,13 @@ int Editor::gestisciInputEditor(SDL_Event *evento) {
                             break;
                         case SDLK_F5:
                             gioco->setStato(EDITOR_TEST);
+                            if (test_partita_allocata) {
+                                delete test;
+                                test = new Partita(*this);
+                            } else {
+                                test_partita_allocata = true;
+                                test = new Partita(*this);
+                            }
                             break;
                         default:
                             break;

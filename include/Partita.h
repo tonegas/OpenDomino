@@ -15,8 +15,10 @@ class Partita :public Livello{
 public:
     Partita(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux);
     Partita(const Partita& orig);
+    Partita(const Livello& orig);
     int aggiornaStato();
     int gestisciInput(SDL_Event *evento);
+    int video();
     //virtual ~Partita();
 };
 
