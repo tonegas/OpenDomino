@@ -37,7 +37,7 @@ public:
 
 class Griglia {
     PosXYZoom griglia;
-    Posizione **matrice_posizioni;
+    ElementoAttivo **matrice_posizioni;
     unsigned num_y_righe;
     unsigned num_x_colonne;
 public:
@@ -49,7 +49,7 @@ public:
 
     PosXYZoom getGriglia();
 
-    Posizione* getPosizione(int i, int j);
+    ElementoAttivo* getPosizione(int i, int j);
 
     Pezzo& getPezzo(int i, int j);
 

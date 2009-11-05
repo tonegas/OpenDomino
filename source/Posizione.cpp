@@ -10,41 +10,38 @@
 #include "../include/pezzi/Pezzo.h"
 #include "../include/basi/Base.h"
 
-    Posizione::Posizione() {
+    ElementoAttivo::ElementoAttivo() {
         selezione_pezzo = 0;
         selezione_base = 0;
-        occupata = false;
         elem = NULL;
     }
 
-    Posizione::~Posizione() {
+    ElementoAttivo::~ElementoAttivo() {
         delete elem;
         elem = NULL;
     }
 
-    Elemento* Posizione::getElem(){
+    Elemento* ElementoAttivo::getElem(){
         return elem;
     }
 
-    void Posizione::liberaPosizione() {
+    void ElementoAttivo::liberaPosizione() {
         delete elem;
-        occupata = 0;
         elem = NULL;
     }
 
-    void Posizione::attivaSelezione(int tipo_aux) {
+    void ElementoAttivo::attivaSelezione(int tipo_aux) {
         if (tipo_aux == ELEM_PEZZO)
             selezione_pezzo = 1;
         if (tipo_aux == ELEM_BASE)
             selezione_base = 1;
     }
 
-    int Posizione::getTipo() {
+    int ElementoAttivo::getTipo() {
         return tipo;
     }
 
-    void Posizione::occupaPosizione(Elemento *elem_aux,int tipo_aux) {
-        occupata = true;
+    void ElementoAttivo::occupaPosizione(Elemento *elem_aux,int tipo_aux) {
         tipo = tipo_aux;
         elem = elem_aux;
     }

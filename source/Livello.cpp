@@ -367,7 +367,7 @@ int Livello::gestisciInput(SDL_Event *evento) {
 int Livello::video() {
     static GLfloat lightpos_ambient[] = {60, 120, 150, 0};
     static GLfloat colorwhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
-    Posizione* p_aux;
+    ElementoAttivo* p_aux;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glPushMatrix();
     if (tipo_proiezione == PROSPETTICA) {
@@ -399,11 +399,11 @@ int Livello::video() {
                 aux_base.stampa(true, i, j, p_aux->selezione_base);
                 p_aux->selezione_base -= 0.05;
             }
-            if (p_aux->occupata == 1 && p_aux->tipo == ELEM_PEZZO) {
+            if (p_aux->getOccupato() && p_aux->tipo == ELEM_PEZZO) {
                 griglia_livello.getPezzo(i, j).aggiorna();
                 p_aux->getElem()->stampa();
             }
-            if (p_aux->occupata == 1 && p_aux->tipo == ELEM_BASE) {
+            if (p_aux->getOccupato() && p_aux->tipo == ELEM_BASE) {
                 p_aux->getElem()->stampa();
             }
         }
@@ -446,7 +446,7 @@ int Livello::mouseSelezione(int altezza_fin) {
             for (int i = -1; i < 2; i++) {
                 for (int j = -1; j < 2; j++) {
                     if ((int) pos_x_griglia + i > 0 && (int) pos_x_griglia + i < (int) griglia_livello.getDimGrigliaX() && (int) pos_y_griglia + j > 0 && (int) pos_y_griglia + j < (int) griglia_livello.getDimGrigliaY()) {
-                        if (griglia_livello.getPosizione(pos_x_griglia + i, pos_y_griglia + j)->occupata) {
+                        if (griglia_livello.getPosizione(pos_x_griglia + i, pos_y_griglia + j)->getOccupato()) {
                             if (griglia_livello.getPosizione(pos_x_griglia + i, pos_y_griglia + j)->tipo == ELEM_PEZZO) {
                                 glLoadName((i + 1) * 3 + (j + 1) + 1);
                                 aux_pezzo.stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);

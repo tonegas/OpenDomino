@@ -27,23 +27,29 @@ public:
     //virtual ~Elemento();
 };
 
-class Posizione {
-public:
+class ElementoAttivo {
+    public:
+    int x,y;
     GLfloat selezione_pezzo;
     GLfloat selezione_base;
     int tipo;
-    bool occupata;
     Elemento *elem;
+    ElementoAttivo *next;
+    ElementoAttivo *prev;
 
-    Posizione();
+    ElementoAttivo();
 
-    ~Posizione();
+    ~ElementoAttivo();
 
     Elemento* getElem();
 
     void liberaPosizione();
 
     void attivaSelezione(int tipo_aux);
+
+    bool getOccupato(){
+        return elem!=NULL?true:false;
+    }
 
     int getTipo();
 
