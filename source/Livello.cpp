@@ -384,6 +384,7 @@ int Livello::video() {
     glLightfv(GL_LIGHT1, GL_POSITION, lightpos_ambient);
 
     stampaSuperficeBase();
+    //qui va sostituito con lo scorrimento della lista!!!!!
     for (unsigned i = 0; i < griglia_livello.getDimGrigliaX(); i++) {
         for (unsigned j = 0; j < griglia_livello.getDimGrigliaY(); j++) {
             p_aux = griglia_livello.getPosizione(i, j);
@@ -400,7 +401,6 @@ int Livello::video() {
                 p_aux->selezione_base -= 0.05;
             }
             if (p_aux->occupata == 1 && p_aux->tipo == ELEM_PEZZO) {
-                griglia_livello.getPezzo(i, j).aggiorna();
                 p_aux->getElem()->stampa();
             }
             if (p_aux->occupata == 1 && p_aux->tipo == ELEM_BASE) {

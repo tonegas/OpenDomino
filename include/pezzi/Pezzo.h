@@ -19,15 +19,15 @@
 #include "../Domino.h"
 #include "../Posizione.h"
 
-enum StatoPezzo{
-    IN_PIEDI,CADE_DESTRA,CADE_SINISTRA
+enum StatoPezzo {
+    IN_PIEDI, CADE_DESTRA, CADE_SINISTRA
 };
 
-class Pezzo : public Elemento{
+class Pezzo : public Elemento {
     GLdouble angolo;
     StatoPezzo stato;
 public:
-    Pezzo(int x_aux = -1,int y_aux = -1);
+    Pezzo(int x_aux = -1, int y_aux = -1);
     Pezzo(const Pezzo& orig);
     void setStato(StatoPezzo aux_stato);
     StatoPezzo getStato();

@@ -163,7 +163,6 @@ int Editor::video() {
 }
 
 int Editor::videoEditor() {
-    Posizione *p_aux_pezzo, *p_aux_base;
     SDL_GetMouseState(&mouse_x_fin, &mouse_y_fin);
     if (azione_continua == 0 && getMousePosGrigliaXY(gioco->getWindowA())) {
         //        //cubo_selezione[pos_x_griglia][pos_y_griglia] = 1;
@@ -173,8 +172,7 @@ int Editor::videoEditor() {
         //
         //
         if (caratteristiche_selezione == DAVANTI_PEZZO) {
-            p_aux_pezzo = griglia_livello.getPosizione(x_pezzo_selezionato, y_pezzo_selezionato);
-            p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
+            griglia_livello.attivaSelezione(x_pezzo_selezionato, y_pezzo_selezionato, ELEM_PEZZO);
             //            if (p_aux_pezzo->occupata) {
             //                if (p_aux_pezzo->tipo == ELEM_PEZZO)
             //                    p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
@@ -183,8 +181,7 @@ int Editor::videoEditor() {
             //            }
         }
         if (caratteristiche_selezione == DAVANTI_BASE) {
-            p_aux_base = griglia_livello.getPosizione(x_base_selezionata, y_base_selezionata);
-            p_aux_base->attivaSelezione(ELEM_BASE);
+            griglia_livello.attivaSelezione(x_base_selezionata, y_base_selezionata, ELEM_BASE);
             //            if (p_aux_base->occupata) {
             //                if (p_aux_base->tipo == ELEM_BASE)
             //                    p_aux_base->attivaSelezione(ELEM_BASE);
@@ -239,28 +236,25 @@ int Editor::gestisciInputEditor(SDL_Event *evento) {
                 case SDL_MOUSEBUTTONDOWN:
                     if (evento->button.button == SDL_BUTTON_LEFT && getMousePosGrigliaXY(gioco->getWindowA(), evento->button.x, evento->button.y)) {
                         mouseSelezione(gioco->getWindowA());
-                        Posizione *p_aux_pezzo, *p_aux_base;
                         if (caratteristiche_selezione == DAVANTI_PEZZO) {
-                            p_aux_pezzo = griglia_livello.getPosizione(x_pezzo_selezionato, y_pezzo_selezionato);
-                            if (p_aux_pezzo->occupata) {
+                            if (griglia_livello.getOccupata(x_pezzo_selezionato, y_pezzo_selezionato)) {
                                 //if (p_aux_pezzo->tipo == ELEM_PEZZO) {
-                                p_aux_pezzo->liberaPosizione();
+                                griglia_livello.liberaPosizione(x_pezzo_selezionato, y_pezzo_selezionato);
                                 azione_continua = ELIMINA_PEZZI;
                                 //}
                             } else {
-                                p_aux_pezzo->occupaPosizione(new Pezzo(x_pezzo_selezionato, y_pezzo_selezionato), ELEM_PEZZO);
+                                griglia_livello.occupaPosizione(x_pezzo_selezionato, y_pezzo_selezionato, ELEM_PEZZO);
                                 azione_continua = POSIZIONA_PEZZI;
                             }
                         }
                         if (caratteristiche_selezione == DAVANTI_BASE) {
-                            p_aux_base = griglia_livello.getPosizione(x_base_selezionata, y_base_selezionata);
-                            if (p_aux_base->occupata) {
+                            if (griglia_livello.getOccupata(x_base_selezionata, y_base_selezionata)) {
                                 //if (p_aux_base->tipo == ELEM_BASE) {
-                                p_aux_base->liberaPosizione();
+                                griglia_livello.liberaPosizione(x_base_selezionata, y_base_selezionata);
                                 azione_continua = ELIMINA_BASI;
                                 //}
                             } else {
-                                p_aux_base->occupaPosizione(new Base(x_base_selezionata, y_base_selezionata), ELEM_BASE);
+                                griglia_livello.occupaPosizione(x_base_selezionata, y_base_selezionata, ELEM_BASE);
                                 azione_continua = POSIZIONA_BASI;
                             }
                         }
@@ -269,52 +263,37 @@ int Editor::gestisciInputEditor(SDL_Event *evento) {
                 case SDL_MOUSEMOTION:
                     if (getMousePosGrigliaXY(gioco->getWindowA(), evento->button.x, evento->button.y)) {
                         mouseSelezione(gioco->getWindowA());
-                        Posizione *p_aux_pezzo, *p_aux_base;
-                        if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi)
-                            p_aux_pezzo = griglia_livello.getPosizione(x_pezzo_selezionato, y_pezzo_selezionato);
-                        if (caratteristiche_selezione == DAVANTI_BASE || entrambi)
-                            p_aux_base = griglia_livello.getPosizione(x_base_selezionata, y_base_selezionata);
                         switch (azione_continua) {
                             case POSIZIONA_PEZZI:
-                                if ((caratteristiche_selezione == DAVANTI_PEZZO || entrambi) && !p_aux_pezzo->occupata) {
-                                    p_aux_pezzo->occupaPosizione(new Pezzo(x_pezzo_selezionato, y_pezzo_selezionato), ELEM_PEZZO);
-                                    p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
+                                if ((caratteristiche_selezione == DAVANTI_PEZZO || entrambi) && !griglia_livello.getOccupata(x_pezzo_selezionato, y_pezzo_selezionato)) {
+                                    griglia_livello.occupaPosizione(x_pezzo_selezionato, y_pezzo_selezionato, ELEM_PEZZO, true);
                                 }
                                 break;
                             case POSIZIONA_BASI:
-                                if ((caratteristiche_selezione == DAVANTI_BASE || entrambi) && !p_aux_base->occupata) {
-                                    p_aux_base->occupaPosizione(new Base(x_base_selezionata, y_base_selezionata), ELEM_BASE);
-                                    p_aux_base->attivaSelezione(ELEM_BASE);
+                                if ((caratteristiche_selezione == DAVANTI_BASE || entrambi) && !griglia_livello.getOccupata(x_base_selezionata, y_base_selezionata)) {
+                                    griglia_livello.occupaPosizione(x_base_selezionata, y_base_selezionata, ELEM_BASE, true);
                                 }
                                 break;
                             case ELIMINA_PEZZI:
-                                if ((caratteristiche_selezione == DAVANTI_PEZZO || entrambi) && p_aux_pezzo->occupata && p_aux_pezzo->tipo == ELEM_PEZZO) {
-                                    p_aux_pezzo->liberaPosizione();
-                                    p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
+                                if ((caratteristiche_selezione == DAVANTI_PEZZO || entrambi) && griglia_livello.getOccupata(x_pezzo_selezionato, y_pezzo_selezionato)
+                                        && griglia_livello.getTipo(x_pezzo_selezionato, y_pezzo_selezionato) == ELEM_PEZZO) {
+                                    griglia_livello.liberaPosizione(x_pezzo_selezionato, y_pezzo_selezionato);
+                                    griglia_livello.attivaSelezione(x_pezzo_selezionato, y_pezzo_selezionato, ELEM_PEZZO);
                                 }
                                 break;
                             case ELIMINA_BASI:
-                                if ((caratteristiche_selezione == DAVANTI_BASE || entrambi) && p_aux_base->occupata && p_aux_base->tipo == ELEM_BASE) {
-                                    p_aux_base->liberaPosizione();
-                                    p_aux_base->attivaSelezione(ELEM_BASE);
+                                if ((caratteristiche_selezione == DAVANTI_BASE || entrambi) && griglia_livello.getOccupata(x_base_selezionata, y_base_selezionata)
+                                        && griglia_livello.getTipo(x_base_selezionata, y_base_selezionata) == ELEM_BASE) {
+                                    griglia_livello.liberaPosizione(x_base_selezionata, y_base_selezionata);
+                                    griglia_livello.attivaSelezione(x_base_selezionata, y_base_selezionata, ELEM_BASE);
                                 }
                                 break;
                             default:
                                 if (caratteristiche_selezione == DAVANTI_PEZZO) {
-                                    if (p_aux_pezzo->occupata) {
-                                        //if (p_aux_pezzo->tipo == ELEM_PEZZO)
-                                        p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
-                                    } else {
-                                        p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
-                                    }
+                                    griglia_livello.attivaSelezione(x_pezzo_selezionato, y_pezzo_selezionato, ELEM_PEZZO);
                                 }
                                 if (caratteristiche_selezione == DAVANTI_BASE) {
-                                    if (p_aux_base->occupata) {
-                                        //if (p_aux_base->tipo == ELEM_BASE)
-                                        p_aux_base->attivaSelezione(ELEM_BASE);
-                                    } else {
-                                        p_aux_base->attivaSelezione(ELEM_BASE);
-                                    }
+                                    griglia_livello.attivaSelezione(x_base_selezionata, y_base_selezionata, ELEM_BASE);
                                 }
                                 break;
                         }

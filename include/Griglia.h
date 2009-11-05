@@ -30,16 +30,23 @@ public:
         zoom = orig.zoom;
     }
 
-//    inline GLfloat getX() const {
-//        return x;
-//    }
+    //    inline GLfloat getX() const {
+    //        return x;
+    //    }
 };
 
 class Griglia {
     PosXYZoom griglia;
+    //la cosa migliore è creare un unico oggetto che implementa sia lista che matrice
+    //Doppia struttura di memorizzazione
     Posizione **matrice_posizioni;
+    ElementoLista *testa;
     unsigned num_y_righe;
     unsigned num_x_colonne;
+
+    void inserisci(Elemento *elem, int x, int y);
+
+    void estrazione(ElementoLista *elem_lista);
 public:
     Griglia(int num_x_colonne_aux, int num_y_righe_aux);
 
@@ -49,11 +56,23 @@ public:
 
     PosXYZoom getGriglia();
 
-    Posizione* getPosizione(int i, int j);
+    void attivaSelezione(int x, int y, int tipo);
 
-    Pezzo& getPezzo(int i, int j);
+    GLfloat getSelezione(int x,int y);
 
-    Base& getBase(int i, int j);
+    void liberaPosizione(int x,int y);
+
+    void occupaPosizione(int x,int y,int tipo, bool selezione = false);
+
+    bool getOccupata(int x,int y);
+
+    int getTipo(int x,int y);
+
+    //    Posizione* getPosizione(int i, int j);
+    //
+    //    Pezzo& getPezzo(int i, int j);
+    //
+    //    Base& getBase(int i, int j);
 
     void setGrigliaZoom(GLfloat zoom);
 
