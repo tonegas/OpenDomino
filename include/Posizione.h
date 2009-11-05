@@ -56,7 +56,7 @@ class ElementoAttivo {
     GLfloat selezione;
 
     //puntatore all'oggetto Elemento pezzo o base che sia che sarà allocato quando è presente un pezzo nella casella
-    bool occupato;
+    //bool occupato;
     Elemento *elem;
 
     ElementoAttivo *next;
@@ -69,7 +69,7 @@ class ElementoAttivo {
         y = y_aux;
         tipo = tipo_aux;
         selezione = 0.0;
-        occupato = true;
+        //occupato = true;
         elem = elem_aux;
         prev = prev_aux;
         next = next_aux;
@@ -80,14 +80,14 @@ class ElementoAttivo {
         y = y_aux;
         tipo = tipo_aux;
         selezione = 1.0;
-        occupato = false;
+        //occupato = false;
         elem = NULL;
         prev = prev_aux;
         next = next_aux;
     }
 
     ~ElementoAttivo() {
-        if (occupato)
+        if (elem != NULL)
             delete elem;
     }
 
@@ -103,8 +103,8 @@ class ElementoAttivo {
         return tipo;
     }
 
-        inline int getOccupato() const {
-        return occupato;
+    inline int getOccupato() const {
+        return elem!=NULL?true:false;
     }
 };
 

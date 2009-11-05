@@ -44,35 +44,48 @@ class Griglia {
     unsigned num_y_righe;
     unsigned num_x_colonne;
 
-    void inserisci(Elemento *elem, int x, int y);
+    void inserisci(Elemento *elem, int x, int y,TipoElemento tipo);
+
+    void inserisci(int x,int y,TipoElemento tipo);
+
+    void inserisci(Elemento *elem, ElementoAttivo *elem_lista);
 
     void estrazione(ElementoAttivo *elem_lista);
 public:
     Griglia(int num_x_colonne_aux, int num_y_righe_aux);
 
-    Griglia(const Griglia& orig);
-
     ~Griglia();
 
-    PosXYZoom getGriglia();
+    void pulisciGriglia();
+
+    void inserisciElemento(Elemento *elem, int x, int y, TipoElemento tipo);
+
+    Griglia(const Griglia& orig);
+
+
+    
 
     void attivaSelezione(int x, int y, int tipo);
 
-    GLfloat getSelezione(int x,int y);
+    GLfloat getSelezione(int x, int y);
 
-    void liberaPosizione(int x,int y);
+    void aggiornaSelezione(int x,int y);
 
-    void occupaPosizione(int x,int y,int tipo, bool selezione = false);
+    void liberaPosizione(int x, int y);
 
-    bool getOccupata(int x,int y);
+    void occupaPosizione(int x, int y, int tipo, bool selezione = false);
 
-    int getTipo(int x,int y);
+    bool getOccupata(int x, int y);
+
+    int getTipo(int x, int y);
 
     //    Posizione* getPosizione(int i, int j);
     //
     //    Pezzo& getPezzo(int i, int j);
     //
     //    Base& getBase(int i, int j);
+
+    PosXYZoom getGriglia();
 
     void setGrigliaZoom(GLfloat zoom);
 
