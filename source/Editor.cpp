@@ -183,7 +183,7 @@ int Editor::videoEditor() {
             //                p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
             //            }
         }
-        if (caratteristiche_selezione == DAVANTI_BASE) {
+        else if (caratteristiche_selezione == DAVANTI_BASE) {
             griglia_livello.attivaSelezione(x_base_selezionata, y_base_selezionata,ELEM_BASE);
 //            p_aux_base = griglia_livello.getPosizione(x_base_selezionata, y_base_selezionata);
 //            p_aux_base->attivaSelezione(ELEM_BASE);
@@ -255,7 +255,7 @@ int Editor::gestisciInputEditor(SDL_Event *evento) {
                             }
                             griglia_livello.attivaSelezione(x_pezzo_selezionato, y_pezzo_selezionato,ELEM_PEZZO);
                         }
-                        if (caratteristiche_selezione == DAVANTI_BASE) {
+                        else if (caratteristiche_selezione == DAVANTI_BASE) {
 //                            p_aux_base = griglia_livello.getPosizione(x_base_selezionata, y_base_selezionata);
                             if (griglia_livello.getOccupato(x_base_selezionata, y_base_selezionata)) {
                                 griglia_livello.eliminaElemento(x_base_selezionata, y_base_selezionata);
