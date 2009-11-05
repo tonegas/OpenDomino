@@ -55,7 +55,7 @@ int Partita::gestisciInput(SDL_Event * evento) {
                         if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {
                             ElementoAttivo *p_aux_pezzo = griglia_livello.getPosizione(x_pezzo_selezionato, y_pezzo_selezionato);
                             if (p_aux_pezzo->getOccupato()) {
-                                griglia_livello.getPezzo(x_pezzo_selezionato, y_pezzo_selezionato).setStato(CADE_DESTRA);
+                                griglia_livello.setStatoPezzo(x_pezzo_selezionato, y_pezzo_selezionato,CADE_DESTRA);
                             }
                         }
                     }

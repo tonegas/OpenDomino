@@ -25,6 +25,10 @@
         return elem;
     }
 
+    bool ElementoAttivo::getOccupato() {
+        return elem != NULL ? true : false;
+    }
+
     void ElementoAttivo::liberaPosizione() {
         delete elem;
         elem = NULL;

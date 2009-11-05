@@ -30,9 +30,9 @@ public:
         zoom = orig.zoom;
     }
 
-//    inline GLfloat getX() const {
-//        return x;
-//    }
+    //    inline GLfloat getX() const {
+    //        return x;
+    //    }
 };
 
 class Griglia {
@@ -47,13 +47,21 @@ public:
 
     ~Griglia();
 
+    GLfloat getSelezione(int x, int y, TipoElemento tipo);
+
+    void aggiornaSelezione(int x, int y, TipoElemento tipo);
+
+    void setStatoPezzo(int x, int y, StatoPezzo stato);
+
+    void aggiornaStatoPezzo(int x, int y);
+
     PosXYZoom getGriglia();
 
     ElementoAttivo* getPosizione(int i, int j);
 
-    Pezzo& getPezzo(int i, int j);
+//    Pezzo& getPezzo(int i, int j);
 
-    Base& getBase(int i, int j);
+//    Base& getBase(int i, int j);
 
     void setGrigliaZoom(GLfloat zoom);
 

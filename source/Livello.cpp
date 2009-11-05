@@ -391,16 +391,16 @@ int Livello::video() {
             //                stampaQuadrato(i, j, cubo_selezione[i][j]);
             //                cubo_selezione[i][j] -= 0.05;
             //            }
-            if (p_aux->selezione_pezzo > 0) {
-                aux_pezzo.stampa(true, i, j, p_aux->selezione_pezzo);
-                p_aux->selezione_pezzo -= 0.05;
+            if (griglia_livello.getSelezione(i,j,ELEM_PEZZO) > 0) {
+                aux_pezzo.stampa(true, i, j, griglia_livello.getSelezione(i,j,ELEM_PEZZO));
+                griglia_livello.aggiornaSelezione(i,j,ELEM_PEZZO);
             }
-            if (p_aux->selezione_base > 0) {
-                aux_base.stampa(true, i, j, p_aux->selezione_base);
-                p_aux->selezione_base -= 0.05;
+            if (griglia_livello.getSelezione(i,j,ELEM_BASE) > 0) {
+                aux_base.stampa(true, i, j, griglia_livello.getSelezione(i,j,ELEM_BASE));
+                griglia_livello.aggiornaSelezione(i,j,ELEM_BASE);
             }
             if (p_aux->getOccupato() && p_aux->tipo == ELEM_PEZZO) {
-                griglia_livello.getPezzo(i, j).aggiorna();
+                griglia_livello.aggiornaStatoPezzo(i,j);
                 p_aux->getElem()->stampa();
             }
             if (p_aux->getOccupato() && p_aux->tipo == ELEM_BASE) {

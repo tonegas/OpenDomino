@@ -10,28 +10,39 @@
 
 #include "Domino.h"
 
+enum TipoElemento {
+    ELEM_PEZZO, ELEM_BASE
+};
+
 class Elemento {
 protected:
-    int x,y;
+    int x, y;
 public:
-    Elemento(int x_aux,int y_aux){
-        x=x_aux;
-        y=y_aux;
+
+    Elemento(int x_aux, int y_aux) {
+        x = x_aux;
+        y = y_aux;
     };
-    Elemento(const Elemento& orig){
-        x=orig.x;
-        y=orig.y;
+
+    Elemento(const Elemento& orig) {
+        x = orig.x;
+        y = orig.y;
     };
-    virtual void stampa(bool wire, int x, int y, GLfloat attivo){}
-    virtual void stampa(){}
+
+    virtual void stampa(bool wire, int x, int y, GLfloat attivo) {
+    }
+
+    virtual void stampa() {
+    }
     //virtual ~Elemento();
 };
 
 class ElementoAttivo {
-    public:
-    int x,y;
+    friend class Griglia;
     GLfloat selezione_pezzo;
     GLfloat selezione_base;
+public:
+    int x, y;
     int tipo;
     Elemento *elem;
     ElementoAttivo *next;
@@ -47,13 +58,11 @@ class ElementoAttivo {
 
     void attivaSelezione(int tipo_aux);
 
-    bool getOccupato(){
-        return elem!=NULL?true:false;
-    }
+    bool getOccupato();
 
     int getTipo();
 
-    void occupaPosizione(Elemento *elem_aux,int tipo_aux);
+    void occupaPosizione(Elemento *elem_aux, int tipo_aux);
 };
 
 #endif	/* _POSIZONE_H */

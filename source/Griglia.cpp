@@ -12,7 +12,7 @@ Griglia::Griglia(int num_x_colonne_aux, int num_y_righe_aux) {
     num_x_colonne = num_x_colonne_aux;
     matrice_posizioni = new ElementoAttivo *[num_x_colonne];
     for (unsigned i = 0; i < num_x_colonne; i++) {
-        matrice_posizioni[i] = new ElementoAttivo[num_y_righe];
+        matrice_posizioni[i] = new ElementoAttivo [num_y_righe];
     }
 }
 
@@ -48,17 +48,17 @@ PosXYZoom Griglia::getGriglia() {
     return griglia;
 }
 
-ElementoAttivo* Griglia::getPosizione(int i, int j){
+ElementoAttivo* Griglia::getPosizione(int i, int j) {
     return &matrice_posizioni[i][j];
 }
 
-Pezzo& Griglia::getPezzo(int i, int j) {
-    return *(Pezzo*)matrice_posizioni[i][j].elem;
-}
+//Pezzo& Griglia::getPezzo(int i, int j) {
+//    return *(Pezzo*) matrice_posizioni[i][j].elem;
+//}
 
-Base& Griglia::getBase(int i, int j) {
-    return *(Base*)matrice_posizioni[i][j].elem;
-}
+//Base& Griglia::getBase(int i, int j) {
+//    return *(Base*) matrice_posizioni[i][j].elem;
+//}
 
 void Griglia::setGrigliaZoom(GLfloat zoom) {
     griglia.zoom = zoom;
@@ -69,10 +69,40 @@ void Griglia::setGrigliaXY(GLfloat x, GLfloat y) {
     griglia.y = y;
 }
 
-unsigned Griglia::getDimGrigliaX() const{
+void Griglia::setStatoPezzo(int x, int y, StatoPezzo stato){
+    if(matrice_posizioni[x][y].tipo == ELEM_PEZZO){
+        Pezzo *aux = (Pezzo*)matrice_posizioni[x][y].elem;
+        aux->setStato(stato);
+    }
+}
+
+void Griglia::aggiornaStatoPezzo(int x, int y){
+    if(matrice_posizioni[x][y].tipo == ELEM_PEZZO){
+        Pezzo *aux = (Pezzo*)matrice_posizioni[x][y].elem;
+        aux->aggiorna();
+    }
+}
+
+GLfloat Griglia::getSelezione(int x, int y, TipoElemento tipo) {
+    if (tipo == ELEM_PEZZO) {
+        return matrice_posizioni[x][y].selezione_pezzo;
+    } else {
+        return matrice_posizioni[x][y].selezione_base;
+    }
+}
+
+void Griglia::aggiornaSelezione(int x, int y, TipoElemento tipo) {
+    if (tipo == ELEM_PEZZO) {
+        matrice_posizioni[x][y].selezione_pezzo -= 0.05;
+    } else {
+        matrice_posizioni[x][y].selezione_base -= 0.05;
+    }
+}
+
+unsigned Griglia::getDimGrigliaX() const {
     return num_x_colonne;
 }
 
-unsigned Griglia::getDimGrigliaY() const{
+unsigned Griglia::getDimGrigliaY() const {
     return num_y_righe;
 }
