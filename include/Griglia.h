@@ -55,9 +55,21 @@ public:
 
     void aggiornaStatoPezzo(int x, int y);
 
+    bool getOccupato(int x,int y);
+
     PosXYZoom getGriglia();
 
-    ElementoAttivo* getPosizione(int i, int j);
+    void attivaSelezione(int x,int y,TipoElemento tipo);
+
+    void eliminaElementoAttivo(int x,int y);
+
+    void creaElementoAttivo(int x,int y,TipoElemento tipo);
+
+    TipoElemento getTipo(int x,int y);
+
+    void stampa(int x,int y);
+
+//    ElementoAttivo* getPosizione(int i, int j);
 
 //    Pezzo& getPezzo(int i, int j);
 

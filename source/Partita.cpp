@@ -42,9 +42,8 @@ int Partita::gestisciInput(SDL_Event * evento) {
                     if (getMousePosGrigliaXY(gioco->getWindowA(), evento->button.x, evento->button.y)) {
                         mouseSelezione(gioco->getWindowA());
                         if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {
-                            ElementoAttivo *p_aux_pezzo = griglia_livello.getPosizione(x_pezzo_selezionato, y_pezzo_selezionato);
-                            if (p_aux_pezzo->getOccupato()) {
-                                p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
+                            if (griglia_livello.getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
+                                griglia_livello.attivaSelezione(x_pezzo_selezionato, y_pezzo_selezionato,ELEM_PEZZO);
                             }
                         }
                     }
@@ -53,8 +52,7 @@ int Partita::gestisciInput(SDL_Event * evento) {
                     if (evento->button.button == SDL_BUTTON_LEFT && getMousePosGrigliaXY(gioco->getWindowA(), evento->button.x, evento->button.y)) {
                         mouseSelezione(gioco->getWindowA());
                         if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {
-                            ElementoAttivo *p_aux_pezzo = griglia_livello.getPosizione(x_pezzo_selezionato, y_pezzo_selezionato);
-                            if (p_aux_pezzo->getOccupato()) {
+                            if (griglia_livello.getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
                                 griglia_livello.setStatoPezzo(x_pezzo_selezionato, y_pezzo_selezionato,CADE_DESTRA);
                             }
                         }
@@ -73,9 +71,8 @@ int Partita::video() {
     if (getMousePosGrigliaXY(gioco->getWindowA())) {
         mouseSelezione(gioco->getWindowA());
         if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {
-            ElementoAttivo *p_aux_pezzo = griglia_livello.getPosizione(x_pezzo_selezionato, y_pezzo_selezionato);
-            if (p_aux_pezzo->getOccupato()) {
-                p_aux_pezzo->attivaSelezione(ELEM_PEZZO);
+            if (griglia_livello.getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
+                griglia_livello.attivaSelezione(x_pezzo_selezionato, y_pezzo_selezionato,ELEM_PEZZO);
             }
         }
     }

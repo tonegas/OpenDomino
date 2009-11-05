@@ -10,42 +10,44 @@
 #include "../include/pezzi/Pezzo.h"
 #include "../include/basi/Base.h"
 
-    ElementoAttivo::ElementoAttivo() {
-        selezione_pezzo = 0;
-        selezione_base = 0;
-        elem = NULL;
-    }
+ElementoAttivo::ElementoAttivo() {
+    selezione_pezzo = 0;
+    selezione_base = 0;
+    elem = NULL;
+}
 
-    ElementoAttivo::~ElementoAttivo() {
+ElementoAttivo::~ElementoAttivo() {
+    if (elem != NULL)
         delete elem;
-        elem = NULL;
-    }
+    elem = NULL;
+}
 
-    Elemento* ElementoAttivo::getElem(){
-        return elem;
-    }
+Elemento* ElementoAttivo::getElem() {
+    return elem;
+}
 
-    bool ElementoAttivo::getOccupato() {
-        return elem != NULL ? true : false;
-    }
+bool ElementoAttivo::getOccupato() {
+    return elem != NULL ? true : false;
+}
 
-    void ElementoAttivo::liberaPosizione() {
+void ElementoAttivo::liberaPosizione() {
+    if (elem != NULL)
         delete elem;
-        elem = NULL;
-    }
+    elem = NULL;
+}
 
-    void ElementoAttivo::attivaSelezione(int tipo_aux) {
-        if (tipo_aux == ELEM_PEZZO)
-            selezione_pezzo = 1;
-        if (tipo_aux == ELEM_BASE)
-            selezione_base = 1;
-    }
+void ElementoAttivo::attivaSelezione(int tipo_aux) {
+    if (tipo_aux == ELEM_PEZZO)
+        selezione_pezzo = 1;
+    if (tipo_aux == ELEM_BASE)
+        selezione_base = 1;
+}
 
-    int ElementoAttivo::getTipo() {
-        return tipo;
-    }
+int ElementoAttivo::getTipo() {
+    return tipo;
+}
 
-    void ElementoAttivo::occupaPosizione(Elemento *elem_aux,int tipo_aux) {
-        tipo = tipo_aux;
-        elem = elem_aux;
-    }
+void ElementoAttivo::occupaPosizione(Elemento *elem_aux, TipoElemento tipo_aux) {
+    tipo = tipo_aux;
+    elem = elem_aux;
+}

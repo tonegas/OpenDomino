@@ -48,9 +48,44 @@ PosXYZoom Griglia::getGriglia() {
     return griglia;
 }
 
-ElementoAttivo* Griglia::getPosizione(int i, int j) {
-    return &matrice_posizioni[i][j];
+void Griglia::attivaSelezione(int x,int y,TipoElemento tipo){
+    if(tipo == ELEM_PEZZO){
+        matrice_posizioni[x][y].selezione_pezzo = 1;
+    }else{
+        matrice_posizioni[x][y].selezione_base = 1;
+    }
 }
+
+bool Griglia::getOccupato(int x,int y){
+    return matrice_posizioni[x][y].getOccupato();
+}
+
+TipoElemento Griglia::getTipo(int x,int y){
+    return matrice_posizioni[x][y].tipo;
+}
+
+void Griglia::eliminaElementoAttivo(int x,int y){
+    matrice_posizioni[x][y].liberaPosizione();
+}
+
+void Griglia::creaElementoAttivo(int x,int y,TipoElemento tipo){
+    switch(tipo){
+        case ELEM_PEZZO:
+                matrice_posizioni[x][y].occupaPosizione(new Pezzo(x, y), ELEM_PEZZO);
+            break;
+        case ELEM_BASE:
+                matrice_posizioni[x][y].occupaPosizione(new Base(x, y), ELEM_BASE);
+            break;
+    }
+}
+
+void Griglia::stampa(int x,int y){
+    matrice_posizioni[x][y].elem->stampa();
+}
+
+//ElementoAttivo* Griglia::getPosizione(int i, int j) {
+//    return &matrice_posizioni[i][j];
+//}
 
 //Pezzo& Griglia::getPezzo(int i, int j) {
 //    return *(Pezzo*) matrice_posizioni[i][j].elem;
@@ -72,14 +107,18 @@ void Griglia::setGrigliaXY(GLfloat x, GLfloat y) {
 void Griglia::setStatoPezzo(int x, int y, StatoPezzo stato){
     if(matrice_posizioni[x][y].tipo == ELEM_PEZZO){
         Pezzo *aux = (Pezzo*)matrice_posizioni[x][y].elem;
-        aux->setStato(stato);
+        if(aux!=NULL){
+            aux->setStato(stato);
+        }
     }
 }
 
 void Griglia::aggiornaStatoPezzo(int x, int y){
     if(matrice_posizioni[x][y].tipo == ELEM_PEZZO){
         Pezzo *aux = (Pezzo*)matrice_posizioni[x][y].elem;
-        aux->aggiorna();
+        if(aux != NULL){
+            aux->aggiorna();
+        }
     }
 }
 

@@ -39,14 +39,16 @@ public:
 
 class ElementoAttivo {
     friend class Griglia;
+
+    int x, y;
+    TipoElemento tipo;
+    Elemento *elem;
+
     GLfloat selezione_pezzo;
     GLfloat selezione_base;
-public:
-    int x, y;
-    int tipo;
-    Elemento *elem;
     ElementoAttivo *next;
     ElementoAttivo *prev;
+public:
 
     ElementoAttivo();
 
@@ -62,7 +64,7 @@ public:
 
     int getTipo();
 
-    void occupaPosizione(Elemento *elem_aux, int tipo_aux);
+    void occupaPosizione(Elemento *elem_aux, TipoElemento tipo_aux);
 };
 
 #endif	/* _POSIZONE_H */

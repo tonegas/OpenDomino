@@ -367,7 +367,6 @@ int Livello::gestisciInput(SDL_Event *evento) {
 int Livello::video() {
     static GLfloat lightpos_ambient[] = {60, 120, 150, 0};
     static GLfloat colorwhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
-    ElementoAttivo* p_aux;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glPushMatrix();
     if (tipo_proiezione == PROSPETTICA) {
@@ -386,7 +385,6 @@ int Livello::video() {
     stampaSuperficeBase();
     for (unsigned i = 0; i < griglia_livello.getDimGrigliaX(); i++) {
         for (unsigned j = 0; j < griglia_livello.getDimGrigliaY(); j++) {
-            p_aux = griglia_livello.getPosizione(i, j);
             //            if (cubo_selezione[i][j] > 0) {
             //                stampaQuadrato(i, j, cubo_selezione[i][j]);
             //                cubo_selezione[i][j] -= 0.05;
@@ -399,12 +397,12 @@ int Livello::video() {
                 aux_base.stampa(true, i, j, griglia_livello.getSelezione(i,j,ELEM_BASE));
                 griglia_livello.aggiornaSelezione(i,j,ELEM_BASE);
             }
-            if (p_aux->getOccupato() && p_aux->tipo == ELEM_PEZZO) {
+            if (griglia_livello.getOccupato(i,j) && griglia_livello.getTipo(i,j) == ELEM_PEZZO) {
                 griglia_livello.aggiornaStatoPezzo(i,j);
-                p_aux->getElem()->stampa();
+                griglia_livello.stampa(i,j);
             }
-            if (p_aux->getOccupato() && p_aux->tipo == ELEM_BASE) {
-                p_aux->getElem()->stampa();
+            if (griglia_livello.getOccupato(i,j) && griglia_livello.getTipo(i,j) == ELEM_BASE) {
+                griglia_livello.stampa(i,j);
             }
         }
     }
@@ -446,8 +444,8 @@ int Livello::mouseSelezione(int altezza_fin) {
             for (int i = -1; i < 2; i++) {
                 for (int j = -1; j < 2; j++) {
                     if ((int) pos_x_griglia + i > 0 && (int) pos_x_griglia + i < (int) griglia_livello.getDimGrigliaX() && (int) pos_y_griglia + j > 0 && (int) pos_y_griglia + j < (int) griglia_livello.getDimGrigliaY()) {
-                        if (griglia_livello.getPosizione(pos_x_griglia + i, pos_y_griglia + j)->getOccupato()) {
-                            if (griglia_livello.getPosizione(pos_x_griglia + i, pos_y_griglia + j)->tipo == ELEM_PEZZO) {
+                        if (griglia_livello.getOccupato(pos_x_griglia + i, pos_y_griglia + j)) {
+                            if (griglia_livello.getTipo(pos_x_griglia + i, pos_y_griglia + j) == ELEM_PEZZO) {
                                 glLoadName((i + 1) * 3 + (j + 1) + 1);
                                 aux_pezzo.stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
                             } else {
