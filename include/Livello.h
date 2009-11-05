@@ -50,9 +50,6 @@ protected:
     //puntatore al gioco per interagire sulle funzionidi gioco
     Gioco *gioco; //ok
 
-    Pezzo aux_pezzo; //da soli al valre di default
-    Base aux_base; //da soli al valre di default
-
     //matrici dinamiche di pezzi e basi
     Griglia griglia_livello; //ok
 

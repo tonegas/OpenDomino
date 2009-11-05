@@ -9,10 +9,17 @@
 #include "../../include/pezzi/Pezzo.h"
 
 
-
 Base::Base(int x_aux,int y_aux) : Elemento(x_aux,y_aux){}
 
 Base::Base(const Base& orig) : Elemento(orig)  {}
+
+Elemento* Base::costruttore(){
+    return new Base(*this);
+}
+
+void Base::aggiornaStato(){}
+
+void Base::setStato(void *stato){}
 
 void Base::stampa(bool wire, int x, int y, GLfloat attivo) {
     static GLfloat colorgreen [] = {0.0f, 1.0f, 0.0f, 1.0f};

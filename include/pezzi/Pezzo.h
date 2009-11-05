@@ -27,11 +27,12 @@ class Pezzo : public Elemento{
 public:
     Pezzo(int x_aux = -1,int y_aux = -1);
     Pezzo(const Pezzo& orig);
-    void setStato(StatoPezzo aux_stato);
+    Elemento* costruttore();
+    void setStato(void* stato);
     StatoPezzo getStato();
-    void aggiorna();
+    void aggiornaStato();
     void stampa();
-    void stampa(bool wire, int x, int y, GLfloat attivo);
+    static void stampa(bool wire, int x, int y, GLfloat attivo, GLdouble angolo = 0);
 };
 
 #endif	/* _PEZZO_H */

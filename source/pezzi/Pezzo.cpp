@@ -17,15 +17,19 @@ Pezzo::Pezzo(const Pezzo& orig) : Elemento(orig) {
     angolo = orig.angolo;
 }
 
-void Pezzo::setStato(StatoPezzo aux_stato) {
-    stato = aux_stato;
+Elemento* Pezzo::costruttore(){
+    return new Pezzo(*this);
+}
+
+void Pezzo::setStato(void* aux_stato) {
+    stato = *(StatoPezzo*) aux_stato;
 }
 
 StatoPezzo Pezzo::getStato() {
     return stato;
 }
 
-void Pezzo::aggiorna() {
+void Pezzo::aggiornaStato() {
     switch (stato) {
         case IN_PIEDI:
             break;
@@ -39,7 +43,8 @@ void Pezzo::aggiorna() {
     }
 }
 
-void Pezzo::stampa(bool wire, int x, int y, GLfloat attivo) {
+
+void Pezzo::stampa(bool wire, int x, int y, GLfloat attivo, GLdouble angolo) {
     static GLfloat coloryellow[] = {1.0f, 1.0f, 0.0f, 1.0f};
 
     GLfloat xf = (GLfloat) x;
@@ -125,5 +130,5 @@ void Pezzo::stampa(bool wire, int x, int y, GLfloat attivo) {
 }
 
 void Pezzo::stampa() {
-    stampa(false, x, y, 0);
+    stampa(false, x, y, 0, angolo);
 }

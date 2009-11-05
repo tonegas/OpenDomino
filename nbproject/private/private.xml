@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
+        <file>file:/home/tonegas/workspace/Domino-Net/OpenDomino/include/Editor.h</file>
+        <file>file:/home/tonegas/workspace/Domino-Net/OpenDomino/source/Editor.cpp</file>
+        <file>file:/home/tonegas/workspace/Domino-Net/OpenDomino/source/Griglia.cpp</file>
+        <file>file:/home/tonegas/workspace/Domino-Net/OpenDomino/include/Griglia.h</file>
+        <file>file:/home/tonegas/workspace/Domino-Net/OpenDomino/include/Posizione.h</file>
+        <file>file:/home/tonegas/workspace/Domino-Net/OpenDomino/include/basi/Base.h</file>
+        <file>file:/home/tonegas/workspace/Domino-Net/OpenDomino/include/pezzi/Pezzo.h</file>
+        <file>file:/home/tonegas/workspace/Domino-Net/OpenDomino/source/Livello.cpp</file>
+        <file>file:/home/tonegas/workspace/Domino-Net/OpenDomino/source/Posizione.cpp</file>
+        <file>file:/home/tonegas/workspace/Domino-Net/OpenDomino/source/Partita.cpp</file>
+        <file>file:/home/tonegas/workspace/Domino-Net/OpenDomino/include/Livello.h</file>
+    </open-files>
 </project-private>

@@ -223,6 +223,7 @@ int Livello::aggiornaStato() {
             delta_zoom = DELTA_ZOOM;
         }
     }
+    griglia_livello.aggiornaStato();
     return 1;
 }
 
@@ -383,29 +384,30 @@ int Livello::video() {
     glLightfv(GL_LIGHT1, GL_POSITION, lightpos_ambient);
 
     stampaSuperficeBase();
-    for (unsigned i = 0; i < griglia_livello.getDimGrigliaX(); i++) {
-        for (unsigned j = 0; j < griglia_livello.getDimGrigliaY(); j++) {
-            //            if (cubo_selezione[i][j] > 0) {
-            //                stampaQuadrato(i, j, cubo_selezione[i][j]);
-            //                cubo_selezione[i][j] -= 0.05;
-            //            }
-            if (griglia_livello.getSelezione(i,j,ELEM_PEZZO) > 0) {
-                aux_pezzo.stampa(true, i, j, griglia_livello.getSelezione(i,j,ELEM_PEZZO));
-                griglia_livello.aggiornaSelezione(i,j,ELEM_PEZZO);
-            }
-            if (griglia_livello.getSelezione(i,j,ELEM_BASE) > 0) {
-                aux_base.stampa(true, i, j, griglia_livello.getSelezione(i,j,ELEM_BASE));
-                griglia_livello.aggiornaSelezione(i,j,ELEM_BASE);
-            }
-            if (griglia_livello.getOccupato(i,j) && griglia_livello.getTipo(i,j) == ELEM_PEZZO) {
-                griglia_livello.aggiornaStatoPezzo(i,j);
-                griglia_livello.stampa(i,j);
-            }
-            if (griglia_livello.getOccupato(i,j) && griglia_livello.getTipo(i,j) == ELEM_BASE) {
-                griglia_livello.stampa(i,j);
-            }
-        }
-    }
+    griglia_livello.stampa();
+//    for (unsigned i = 0; i < griglia_livello.getDimGrigliaX(); i++) {
+//        for (unsigned j = 0; j < griglia_livello.getDimGrigliaY(); j++) {
+//            //            if (cubo_selezione[i][j] > 0) {
+//            //                stampaQuadrato(i, j, cubo_selezione[i][j]);
+//            //                cubo_selezione[i][j] -= 0.05;
+//            //            }
+//            if (griglia_livello.getSelezione(i,j,ELEM_PEZZO) > 0) {
+//                Pezzo::stampa(true, i, j, griglia_livello.getSelezione(i,j,ELEM_PEZZO));
+//                griglia_livello.aggiornaSelezione(i,j,ELEM_PEZZO);
+//            }
+//            if (griglia_livello.getSelezione(i,j,ELEM_BASE) > 0) {
+//                Base::stampa(true, i, j, griglia_livello.getSelezione(i,j,ELEM_BASE));
+//                griglia_livello.aggiornaSelezione(i,j,ELEM_BASE);
+//            }
+//            if (griglia_livello.getOccupato(i,j) && griglia_livello.getTipo(i,j) == ELEM_PEZZO) {
+//                griglia_livello.aggiornaStatoPezzo(i,j);
+//                griglia_livello.stampa(i,j);
+//            }
+//            if (griglia_livello.getOccupato(i,j) && griglia_livello.getTipo(i,j) == ELEM_BASE) {
+//                griglia_livello.stampa(i,j);
+//            }
+//        }
+//    }
 
     glPopMatrix();
     SDL_GL_SwapBuffers();
@@ -447,16 +449,16 @@ int Livello::mouseSelezione(int altezza_fin) {
                         if (griglia_livello.getOccupato(pos_x_griglia + i, pos_y_griglia + j)) {
                             if (griglia_livello.getTipo(pos_x_griglia + i, pos_y_griglia + j) == ELEM_PEZZO) {
                                 glLoadName((i + 1) * 3 + (j + 1) + 1);
-                                aux_pezzo.stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
+                                Pezzo::stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
                             } else {
                                 glLoadName(11 + (i + 1) * 3 + (j + 1));
-                                aux_base.stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
+                                Base::stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
                             }
                         } else {
                             glLoadName((i + 1) * 3 + (j + 1) + 1);
-                            aux_pezzo.stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
+                            Pezzo::stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
                             glLoadName(11 + (i + 1) * 3 + (j + 1));
-                            aux_base.stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
+                            Base::stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
                         }
                         indice++;
                     }

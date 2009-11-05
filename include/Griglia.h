@@ -37,9 +37,17 @@ public:
 
 class Griglia {
     PosXYZoom griglia;
-    ElementoAttivo **matrice_posizioni;
+    //ElementoAttivo **matrice_posizioni;
+
+    ElementoAttivo *testa_elementi;
+    ElementoAttivo* **matrice_elementi;
     unsigned num_y_righe;
     unsigned num_x_colonne;
+
+    ElementoAttivo* creaElementoAttivo(int x, int y);
+
+    void eliminaElementoAttivo(ElementoAttivo* tokill);
+
 public:
     Griglia(int num_x_colonne_aux, int num_y_righe_aux);
 
@@ -47,33 +55,37 @@ public:
 
     ~Griglia();
 
-    GLfloat getSelezione(int x, int y, TipoElemento tipo);
+    //    GLfloat getSelezione(int x, int y, TipoElemento tipo);
 
-    void aggiornaSelezione(int x, int y, TipoElemento tipo);
+    //    void aggiornaSelezione(int x, int y, TipoElemento tipo);
 
-    void setStatoPezzo(int x, int y, StatoPezzo stato);
+    void setStato(int x, int y, StatoPezzo stato);
 
-    void aggiornaStatoPezzo(int x, int y);
+    //void aggiornaStatoPezzo(int x, int y);
 
-    bool getOccupato(int x,int y);
+    bool getOccupato(int x, int y);
 
     PosXYZoom getGriglia();
 
-    void attivaSelezione(int x,int y,TipoElemento tipo);
+    void attivaSelezione(int x, int y, TipoElemento tipo);
 
-    void eliminaElementoAttivo(int x,int y);
+    void eliminaElemento(int x, int y);
 
-    void creaElementoAttivo(int x,int y,TipoElemento tipo);
+    void creaElemento(int x, int y, TipoElemento tipo);
 
-    TipoElemento getTipo(int x,int y);
+    TipoElemento getTipo(int x, int y);
 
-    void stampa(int x,int y);
+    void stampa();
 
-//    ElementoAttivo* getPosizione(int i, int j);
+    void aggiornaStato();
 
-//    Pezzo& getPezzo(int i, int j);
+    //void stampa(int x,int y);
 
-//    Base& getBase(int i, int j);
+    //    ElementoAttivo* getPosizione(int i, int j);
+
+    //    Pezzo& getPezzo(int i, int j);
+
+    //    Base& getBase(int i, int j);
 
     void setGrigliaZoom(GLfloat zoom);
 

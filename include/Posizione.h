@@ -11,7 +11,7 @@
 #include "Domino.h"
 
 enum TipoElemento {
-    ELEM_PEZZO, ELEM_BASE
+    NESSUNO, ELEM_PEZZO, ELEM_BASE
 };
 
 class Elemento {
@@ -29,7 +29,15 @@ public:
         y = orig.y;
     };
 
-    virtual void stampa(bool wire, int x, int y, GLfloat attivo) {
+    virtual Elemento* costruttore(){
+        return NULL;
+    }
+
+    virtual void aggiornaStato(){}
+
+    virtual void setStato(void *stato){}
+
+    static void stampa(bool wire, int x, int y, GLfloat attivo) {
     }
 
     virtual void stampa() {
@@ -39,7 +47,7 @@ public:
 
 class ElementoAttivo {
     friend class Griglia;
-
+public:
     int x, y;
     TipoElemento tipo;
     Elemento *elem;
@@ -48,9 +56,17 @@ class ElementoAttivo {
     GLfloat selezione_base;
     ElementoAttivo *next;
     ElementoAttivo *prev;
-public:
+
 
     ElementoAttivo();
+
+    ElementoAttivo(int x_aux, int y_aux, TipoElemento tipo_aux, ElementoAttivo *next_aux = NULL, ElementoAttivo *prev_aux = NULL);
+
+    ElementoAttivo(Elemento *elem_aux, int x_aux, int y_aux, TipoElemento tipo_aux, ElementoAttivo *next_aux = NULL, ElementoAttivo *prev_aux = NULL);
+
+    ElementoAttivo(int x_aux, int y_aux, ElementoAttivo *next_aux = NULL, ElementoAttivo *prev_aux = NULL);
+
+    ElementoAttivo(const ElementoAttivo& orig);
 
     ~ElementoAttivo();
 

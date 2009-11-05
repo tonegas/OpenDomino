@@ -53,7 +53,7 @@ int Partita::gestisciInput(SDL_Event * evento) {
                         mouseSelezione(gioco->getWindowA());
                         if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {
                             if (griglia_livello.getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
-                                griglia_livello.setStatoPezzo(x_pezzo_selezionato, y_pezzo_selezionato,CADE_DESTRA);
+                                griglia_livello.setStato(x_pezzo_selezionato, y_pezzo_selezionato,CADE_DESTRA);
                             }
                         }
                     }
