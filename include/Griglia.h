@@ -39,14 +39,14 @@ class Griglia {
     PosXYZoom griglia;
     //la cosa migliore è creare un unico oggetto che implementa sia lista che matrice
     //Doppia struttura di memorizzazione
-    Posizione **matrice_posizioni;
-    ElementoLista *testa;
+    ElementoAttivo* **matrice_elementi;
+    ElementoAttivo *testa_elementi;
     unsigned num_y_righe;
     unsigned num_x_colonne;
 
     void inserisci(Elemento *elem, int x, int y);
 
-    void estrazione(ElementoLista *elem_lista);
+    void estrazione(ElementoAttivo *elem_lista);
 public:
     Griglia(int num_x_colonne_aux, int num_y_righe_aux);
 

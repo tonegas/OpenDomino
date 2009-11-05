@@ -12,9 +12,12 @@
 #include "pezzi/Pezzo.h"
 #include "basi/Base.h"
 
+enum TipoElemento {
+    ELEM_PEZZO, ELEM_BASE
+};
+
 class Elemento {
 protected:
-    GLfloat selezione;
     int x, y;
 public:
 
@@ -36,14 +39,6 @@ public:
         return y;
     }
 
-    void attivaSelezione(){
-        selezione = 1;
-    }
-
-    GLfloat getSelezione(){
-        return selezione;
-    }
-
     virtual void stampa(bool wire, int x, int y, GLfloat attivo) {
     }
 
@@ -52,55 +47,65 @@ public:
     //virtual ~Elemento();
 };
 
-class ElementoLista {
-public:
-    int tipo;
-    ElementoLista *next;
-    ElementoLista *prev;
+class ElementoAttivo {
+ //   friend class Griglia;
+    public:
+    int x, y;
+
+    TipoElemento tipo;
+    GLfloat selezione;
+
+    //puntatore all'oggetto Elemento pezzo o base che sia che sarà allocato quando è presente un pezzo nella casella
+    bool occupato;
     Elemento *elem;
 
-    ElementoLista(Elemento *elem_aux, int tipo_aux, ElementoLista *next_aux = NULL, ElementoLista *prev_aux = NULL) {
+    ElementoAttivo *next;
+    ElementoAttivo *prev;
+
+
+
+    ElementoAttivo(Elemento *elem_aux, int x_aux, int y_aux, TipoElemento tipo_aux, ElementoAttivo *next_aux = NULL, ElementoAttivo *prev_aux = NULL) {
+        x = x_aux;
+        y = y_aux;
+        tipo = tipo_aux;
+        selezione = 0.0;
+        occupato = true;
         elem = elem_aux;
         prev = prev_aux;
         next = next_aux;
+    }
+
+    ElementoAttivo(int x_aux, int y_aux, TipoElemento tipo_aux, ElementoAttivo *next_aux = NULL, ElementoAttivo *prev_aux = NULL) {
+        x = x_aux;
+        y = y_aux;
         tipo = tipo_aux;
+        selezione = 1.0;
+        occupato = false;
+        elem = NULL;
+        prev = prev_aux;
+        next = next_aux;
     }
 
-    ElementoLista(int x, int y, int tipo_aux) {
-        tipo = tipo_aux;
-        switch (tipo) {
-//            case ELEM_PEZZO:
-//                elem = new Pezzo(x, y);
-//                break;
-//            case ELEM_BASE:
-//                elem = new Base(x, y);
-//                break;
-        }
+    ~ElementoAttivo() {
+        if (occupato)
+            delete elem;
     }
 
-    ~ElementoLista() {
-        delete elem;
+    inline int getX() const {
+        return x;
     }
-};
 
-class Posizione {
-public:
-    bool occupata;
-    ElementoLista *elem_lista;
+    inline int getY() const {
+        return y;
+    }
 
-    Posizione();
+    inline int getTipo() const {
+        return tipo;
+    }
 
-    ~Posizione();
-
-    ElementoLista* getElem();
-
-    void liberaPosizione();
-
-    //  void attivaSelezione(int tipo_aux);
-
-    //    int getTipo();
-
-    void occupaPosizione(ElementoLista *elem_aux);
+        inline int getOccupato() const {
+        return occupato;
+    }
 };
 
 #endif	/* _POSIZONE_H */
