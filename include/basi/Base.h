@@ -12,16 +12,18 @@
 #define ALTEZZA_BASE 2
 #define SPESSORE_BASE 8
 
-#include "../Domino.h"
-#include "../Posizione.h"
+class Griglia;
 
+#include "../Domino.h"
+//#include "../Posizione.h"
+//#include "../Griglia.h"
 
 class Base : public Elemento{
 public:
     Base(int x_aux = -1,int y_aux= -1);
     Base(const Base& orig);
     Elemento* costruttore();
-    void aggiornaStato();
+    void aggiornaStato(Griglia &griglia);
     void setStato(void *stato);
     static void stampa(bool wire, int x, int y, GLfloat attivo);
     void stampa();

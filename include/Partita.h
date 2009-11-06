@@ -8,8 +8,10 @@
 #ifndef _PARTITA_H
 #define	_PARTITA_H
 
+class Livello;
+
 #include "Domino.h"
-#include "Livello.h"
+//#include "Livello.h"
 
 class Partita :public Livello{
 public:

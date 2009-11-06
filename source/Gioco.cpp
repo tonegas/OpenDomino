@@ -5,7 +5,8 @@
  * Created on 30 ottobre 2009, 23.31
  */
 
-#include "../include/Gioco.h"
+#include "../include/Domino.h"
+//#include "../include/Gioco.h"
 
 Gioco::Gioco():domino_editor(this){
     bpp = BPP_FIN;
@@ -120,7 +121,7 @@ void Gioco::loop() {
         if (aspetto > 0){
             SDL_Delay(aspetto);
         }else{
-            cout<<"A PALLA"<<'\n'<<flush;
+            cout<<"SCATTA"<<'\n'<<flush;
         }
         //            else
         //                cout << "H" << flush;

@@ -8,11 +8,6 @@
 #ifndef _EDITOR_H
 #define	_EDITOR_H
 
-#include "Domino.h"
-#include "Livello.h"
-#include "Partita.h"
-
-
 #define GRIGLIA_EDITOR_Y 2000
 #define GRIGLIA_EDITOR_X 2000
 
@@ -25,6 +20,14 @@
 #define POSIZIONA_BASI 2
 #define ELIMINA_PEZZI -1
 #define ELIMINA_BASI -2
+
+class Partita;
+class Livello;
+class Gioco;
+
+#include "Domino.h"
+//#include "Livello.h"
+//#include "Partita.h"
 
 class Editor : public Livello {
     bool test_partita_allocata;

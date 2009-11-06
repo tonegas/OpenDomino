@@ -5,8 +5,9 @@
  * Created on 30 ottobre 2009, 15.45
  */
 
-#include "../../include/basi/Base.h"
-#include "../../include/pezzi/Pezzo.h"
+#include "../../include/Domino.h"
+//#include "../../include/basi/Base.h"
+//#include "../../include/pezzi/Pezzo.h"
 
 
 Base::Base(int x_aux,int y_aux) : Elemento(x_aux,y_aux){}
@@ -17,7 +18,7 @@ Elemento* Base::costruttore(){
     return new Base(*this);
 }
 
-void Base::aggiornaStato(){}
+void Base::aggiornaStato(Griglia &griglia){}
 
 void Base::setStato(void *stato){}
 

@@ -8,9 +8,6 @@
 #ifndef _LIVELLO_H
 #define	_LIVELLO_H
 
-#include "Domino.h"
-#include "Griglia.h"
-
 #define X_TELECAMERA 0
 #define Y_TELECAMERA 0
 #define H_TELECAMERA 200
@@ -36,14 +33,18 @@ enum Selezione {
     NIENTE, DAVANTI_PEZZO, DAVANTI_BASE
 };
 
+class Gioco;
+
+#include "Domino.h"
+//#include "Griglia.h"
+
+
 const GLfloat cavalier[] = {
     1, 0, 0, 0,
     0, 1, 0, 0,
     -0.5, -0.5, 1, 0,
     0, 0, 0, 1
 };
-
-class Gioco;
 
 class Livello {
 protected:

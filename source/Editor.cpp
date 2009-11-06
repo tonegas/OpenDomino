@@ -5,9 +5,10 @@
  * Created on 30 ottobre 2009, 23.37
  */
 
-#include "../include/Editor.h"
-#include "../include/Partita.h"
-#include "../include/Gioco.h"
+#include "../include/Domino.h"
+//#include "../include/Editor.h"
+//#include "../include/Partita.h"
+//#include "../include/Gioco.h"
 
 using namespace std;
 

@@ -8,10 +8,6 @@
 #ifndef _GIOCO_H
 #define	_GIOCO_H
 
-#include "Domino.h"
-#include "Partita.h"
-#include "Editor.h"
-
 #define FRAMERATE   50                  //frame per secondo massimi
 #define FRAMEMS     1000/FRAMERATE      //millisecondi per frame
 
@@ -29,6 +25,10 @@ enum Stato {
 class Editor;
 class Partita;
 class Livello;
+
+#include "Domino.h"
+//#include "Partita.h"
+//#include "Editor.h"
 
 class Gioco {
     //parametri finestra

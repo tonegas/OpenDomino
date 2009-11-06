@@ -5,8 +5,9 @@
  * Created on 30 ottobre 2009, 16.03
  */
 
-#include "../include/Livello.h"
-#include "../include/Gioco.h"
+#include "../include/Domino.h"
+//#include "../include/Livello.h"
+//#include "../include/Gioco.h"
 
 using namespace std;
 

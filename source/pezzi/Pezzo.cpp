@@ -5,7 +5,9 @@
  * Created on 30 ottobre 2009, 15.35
  */
 
-#include "../../include/pezzi/Pezzo.h"
+#include "../../include/Domino.h"
+//#include "../../include/pezzi/Pezzo.h"
+//#include"../../include/Griglia.h"
 
 Pezzo::Pezzo(int x_aux, int y_aux) : Elemento(x_aux, y_aux) {
     stato = IN_PIEDI;
@@ -17,7 +19,7 @@ Pezzo::Pezzo(const Pezzo& orig) : Elemento(orig) {
     angolo = orig.angolo;
 }
 
-Elemento* Pezzo::costruttore(){
+Elemento* Pezzo::costruttore() {
     return new Pezzo(*this);
 }
 
@@ -29,22 +31,53 @@ StatoPezzo Pezzo::getStato() {
     return stato;
 }
 
-void Pezzo::aggiornaStato() {
+void Pezzo::aggiornaStato(Griglia &griglia) {
+    int x_successiva = 0;
     switch (stato) {
         case IN_PIEDI:
-            break;
-        case CADE_DESTRA:
-            angolo+=2;
+            if(griglia.matrice_elementi[x][y-1]==NULL){
+                stato = CADE_GIU;
+            }
             break;
         case CADE_SINISTRA:
-            angolo-=2;
+            x_successiva = x - 1;
             break;
-
+        case CADE_DESTRA:
+            x_successiva = x + 1;
+            break;
+        case CADE_GIU:
+            break;
+    }
+    if (stato == CADE_SINISTRA || stato == CADE_DESTRA){
+        if (angolo < 77) {
+            if (angolo > 50) {
+                if (griglia.getOccupato(x_successiva, y)) {
+                    griglia.setStato(x_successiva, y, stato);
+                } else {
+                    angolo += 1;
+                }
+            } else {
+                angolo += 1;
+            }
+            angolo += 1;
+        } else {
+            if (!griglia.getOccupato(x_successiva, y)) {
+                if (angolo < 90) {
+                    angolo += 2;
+                } else {
+                    if(!griglia.getOccupato(x_successiva,y-1)){
+                        griglia.spostaElementoAttivo(x,y,x_successiva,y-1);
+                        angolo = 0;
+                    }else{
+                        angolo =90;
+                    }
+                }
+            }
+        }
     }
 }
 
-
-void Pezzo::stampa(bool wire, int x, int y, GLfloat attivo, GLdouble angolo) {
+void Pezzo::stampa(bool wire, int x, int y, GLfloat attivo, GLdouble angolo, StatoPezzo stato) {
     static GLfloat coloryellow[] = {1.0f, 1.0f, 0.0f, 1.0f};
 
     GLfloat xf = (GLfloat) x;
@@ -62,7 +95,18 @@ void Pezzo::stampa(bool wire, int x, int y, GLfloat attivo, GLdouble angolo) {
         glTranslatef(SPESSORE_PEZZO * (1.0 - grandezza) / 2, ALTEZZA_PEZZO * (1.0 - grandezza) / 2, LARGHEZZA_PEZZO * (1.0 - grandezza) / 2);
         glScalef(grandezza, grandezza, grandezza);
     }
-    glRotated(angolo,0,0,1);
+    if (stato == CADE_DESTRA) {
+        const GLfloat ribalta[] = {
+            -1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+        };
+        glTranslated(SPESSORE_PEZZO, 0, 0);
+        glMultMatrixf(ribalta);
+    }
+    glTranslated(angolo / 90.0 * ((GLdouble) SPESSORE_PEZZO / 2.0), 0, 0);
+    glRotated(angolo, 0, 0, 1);
     glColor4f(1.0f, 1.0f, 0.0f, attivo);
     glLineWidth(1.5);
     glBegin(wire ? GL_LINE_STRIP : GL_QUADS);
@@ -130,5 +174,5 @@ void Pezzo::stampa(bool wire, int x, int y, GLfloat attivo, GLdouble angolo) {
 }
 
 void Pezzo::stampa() {
-    stampa(false, x, y, 0, angolo);
+    stampa(false, x, y, 0, angolo, stato);
 }

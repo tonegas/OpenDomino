@@ -8,17 +8,19 @@
 #ifndef _POSIZONE_H
 #define	_POSIZONE_H
 
-#include "Domino.h"
-
 enum TipoElemento {
     NESSUNO, ELEM_PEZZO, ELEM_BASE
 };
+
+class Griglia;
+
+#include "Domino.h"
+//#include "Griglia.h"
 
 class Elemento {
 protected:
     int x, y;
 public:
-
     Elemento(int x_aux, int y_aux) {
         x = x_aux;
         y = y_aux;
@@ -29,11 +31,16 @@ public:
         y = orig.y;
     };
 
+    void spostaElemento(int x_new,int y_new){
+        x=x_new;
+        y=y_new;
+    }
+
     virtual Elemento* costruttore(){
         return NULL;
     }
 
-    virtual void aggiornaStato(){}
+    virtual void aggiornaStato(Griglia &griglia){}
 
     virtual void setStato(void *stato){}
 
@@ -47,6 +54,7 @@ public:
 
 class ElementoAttivo {
     friend class Griglia;
+    friend class Pezzo;
 public:
     int x, y;
     TipoElemento tipo;

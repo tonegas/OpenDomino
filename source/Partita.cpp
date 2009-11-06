@@ -5,8 +5,9 @@
  * Created on 3 novembre 2009, 0.21
  */
 
-#include "../include/Partita.h"
-#include "../include/Gioco.h"
+#include "../include/Domino.h"
+//#include "../include/Partita.h"
+//#include "../include/Gioco.h"
 
 using namespace std;
 
@@ -54,6 +55,8 @@ int Partita::gestisciInput(SDL_Event * evento) {
                         if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {
                             if (griglia_livello.getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
                                 griglia_livello.setStato(x_pezzo_selezionato, y_pezzo_selezionato,CADE_DESTRA);
+                            }else{
+                                cout<<"NONOCCUPATO"<<flush;
                             }
                         }
                     }

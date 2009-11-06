@@ -9,8 +9,8 @@
 #define	_GRIGLIA_H
 
 #include "Domino.h"
-#include "pezzi/Pezzo.h"
-#include "basi/Base.h"
+//#include "Posizione.h"
+//#include "pezzi/Pezzo.h"
 
 class PosXYZoom {
 public:
@@ -29,16 +29,12 @@ public:
         y = orig.y;
         zoom = orig.zoom;
     }
-
-    //    inline GLfloat getX() const {
-    //        return x;
-    //    }
 };
 
 class Griglia {
+    friend class Pezzo;
     PosXYZoom griglia;
-    //ElementoAttivo **matrice_posizioni;
-
+public:
     ElementoAttivo *testa_elementi;
     ElementoAttivo* **matrice_elementi;
     unsigned num_y_righe;
@@ -48,20 +44,14 @@ class Griglia {
 
     void eliminaElementoAttivo(ElementoAttivo* tokill);
 
-public:
+
     Griglia(int num_x_colonne_aux, int num_y_righe_aux);
 
     Griglia(const Griglia& orig);
 
     ~Griglia();
 
-    //    GLfloat getSelezione(int x, int y, TipoElemento tipo);
-
-    //    void aggiornaSelezione(int x, int y, TipoElemento tipo);
-
     void setStato(int x, int y, StatoPezzo stato);
-
-    //void aggiornaStatoPezzo(int x, int y);
 
     bool getOccupato(int x, int y);
 
@@ -79,7 +69,7 @@ public:
 
     void aggiornaStato();
 
-    //void stampa(int x,int y);
+    bool spostaElementoAttivo(int x_sorg,int y_sorg, int x_dest,int y_dest);
 
     //    ElementoAttivo* getPosizione(int i, int j);
 
