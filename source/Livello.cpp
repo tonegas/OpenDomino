@@ -369,12 +369,16 @@ int Livello::gestisciInput(SDL_Event *evento) {
 int Livello::video() {
     static GLfloat lightpos_ambient[] = {60, 120, 150, 0};
     static GLfloat colorwhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glPushMatrix();
     if (tipo_proiezione == PROSPETTICA) {
         glRotatef(angolo_telecamera_y, 1, 0, 0);
         glRotatef(-angolo_telecamera_x, 0, 1, 0);
     }
+
+    //STO inserendo la pallina per colpire gli oggetti ma manca la struttura dati di supporto
+    //poi bisogna cambiare dove si pulisce il buffer OPENGL perchè altrimenti le cose di grafica fatte fuori da questa funzione non si vedono
+    //Poi devo recuperare il caricatore del ds e del computer che fava che sono!
+
     glTranslatef(griglia_livello.getGriglia().x, griglia_livello.getGriglia().y, 0);
     glScalef(griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom);
     glGetDoublev(GL_MODELVIEW_MATRIX, matrice_model_griglia);
@@ -386,32 +390,32 @@ int Livello::video() {
 
     stampaSuperficeBase();
     griglia_livello.stampa();
-//    for (unsigned i = 0; i < griglia_livello.getDimGrigliaX(); i++) {
-//        for (unsigned j = 0; j < griglia_livello.getDimGrigliaY(); j++) {
-//            //            if (cubo_selezione[i][j] > 0) {
-//            //                stampaQuadrato(i, j, cubo_selezione[i][j]);
-//            //                cubo_selezione[i][j] -= 0.05;
-//            //            }
-//            if (griglia_livello.getSelezione(i,j,ELEM_PEZZO) > 0) {
-//                Pezzo::stampa(true, i, j, griglia_livello.getSelezione(i,j,ELEM_PEZZO));
-//                griglia_livello.aggiornaSelezione(i,j,ELEM_PEZZO);
-//            }
-//            if (griglia_livello.getSelezione(i,j,ELEM_BASE) > 0) {
-//                Base::stampa(true, i, j, griglia_livello.getSelezione(i,j,ELEM_BASE));
-//                griglia_livello.aggiornaSelezione(i,j,ELEM_BASE);
-//            }
-//            if (griglia_livello.getOccupato(i,j) && griglia_livello.getTipo(i,j) == ELEM_PEZZO) {
-//                griglia_livello.aggiornaStatoPezzo(i,j);
-//                griglia_livello.stampa(i,j);
-//            }
-//            if (griglia_livello.getOccupato(i,j) && griglia_livello.getTipo(i,j) == ELEM_BASE) {
-//                griglia_livello.stampa(i,j);
-//            }
-//        }
-//    }
+
+    //    for (unsigned i = 0; i < griglia_livello.getDimGrigliaX(); i++) {
+    //        for (unsigned j = 0; j < griglia_livello.getDimGrigliaY(); j++) {
+    //            //            if (cubo_selezione[i][j] > 0) {
+    //            //                stampaQuadrato(i, j, cubo_selezione[i][j]);
+    //            //                cubo_selezione[i][j] -= 0.05;
+    //            //            }
+    //            if (griglia_livello.getSelezione(i,j,ELEM_PEZZO) > 0) {
+    //                Pezzo::stampa(true, i, j, griglia_livello.getSelezione(i,j,ELEM_PEZZO));
+    //                griglia_livello.aggiornaSelezione(i,j,ELEM_PEZZO);
+    //            }
+    //            if (griglia_livello.getSelezione(i,j,ELEM_BASE) > 0) {
+    //                Base::stampa(true, i, j, griglia_livello.getSelezione(i,j,ELEM_BASE));
+    //                griglia_livello.aggiornaSelezione(i,j,ELEM_BASE);
+    //            }
+    //            if (griglia_livello.getOccupato(i,j) && griglia_livello.getTipo(i,j) == ELEM_PEZZO) {
+    //                griglia_livello.aggiornaStatoPezzo(i,j);
+    //                griglia_livello.stampa(i,j);
+    //            }
+    //            if (griglia_livello.getOccupato(i,j) && griglia_livello.getTipo(i,j) == ELEM_BASE) {
+    //                griglia_livello.stampa(i,j);
+    //            }
+    //        }
+    //    }
 
     glPopMatrix();
-    SDL_GL_SwapBuffers();
     return 1;
 }
 
@@ -450,16 +454,16 @@ int Livello::mouseSelezione(int altezza_fin) {
                         if (griglia_livello.getOccupato(pos_x_griglia + i, pos_y_griglia + j)) {
                             if (griglia_livello.getTipo(pos_x_griglia + i, pos_y_griglia + j) == ELEM_PEZZO) {
                                 glLoadName((i + 1) * 3 + (j + 1) + 1);
-                                Pezzo::stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
+                                Pezzo::stampaPezzoCollisione(pos_x_griglia + i, pos_y_griglia + j);
                             } else {
                                 glLoadName(11 + (i + 1) * 3 + (j + 1));
-                                Base::stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
+                                Base::stampaBaseCollisione(pos_x_griglia + i, pos_y_griglia + j);
                             }
                         } else {
                             glLoadName((i + 1) * 3 + (j + 1) + 1);
-                            Pezzo::stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
+                            Pezzo::stampaPezzoCollisione(pos_x_griglia + i, pos_y_griglia + j);
                             glLoadName(11 + (i + 1) * 3 + (j + 1));
-                            Base::stampa(false, pos_x_griglia + i, pos_y_griglia + j, 0.0);
+                            Base::stampaBaseCollisione(pos_x_griglia + i, pos_y_griglia + j);
                         }
                         indice++;
                     }

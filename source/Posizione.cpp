@@ -16,7 +16,7 @@ ElementoAttivo::ElementoAttivo() {
     elem = NULL;
 }
 
-ElementoAttivo::ElementoAttivo(Elemento *elem_aux, int x_aux, int y_aux, TipoElemento tipo_aux, ElementoAttivo *next_aux, ElementoAttivo *prev_aux) {
+ElementoAttivo::ElementoAttivo(Elemento *elem_aux, unsigned x_aux, unsigned y_aux, TipoElemento tipo_aux, ElementoAttivo *next_aux, ElementoAttivo *prev_aux) {
     selezione_pezzo = 0;
     selezione_base = 0;
     x = x_aux;
@@ -27,7 +27,7 @@ ElementoAttivo::ElementoAttivo(Elemento *elem_aux, int x_aux, int y_aux, TipoEle
     elem = elem_aux;
 }
 
-ElementoAttivo::ElementoAttivo(int x_aux, int y_aux, ElementoAttivo *next_aux, ElementoAttivo *prev_aux) {
+ElementoAttivo::ElementoAttivo(unsigned x_aux, unsigned y_aux, ElementoAttivo *next_aux, ElementoAttivo *prev_aux) {
     selezione_pezzo = 0;
     selezione_base = 0;
     x = x_aux;
@@ -37,7 +37,7 @@ ElementoAttivo::ElementoAttivo(int x_aux, int y_aux, ElementoAttivo *next_aux, E
     elem = NULL;
 }
 
-ElementoAttivo::ElementoAttivo(int x_aux, int y_aux, TipoElemento tipo_aux, ElementoAttivo *next_aux, ElementoAttivo *prev_aux) {
+ElementoAttivo::ElementoAttivo(unsigned x_aux, unsigned y_aux, TipoElemento tipo_aux, ElementoAttivo *next_aux, ElementoAttivo *prev_aux) {
     x = x_aux;
     y = y_aux;
     next = next_aux;

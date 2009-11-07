@@ -8,7 +8,8 @@
 #include "../include/Domino.h"
 //#include "../include/Griglia.h"
 
-Griglia::Griglia(int num_x_colonne_aux, int num_y_righe_aux) {
+Griglia::Griglia(unsigned num_x_colonne_aux, unsigned num_y_righe_aux) {
+    in_partita = false;
     testa_elementi = NULL;
     num_y_righe = num_y_righe_aux;
     num_x_colonne = num_x_colonne_aux;
@@ -26,6 +27,7 @@ Griglia::Griglia(int num_x_colonne_aux, int num_y_righe_aux) {
 Griglia::Griglia(const Griglia& orig) {
     cout << "costruttore di copia\n" << flush;
     testa_elementi = NULL;
+    in_partita = orig.in_partita;
     griglia = orig.griglia;
     num_y_righe = orig.num_y_righe;
     num_x_colonne = orig.num_x_colonne;
@@ -86,67 +88,88 @@ PosXYZoom Griglia::getGriglia() {
     return griglia;
 }
 
-void Griglia::attivaSelezione(int x, int y, TipoElemento tipo) {
-    ElementoAttivo* aux = creaElementoAttivo(x, y);
-    if (tipo == ELEM_PEZZO) {
-        aux->selezione_pezzo = 1;
-    } else {
-        aux->selezione_base = 1;
-    }
-}
-
-bool Griglia::spostaElementoAttivo(int x_sorg, int y_sorg, int x_dest, int y_dest) {
-    if (matrice_elementi[x_dest][y_dest] == NULL) {
-        matrice_elementi[x_sorg][y_sorg]->x = x_dest;
-        matrice_elementi[x_sorg][y_sorg]->y = y_dest;
-        matrice_elementi[x_dest][y_dest] = matrice_elementi[x_sorg][y_sorg];
-        matrice_elementi[x_sorg][y_sorg] =NULL;
-        if (matrice_elementi[x_dest][y_dest]->elem != NULL) {
-            matrice_elementi[x_dest][y_dest]->elem->spostaElemento(x_dest, y_dest);
+bool Griglia::attivaSelezione(unsigned x, unsigned y, TipoElemento tipo) {
+    if (x < num_x_colonne && y < num_y_righe) {
+        ElementoAttivo* aux = creaElementoAttivo(x, y);
+        if (tipo == ELEM_PEZZO) {
+            aux->selezione_pezzo = 1;
+        } else {
+            aux->selezione_base = 1;
         }
         return true;
     }
     return false;
 }
 
-bool Griglia::getOccupato(int x, int y) {
-    if (matrice_elementi[x][y] != NULL) {
-        return matrice_elementi[x][y]->getOccupato();
+bool Griglia::spostaElementoAttivo(unsigned x_sorg, unsigned y_sorg, unsigned x_dest, unsigned y_dest) {
+    if (x_dest < num_x_colonne && y_dest < num_y_righe) {
+        if (x_sorg < num_x_colonne && y_sorg < num_y_righe) {
+            if (matrice_elementi[x_dest][y_dest] == NULL) {
+                matrice_elementi[x_sorg][y_sorg]->x = x_dest;
+                matrice_elementi[x_sorg][y_sorg]->y = y_dest;
+                matrice_elementi[x_dest][y_dest] = matrice_elementi[x_sorg][y_sorg];
+                matrice_elementi[x_sorg][y_sorg] = NULL;
+                if (matrice_elementi[x_dest][y_dest]->elem != NULL) {
+                    matrice_elementi[x_dest][y_dest]->elem->spostaElemento(x_dest, y_dest);
+                }
+                return true;
+            }
+        }
     } else {
-        return false;
+        eliminaElementoAttivo(matrice_elementi[x_sorg][y_sorg]);
     }
+    return false;
 }
 
-TipoElemento Griglia::getTipo(int x, int y) {
-    if (matrice_elementi[x][y] != NULL) {
-        return matrice_elementi[x][y]->tipo;
-    } else {
-        return NESSUNO;
+bool Griglia::getOccupato(unsigned x, unsigned y) {
+    if (x < num_x_colonne && y < num_y_righe) {
+        if (matrice_elementi[x][y] != NULL) {
+            return matrice_elementi[x][y]->getOccupato();
+        }
     }
+    return false;
 }
 
-void Griglia::eliminaElemento(int x, int y) {
-    if (matrice_elementi[x][y] != NULL) {
-        matrice_elementi[x][y]->liberaPosizione();
+TipoElemento Griglia::getTipo(unsigned x, unsigned y) {
+    if (x < num_x_colonne && y < num_y_righe) {
+        if (matrice_elementi[x][y] != NULL) {
+            return matrice_elementi[x][y]->tipo;
+        }
     }
+    return NESSUNO;
+
 }
 
-void Griglia::creaElemento(int x, int y, TipoElemento tipo) {
-    ElementoAttivo* aux = creaElementoAttivo(x, y);
-    switch (tipo) {
-        case ELEM_PEZZO:
-            aux->elem = new Pezzo(x, y);
-            break;
-        case ELEM_BASE:
-            aux->elem = new Base(x, y);
-            break;
-        default:
-            break;
+bool Griglia::eliminaElemento(unsigned x, unsigned y) {
+    if (x < num_x_colonne && y < num_y_righe) {
+        if (matrice_elementi[x][y] != NULL) {
+            matrice_elementi[x][y]->liberaPosizione();
+        }
+        return true;
     }
-    aux->tipo = tipo;
+    return false;
 }
 
-ElementoAttivo* Griglia::creaElementoAttivo(int x, int y) {
+bool Griglia::creaElemento(unsigned x, unsigned y, TipoElemento tipo) {
+    if (x < num_x_colonne && y < num_y_righe) {
+        ElementoAttivo* aux = creaElementoAttivo(x, y);
+        switch (tipo) {
+            case ELEM_PEZZO:
+                aux->elem = new Pezzo(x, y);
+                break;
+            case ELEM_BASE:
+                aux->elem = new Base(x, y);
+                break;
+            default:
+                break;
+        }
+        aux->tipo = tipo;
+        return true;
+    }
+    return false;
+}
+
+ElementoAttivo * Griglia::creaElementoAttivo(unsigned x, unsigned y) {
     if (matrice_elementi[x][y] == NULL) {
         ElementoAttivo* tmp = testa_elementi;
         testa_elementi = new ElementoAttivo(x, y, tmp);
@@ -157,7 +180,7 @@ ElementoAttivo* Griglia::creaElementoAttivo(int x, int y) {
     return matrice_elementi[x][y];
 }
 
-void Griglia::eliminaElementoAttivo(ElementoAttivo* tokill) {
+void Griglia::eliminaElementoAttivo(ElementoAttivo * tokill) {
     if (tokill->prev == NULL) {
         testa_elementi = tokill->next;
         if (testa_elementi != NULL) {
@@ -179,9 +202,9 @@ void Griglia::stampa() {
         if (aux->elem != NULL)
             aux->elem->stampa();
         if (aux->selezione_pezzo > 0)
-            Pezzo::stampa(true, aux->x, aux->y, aux->selezione_pezzo);
+            Pezzo::stampaSelezione(aux->x, aux->y, aux->selezione_pezzo);
         if (aux->selezione_base > 0)
-            Base::stampa(true, aux->x, aux->y, aux->selezione_base);
+            Base::stampaSelezione(aux->x, aux->y, aux->selezione_base);
         aux = aux->next;
     }
 }
@@ -200,7 +223,9 @@ void Griglia::aggiornaStato() {
             elimina = false;
         }
         if (aux->elem != NULL) {
-            aux->elem->aggiornaStato(*this);
+            if (in_partita) {
+                aux->elem->aggiornaStato(*this);
+            }
             elimina = false;
         }
         if (elimina == true) {
@@ -208,6 +233,10 @@ void Griglia::aggiornaStato() {
         }
         aux = aux->next;
     }
+}
+
+void Griglia::setInPartita(bool aux_in_partita) {
+    in_partita = aux_in_partita;
 }
 
 //void Griglia::stampa(int x, int y) {
@@ -237,10 +266,14 @@ void Griglia::setGrigliaXY(GLfloat x, GLfloat y) {
     griglia.y = y;
 }
 
-void Griglia::setStato(int x, int y, StatoPezzo stato) {
+bool Griglia::setStato(unsigned x, unsigned y, StatoPezzo stato) {
+    if (x < num_x_colonne && y < num_y_righe) {
     if (matrice_elementi[x][y]->getOccupato() && matrice_elementi[x][y]->tipo == ELEM_PEZZO) {
         matrice_elementi[x][y]->elem->setStato(&stato);
     }
+    return true;
+    }
+    return false;
 }
 
 unsigned Griglia::getDimGrigliaX() const {

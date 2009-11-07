@@ -25,17 +25,21 @@ class Griglia;
 //#include "../Griglia.h"
 
 class Pezzo : public Elemento{
-    GLdouble angolo;
     StatoPezzo stato;
+
+    bool angolo_destro;
+    GLdouble angolo;
+    GLdouble dx,dy,dz;
 public:
-    Pezzo(int x_aux = -1,int y_aux = -1);
+    Pezzo(unsigned x_aux,unsigned y_aux);
     Pezzo(const Pezzo& orig);
     Elemento* costruttore();
     void setStato(void* stato);
     StatoPezzo getStato();
     void aggiornaStato(Griglia &griglia);
     void stampa();
-    static void stampa(bool wire, int x, int y, GLfloat attivo, GLdouble angolo = 0, StatoPezzo stato = IN_PIEDI);
+    static void stampaPezzoCollisione(unsigned x, unsigned y);
+    static void stampaSelezione(unsigned x, unsigned y, GLfloat attivo);
 };
 
 #endif	/* _PEZZO_H */

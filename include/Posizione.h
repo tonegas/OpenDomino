@@ -19,9 +19,9 @@ class Griglia;
 
 class Elemento {
 protected:
-    int x, y;
+    unsigned x, y;
 public:
-    Elemento(int x_aux, int y_aux) {
+    Elemento(unsigned x_aux, unsigned y_aux) {
         x = x_aux;
         y = y_aux;
     };
@@ -31,7 +31,7 @@ public:
         y = orig.y;
     };
 
-    void spostaElemento(int x_new,int y_new){
+    void spostaElemento(unsigned x_new,unsigned y_new){
         x=x_new;
         y=y_new;
     }
@@ -44,7 +44,7 @@ public:
 
     virtual void setStato(void *stato){}
 
-    static void stampa(bool wire, int x, int y, GLfloat attivo) {
+    static void stampa(bool wire, unsigned x, unsigned y, GLfloat attivo) {
     }
 
     virtual void stampa() {
@@ -56,7 +56,7 @@ class ElementoAttivo {
     friend class Griglia;
     friend class Pezzo;
 public:
-    int x, y;
+    unsigned x, y;
     TipoElemento tipo;
     Elemento *elem;
 
@@ -68,11 +68,11 @@ public:
 
     ElementoAttivo();
 
-    ElementoAttivo(int x_aux, int y_aux, TipoElemento tipo_aux, ElementoAttivo *next_aux = NULL, ElementoAttivo *prev_aux = NULL);
+    ElementoAttivo(unsigned x_aux, unsigned y_aux, TipoElemento tipo_aux, ElementoAttivo *next_aux = NULL, ElementoAttivo *prev_aux = NULL);
 
-    ElementoAttivo(Elemento *elem_aux, int x_aux, int y_aux, TipoElemento tipo_aux, ElementoAttivo *next_aux = NULL, ElementoAttivo *prev_aux = NULL);
+    ElementoAttivo(Elemento *elem_aux, unsigned x_aux, unsigned y_aux, TipoElemento tipo_aux, ElementoAttivo *next_aux = NULL, ElementoAttivo *prev_aux = NULL);
 
-    ElementoAttivo(int x_aux, int y_aux, ElementoAttivo *next_aux = NULL, ElementoAttivo *prev_aux = NULL);
+    ElementoAttivo(unsigned x_aux, unsigned y_aux, ElementoAttivo *next_aux = NULL, ElementoAttivo *prev_aux = NULL);
 
     ElementoAttivo(const ElementoAttivo& orig);
 

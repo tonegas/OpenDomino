@@ -20,12 +20,13 @@ class Griglia;
 
 class Base : public Elemento{
 public:
-    Base(int x_aux = -1,int y_aux= -1);
+    Base(unsigned x_aux,unsigned y_aux);
     Base(const Base& orig);
     Elemento* costruttore();
     void aggiornaStato(Griglia &griglia);
     void setStato(void *stato);
-    static void stampa(bool wire, int x, int y, GLfloat attivo);
+    static void stampaSelezione(unsigned x, unsigned y, GLfloat attivo);
+    static void stampaBaseCollisione(unsigned x, unsigned y);
     void stampa();
 };
 

@@ -34,48 +34,52 @@ public:
 class Griglia {
     friend class Pezzo;
     PosXYZoom griglia;
+    
 public:
+    bool in_partita;
     ElementoAttivo *testa_elementi;
     ElementoAttivo* **matrice_elementi;
     unsigned num_y_righe;
     unsigned num_x_colonne;
 
-    ElementoAttivo* creaElementoAttivo(int x, int y);
+    ElementoAttivo* creaElementoAttivo(unsigned x, unsigned y);
 
     void eliminaElementoAttivo(ElementoAttivo* tokill);
 
 
-    Griglia(int num_x_colonne_aux, int num_y_righe_aux);
+    Griglia(unsigned num_x_colonne_aux, unsigned num_y_righe_aux);
 
     Griglia(const Griglia& orig);
 
     ~Griglia();
 
-    void setStato(int x, int y, StatoPezzo stato);
+    bool setStato(unsigned x, unsigned y, StatoPezzo stato);
 
-    bool getOccupato(int x, int y);
+    bool getOccupato(unsigned x, unsigned y);
 
     PosXYZoom getGriglia();
 
-    void attivaSelezione(int x, int y, TipoElemento tipo);
+    bool attivaSelezione(unsigned x, unsigned y, TipoElemento tipo);
 
-    void eliminaElemento(int x, int y);
+    bool eliminaElemento(unsigned x, unsigned y);
 
-    void creaElemento(int x, int y, TipoElemento tipo);
+    bool creaElemento(unsigned x, unsigned y, TipoElemento tipo);
 
-    TipoElemento getTipo(int x, int y);
+    TipoElemento getTipo(unsigned x, unsigned y);
 
     void stampa();
 
     void aggiornaStato();
 
-    bool spostaElementoAttivo(int x_sorg,int y_sorg, int x_dest,int y_dest);
+    bool spostaElementoAttivo(unsigned x_sorg, unsigned y_sorg, unsigned x_dest, unsigned y_dest);
 
     //    ElementoAttivo* getPosizione(int i, int j);
 
     //    Pezzo& getPezzo(int i, int j);
 
     //    Base& getBase(int i, int j);
+
+    void setInPartita(bool aux_in_partita);
 
     void setGrigliaZoom(GLfloat zoom);
 

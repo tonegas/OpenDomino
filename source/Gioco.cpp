@@ -8,7 +8,7 @@
 #include "../include/Domino.h"
 //#include "../include/Gioco.h"
 
-Gioco::Gioco():domino_editor(this){
+Gioco::Gioco() : domino_editor(this) {
     bpp = BPP_FIN;
 
     fullscreen = false;
@@ -87,7 +87,7 @@ Gioco::Gioco():domino_editor(this){
     //se lo attivo sparisce anche le faccie laterali
     //glEnable(GL_CULL_FACE); //disattuva le faccie posteriori
 
-    if(stato==EDITOR_COSTRUISCI){
+    if (stato == EDITOR_COSTRUISCI) {
         domino = &domino_editor;
         domino->inizializza();
     }
@@ -101,7 +101,7 @@ void Gioco::loop() {
     while (SDL_PollEvent(&evento)) {
     }
     while (alive) {
-        if(cambia_stato){
+        if (cambia_stato) {
             stato = stato_temporaneo;
             cambia_stato = false;
             domino->inizializza();
@@ -112,16 +112,18 @@ void Gioco::loop() {
         //cout<<"dopo Input!!\n"<<flush;
         domino->aggiornaStato();
         //cout<<"dopo Stato!!\n"<<flush;
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         domino->video();
+        SDL_GL_SwapBuffers();
         //cout<<"dopo Video!!\n"<<flush;
 
         fine = SDL_GetTicks();
         durata = fine - inizio;
         aspetto = frame_ms - durata;
-        if (aspetto > 0){
+        if (aspetto > 0) {
             SDL_Delay(aspetto);
-        }else{
-            cout<<"SCATTA"<<'\n'<<flush;
+        } else {
+            cout << "SCATTA" << '\n' << flush;
         }
         //            else
         //                cout << "H" << flush;
@@ -138,12 +140,12 @@ void Gioco::loop() {
     }
 }
 
-void Gioco::setStato(Stato stato_aux){
+void Gioco::setStato(Stato stato_aux) {
     cambia_stato = true;
     stato_temporaneo = stato_aux;
 }
 
-Stato Gioco::getStato() const{
+Stato Gioco::getStato() const {
     return stato;
 }
 
@@ -155,7 +157,7 @@ void Gioco::setFrames(int frame_aux) {
     frame_ms = frame_aux;
 }
 
-int Gioco::getFrames() const{
+int Gioco::getFrames() const {
     return frame_ms;
 }
 
@@ -183,23 +185,23 @@ void Gioco::resetFullScreen() {
     //        setWindowLA(larghezza_finestra, altezza_finestra);
 }
 
-bool Gioco::getFullScreen() const{
+bool Gioco::getFullScreen() const {
     return fullscreen;
 }
 
-int Gioco::getWindowL() const{
+int Gioco::getWindowL() const {
     return larghezza_finestra;
 }
 
-int Gioco::getWindowA() const{
+int Gioco::getWindowA() const {
     return altezza_finestra;
 }
 
-int Gioco::getScreenL() const{
+int Gioco::getScreenL() const {
     return videoInfo->current_w;
 }
 
-int Gioco::getScreenA() const{
+int Gioco::getScreenA() const {
     return videoInfo->current_h;
 }
 

@@ -13,12 +13,15 @@ using namespace std;
 
 Partita::Partita(Gioco *gioco_aux, int num_y_righe_aux, int num_x_colonne_aux)
 : Livello(gioco_aux, num_x_colonne_aux, num_y_righe_aux, FRAMERATE) {
+    griglia_livello.setInPartita(true);
 }
 
 Partita::Partita(const Partita& orig) : Livello(orig) {
+    griglia_livello.setInPartita(true);
 }
 
 Partita::Partita(const Livello& orig) : Livello(orig) {
+    griglia_livello.setInPartita(true);
 }
 
 int Partita::aggiornaStato() {
@@ -44,7 +47,7 @@ int Partita::gestisciInput(SDL_Event * evento) {
                         mouseSelezione(gioco->getWindowA());
                         if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {
                             if (griglia_livello.getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
-                                griglia_livello.attivaSelezione(x_pezzo_selezionato, y_pezzo_selezionato,ELEM_PEZZO);
+                                griglia_livello.attivaSelezione(x_pezzo_selezionato, y_pezzo_selezionato, ELEM_PEZZO);
                             }
                         }
                     }
@@ -54,9 +57,9 @@ int Partita::gestisciInput(SDL_Event * evento) {
                         mouseSelezione(gioco->getWindowA());
                         if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {
                             if (griglia_livello.getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
-                                griglia_livello.setStato(x_pezzo_selezionato, y_pezzo_selezionato,CADE_DESTRA);
-                            }else{
-                                cout<<"NONOCCUPATO"<<flush;
+                                griglia_livello.setStato(x_pezzo_selezionato, y_pezzo_selezionato, CADE_DESTRA);
+                            } else {
+                                cout << "NONOCCUPATO" << flush;
                             }
                         }
                     }
@@ -70,18 +73,33 @@ int Partita::gestisciInput(SDL_Event * evento) {
 }
 
 int Partita::video() {
+    static GLfloat colorwhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
     SDL_GetMouseState(&mouse_x_fin, &mouse_y_fin);
     if (getMousePosGrigliaXY(gioco->getWindowA())) {
         mouseSelezione(gioco->getWindowA());
         if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {
             if (griglia_livello.getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
-                griglia_livello.attivaSelezione(x_pezzo_selezionato, y_pezzo_selezionato,ELEM_PEZZO);
+                griglia_livello.attivaSelezione(x_pezzo_selezionato, y_pezzo_selezionato, ELEM_PEZZO);
             }
         }
     }
+
+    glPushMatrix();
+    if (griglia_livello.in_partita) {
+        GLUquadric *myQuad;
+        GLint slices, stacks;
+
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, colorwhite);
+        glTranslatef(pos_x, pos_y, pos_z + 10);
+        glScalef(griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom);
+        slices = stacks = 50;
+        myQuad = gluNewQuadric();
+        gluSphere(myQuad, 3, slices, stacks);
+
+    }
+    glPopMatrix();
     return Livello::video();
 }
-
 
 //Partita::~Partita() {
 //}
