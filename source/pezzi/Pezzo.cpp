@@ -10,13 +10,9 @@
 //#include"../../include/Griglia.h"
 
 //GLuint Pezzo::texture;// = Texture::loadTextures("crate.bmp");
-int Pezzo::texture = -1;
 
 Pezzo::Pezzo(unsigned x_aux, unsigned y_aux) : Elemento(x_aux, y_aux){
     stato = IN_PIEDI;
-    if(Pezzo::texture == -1)
-        Pezzo::texture = loadTextures("crate.bmp");
-    cout << Pezzo::texture << flush;
     //texture = loadTextures("prova.jpg");
 
     angolo_destro = false;
@@ -250,7 +246,7 @@ void Pezzo::stampa() {
     glTranslated(angolo / 90.0 * ((GLdouble) SPESSORE_PEZZO / 2.0), 0, 0);
     glRotated(angolo, 0, 0, 1);
     //cout<<"\""<<Pezzo::texture<<"\""<<flush;
-    glBindTexture(GL_TEXTURE_2D, Pezzo::texture);
+    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_PEZZO]);
     //fprintf(stderr, "Errore: %s\n", gluErrorString(glGetError()));
     glBegin(GL_QUADS);
     {

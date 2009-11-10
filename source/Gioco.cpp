@@ -74,6 +74,7 @@ Gioco::Gioco() : domino_editor(this) {
     /* Depth buffer setup */
     glClearDepth(1.0f);
 
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //glBlendFunc(GL_SRC_ALPHA_SATURATE, GL_ONE);
@@ -88,7 +89,8 @@ Gioco::Gioco() : domino_editor(this) {
     /* The Type Of Depth Test To Do */
     glDepthFunc(GL_LEQUAL);
 
-    glEnable(GL_LIGHT0);
+
+//    glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);
     glEnable(GL_LIGHTING);
     glEnable(GL_NORMALIZE);
@@ -97,6 +99,8 @@ Gioco::Gioco() : domino_editor(this) {
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
     //se lo attivo sparisce anche le faccie laterali
     //glEnable(GL_CULL_FACE); //disattuva le faccie posteriori
+
+//        Texture::loadTextures("crate.bmp", TEX_PEZZO);
 
     if (stato == EDITOR_COSTRUISCI) {
         domino = &domino_editor;

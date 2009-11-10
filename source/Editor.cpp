@@ -294,5 +294,24 @@ int Editor::gestisciInputEditor(SDL_Event *evento) {
     return 1;
 }
 
-
-
+//void Livello::stampaSfondo() {
+//    static GLfloat cieloAzzurro [] = {96.0/255.0, 146.0/255.0, 239.0/255.0, 1.0f};
+//    glPushMatrix();
+//
+//    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, cieloAzzurro);
+//    //glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, colorblue);
+//    //glTranslatef(0.0, 0.0, POSIZIONE_SUPERFICE);
+//    //glColor3f(1.0f, 1.0f, 0.0f);
+//    //glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_PEZZO]);
+//    glBegin(GL_QUADS);
+//    {
+//        glNormal3f(0.0, 0.0, 1.0);
+//        glVertex3f(-10000, -10000, 0);
+//        glVertex3f(10000, -10000, 0);
+//        glVertex3f(10000, 10000, 0);
+//        glVertex3f(-10000, 10000, 0);
+//    }
+//    glEnd();
+//
+//    glPopMatrix();
+//}

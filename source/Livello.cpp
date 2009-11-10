@@ -151,8 +151,8 @@ void Livello::setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin,
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
             gluLookAt(
-                    0.0, 0.0, H_TELECAMERA, /* eye  */
-                    0.0, 0.0, 0.0, /* center  */
+                    -400.0, -400.0, H_TELECAMERA, /* eye  */
+                    -400.0, -400.0, 0.0, /* center  */
                     0.0, 1.0, 0.0); /* up is in positive Y direction */
             if (reset) {
                 max_zoom = MAX_ZOOM_ASSIONOMETRIA;
@@ -218,6 +218,21 @@ int Livello::aggiornaStato() {
             mouvi_zoom = false;
             griglia_livello.setGrigliaXY(aux_griglia.x, aux_griglia.y);
             griglia_livello.setGrigliaZoom(aux_griglia.zoom);
+        }
+    }
+
+    if (griglia_livello.getGriglia().x > 0) {
+        griglia_livello.setGrigliaXY(0, griglia_livello.getGriglia().y);
+    } else {
+        if (griglia_livello.getGriglia().x < -(GLdouble) (griglia_livello.num_x_colonne * ALTEZZA_PEZZO) * griglia_livello.getGriglia().zoom) {
+            griglia_livello.setGrigliaXY(-(GLdouble) (griglia_livello.num_x_colonne * ALTEZZA_PEZZO) * griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().y);
+        }
+    }
+    if (griglia_livello.getGriglia().y > 0) {
+        griglia_livello.setGrigliaXY(griglia_livello.getGriglia().x, 0);
+    } else {
+        if (griglia_livello.getGriglia().y < -(GLdouble) (griglia_livello.num_y_righe * ALTEZZA_PEZZO) * griglia_livello.getGriglia().zoom) {
+            griglia_livello.setGrigliaXY(griglia_livello.getGriglia().x, -(GLdouble) (griglia_livello.num_y_righe * ALTEZZA_PEZZO) * griglia_livello.getGriglia().zoom);
         }
     }
     if (delta_zoom > DELTA_ZOOM) {
@@ -328,7 +343,7 @@ int Livello::gestisciInput(SDL_Event *evento) {
         case SDL_MOUSEMOTION:
             getMousePosGrigliaXY(gioco->getWindowA(), evento->button.x, evento->button.y);
             if (bottone_destro) {
-                //cout << pos_x_iniziali << ' ' << pos_x << ' ' << aux_griglia.x << '\n';
+                cout << griglia_livello.getGriglia().x << ' ' << griglia_livello.getGriglia().y << ' ' << '\n';
                 griglia_livello.setGrigliaXY(aux_griglia.x + (pos_x - pos_x_iniziali), aux_griglia.y + (pos_y - pos_y_iniziali));
             }
             if (bottone_centrale) {
@@ -370,17 +385,19 @@ int Livello::gestisciInput(SDL_Event *evento) {
 }
 
 int Livello::video() {
-    static GLfloat lightpos_ambient[] = {60, 120, 150, 0};
+    static GLfloat lightpos_ambient[] = {60, 120, 150, 0.0};
     static GLfloat colorwhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
 
     /* Ambient Light Values ( NEW ) */
-//GLfloat LightAmbient[]  = { 0.5f, 0.5f, 0.5f, 1.0f };
-///* Diffuse Light Values ( NEW ) */
-//GLfloat LightDiffuse[]  = { 1.0f, 1.0f, 1.0f, 1.0f };
-///* Light Position ( NEW ) */
-//GLfloat LightPosition[] = { 0.0f, 0.0f, 2.0f, 1.0f };
+    //static GLfloat LightAmbient[]  = { 0.5f, 0.5f, 0.5f, 1.0f };
+    ///* Diffuse Light Values ( NEW ) */
+    //GLfloat LightDiffuse[]  = { 1.0f, 1.0f, 1.0f, 1.0f };
+    ///* Light Position ( NEW ) */
+    //GLfloat LightPosition[] = { 0.0f, 0.0f, 2.0f, 1.0f };
 
     glPushMatrix();
+    
+    stampaSfondo();
 
     if (tipo_proiezione == PROSPETTICA) {
         glRotatef(angolo_telecamera_y, 1, 0, 0);
@@ -398,7 +415,7 @@ int Livello::video() {
         GLint slices, stacks;
         glPushMatrix();
         glMaterialfv(GL_FRONT, GL_DIFFUSE, colorwhite);
-        glTranslatef(pos_x_griglia, pos_y_griglia, pos_z_griglia + ALTEZZA_PEZZO/2.0);
+        glTranslatef(pos_x_griglia, pos_y_griglia, pos_z_griglia + ALTEZZA_PEZZO / 2.0);
         slices = stacks = 50;
         myQuad = gluNewQuadric();
         gluSphere(myQuad, 3, slices, stacks);
@@ -407,18 +424,20 @@ int Livello::video() {
 
     //glLightfv(GL_LIGHT0, GL_DIFFUSE, colorwhite);
     //glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
+    // glLightfv(GL_LIGHT1, GL_AMBIENT, colorwhite);
     glLightfv(GL_LIGHT1, GL_DIFFUSE, colorwhite);
+    //glLightfv(GL_LIGHT1, GL_SPECULAR, colorwhite);
     glLightfv(GL_LIGHT1, GL_POSITION, lightpos_ambient);
 
-//        /* Setup The Ambient Light */
-//    glLightfv( GL_LIGHT1, GL_AMBIENT, LightAmbient );
-//
-//    /* Setup The Diffuse Light */
-//    glLightfv( GL_LIGHT1, GL_DIFFUSE, LightDiffuse );
-//
-//    /* Position The Light */
-//    glLightfv( GL_LIGHT1, GL_POSITION, LightPosition );
-//
+    //        /* Setup The Ambient Light */
+    //    glLightfv( GL_LIGHT1, GL_AMBIENT, LightAmbient );
+    //
+    //    /* Setup The Diffuse Light */
+    //    glLightfv( GL_LIGHT1, GL_DIFFUSE, LightDiffuse );
+    //
+    //    /* Position The Light */
+    //    glLightfv( GL_LIGHT1, GL_POSITION, LightPosition );
+    //
 
     stampaSuperficeBase();
     griglia_livello.stampa();
@@ -520,17 +539,41 @@ void Livello::stampaSuperficeBase() {
     static GLfloat colorblue [] = {0.0f, 0.0f, 1.0f, 1.0f};
     glPushMatrix();
 
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, colorblue);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, colorblue);
+    //glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, colorblue);
     glTranslatef(0.0, 0.0, POSIZIONE_SUPERFICE);
-    glColor3f(1.0f, 1.0f, 0.0f);
-    //glBindTexture(GL_TEXTURE_2D, indice_texture[0]);
+    //glColor3f(1.0f, 1.0f, 0.0f);
+    //glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_PEZZO]);
     glBegin(GL_QUADS);
     {
         glNormal3f(0.0, 0.0, 1.0);
-        /*glTexCoord2f(0.0f, 0.0f),*/ glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-        /*glTexCoord2f(1.0f, 0.0f),*/ glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-        /*glTexCoord2f(1.0f, 1.0f),*/ glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
-        /*glTexCoord2f(0.0f, 1.0f),*/ glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+        glTexCoord2f(0.0f, 0.0f), glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+        glTexCoord2f(1.0f, 0.0f), glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+        glTexCoord2f(1.0f, 1.0f), glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+        glTexCoord2f(0.0f, 1.0f), glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+    }
+    glEnd();
+
+    glPopMatrix();
+}
+
+void Livello::stampaSfondo() {
+    static GLfloat cieloAzzurro [] = {37.0 / 255.0, 104.0 / 255.0, 246.0 / 255.0, 1.0f};
+    glPushMatrix();
+
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, cieloAzzurro);
+    //glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, colorblue);
+    glTranslatef(0.0, 0.0, -1000.0);
+    //glColor3f(1.0f, 1.0f, 0.0f);
+    //glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_PEZZO]);
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(0.0, 0.0, 1.0);
+        glVertex3f(-10000.0, -10000.0, 0.0);
+        glVertex3f(-1000.0, 10000.0, 0.0);
+        glVertex3f(10000.0, 10000.0, 0.0);
+        glVertex3f(10000.0, -10000.0, 0.0);
+
     }
     glEnd();
 

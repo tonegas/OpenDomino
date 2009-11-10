@@ -8,12 +8,11 @@
 #ifndef _LIVELLO_H
 #define	_LIVELLO_H
 
-#define X_TELECAMERA 0
-#define Y_TELECAMERA 0
+
 #define H_TELECAMERA 200
 #define FOVY    40
-#define ZNEAR   5
-#define ZFAR    700
+#define ZNEAR   2
+#define ZFAR    10000
 
 #define MAX_ZOOM_ASSIONOMETRIA 23
 #define MIN_ZOOM_ASSIONOMETRIA 0.25
@@ -46,7 +45,7 @@ const GLfloat cavalier[] = {
     0, 0, 0, 1
 };
 
-class Livello {
+class Livello : public Texture{
 protected:
     //puntatore al gioco per interagire sulle funzionidi gioco
     Gioco *gioco; //ok
@@ -130,6 +129,8 @@ public:
     void setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin, bool reset = false);
 
     void stampaSuperficeBase();
+
+    void stampaSfondo();
 
     virtual int aggiornaStato();
 

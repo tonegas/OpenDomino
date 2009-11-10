@@ -10,19 +10,23 @@
 
 #define NUMERO_TEXTURES 10
 
+enum Tex {
+    TEX_PEZZO, TEX_BASE
+};
+
 using std::string;
 
 #include "Domino.h"
 
 class Texture {
+protected:
     static unsigned numero_textures;
-    static unsigned numero_tex_caricate;
     static SDL_Surface* texture[NUMERO_TEXTURES];
     static GLuint indice_texture[NUMERO_TEXTURES];
 public:
     Texture();
     ~Texture();
-    static int loadTextures(string nome_immagine);
+    static void loadTextures(string nome_immagine, Tex numero_tex_caricate);
 };
 #endif	/* _TEXTURE_H */
 
