@@ -66,7 +66,6 @@ class Gioco {
 
     //indica se il gioco deve smettere di ciclare
     bool alive;
-
 public:
 
     Gioco();

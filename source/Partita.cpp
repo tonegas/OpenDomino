@@ -73,7 +73,6 @@ int Partita::gestisciInput(SDL_Event * evento) {
 }
 
 int Partita::video() {
-    static GLfloat colorwhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
     SDL_GetMouseState(&mouse_x_fin, &mouse_y_fin);
     if (getMousePosGrigliaXY(gioco->getWindowA())) {
         mouseSelezione(gioco->getWindowA());
@@ -84,20 +83,6 @@ int Partita::video() {
         }
     }
 
-    glPushMatrix();
-    if (griglia_livello.in_partita) {
-        GLUquadric *myQuad;
-        GLint slices, stacks;
-
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, colorwhite);
-        glTranslatef(pos_x, pos_y, pos_z + 10);
-        glScalef(griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom);
-        slices = stacks = 50;
-        myQuad = gluNewQuadric();
-        gluSphere(myQuad, 3, slices, stacks);
-
-    }
-    glPopMatrix();
     return Livello::video();
 }
 

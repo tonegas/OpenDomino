@@ -94,13 +94,15 @@ protected:
     //posizione z della superfice base di sfondo
     GLdouble superfice_z; //inizializzati nella setProiezione
 
-    //posizione 3d del mouse
+    //posizione 3d del mouse assolute
     GLdouble pos_x, pos_y, pos_z; //si inizializzano nella getMousePosGrigliaXY
+    //posizione 3d del mouse rispetto alla griglia
+    GLdouble pos_x_griglia, pos_y_griglia,pos_z_griglia;
     //posizione 3d iniziali del mouse per lo spostamento della griglia
     GLdouble pos_x_iniziali, pos_y_iniziali; //questi si inizializzano da soli quando premo
 
     //indice sulla griglia del mouse
-    int pos_x_griglia, pos_y_griglia; //si inizializzano nella getMousePosGrigliaXY
+    unsigned indice_x_griglia, indice_y_griglia; //si inizializzano nella getMousePosGrigliaXY
     //indicatore booleano che indica se l'indice sulla griglia è più o meno sensato
     bool pos_griglia_ok; //si inizializzano nella getMousePosGrigliaXY
 

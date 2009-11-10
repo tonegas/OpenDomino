@@ -64,9 +64,11 @@ bool Livello::getMousePosGrigliaXY(int altezza_fin, int mouse_x_fin_aux, int mou
 bool Livello::getMousePosGrigliaXY(int altezza_fin) {
     if (tipo_proiezione == ASSIONOMETRICA) {
         gluUnProject(mouse_x_fin, altezza_fin - mouse_y_fin, superfice_z, matrice_model, matrice_proj, matrice_view, &pos_x, &pos_y, &pos_z);
-        pos_x_griglia = (int) (((pos_x - griglia_livello.getGriglia().x) / griglia_livello.getGriglia().zoom) / (GLfloat) ALTEZZA_PEZZO);
-        pos_y_griglia = (int) (((pos_y - griglia_livello.getGriglia().y) / griglia_livello.getGriglia().zoom) / (GLfloat) ALTEZZA_PEZZO);
-        if (pos_x_griglia >= 0 && pos_y_griglia >= 0 && (unsigned) pos_x_griglia < griglia_livello.getDimGrigliaX() && (unsigned) pos_y_griglia < griglia_livello.getDimGrigliaY()) {
+        pos_x_griglia = ((pos_x - griglia_livello.getGriglia().x) / griglia_livello.getGriglia().zoom);
+        pos_y_griglia = ((pos_y - griglia_livello.getGriglia().y) / griglia_livello.getGriglia().zoom);
+        indice_x_griglia = (unsigned) (pos_x_griglia / (GLfloat) ALTEZZA_PEZZO);
+        indice_y_griglia = (unsigned) (pos_y_griglia / (GLfloat) ALTEZZA_PEZZO);
+        if (indice_x_griglia < griglia_livello.getDimGrigliaX() && indice_y_griglia < griglia_livello.getDimGrigliaY()) {
             pos_griglia_ok = true;
         } else {
             pos_griglia_ok = false;
@@ -92,6 +94,7 @@ bool Livello::getMousePosGrigliaXY(int altezza_fin) {
                 glRotatef(-angolo_telecamera_x, 0, 1, 0);
                 glTranslatef(griglia_livello.getGriglia().x, griglia_livello.getGriglia().y, 0);
                 glScalef(griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom);
+                glGetDoublev(GL_MODELVIEW_MATRIX, matrice_model_griglia);
                 glBegin(GL_QUADS);
                 {
                     glNormal3f(0.0, 0.0, 1.0);
@@ -113,10 +116,10 @@ bool Livello::getMousePosGrigliaXY(int altezza_fin) {
             //int choose = buffer[3]; // Make Our Selection The First Object
             GLuint depth = buffer[2]; // Store How Far Away It Is
             //cout << "depth:" << (GLfloat) depth / (GLfloat) (GLuint) (-1) << '\t' << superfice_z << '\n' << flush;
-            gluUnProject(mouse_x_fin, altezza_fin - mouse_y_fin, (GLdouble) depth / (GLdouble) (GLuint) (-1), matrice_model_griglia, matrice_proj, matrice_view, &pos_x, &pos_y, &pos_z);
-            pos_x_griglia = pos_x / (GLfloat) ALTEZZA_PEZZO;
-            pos_y_griglia = pos_y / (GLfloat) ALTEZZA_PEZZO;
-            if (pos_x_griglia >= 0 && pos_y_griglia >= 0 && (unsigned) pos_x_griglia < griglia_livello.getDimGrigliaX() && (unsigned) pos_y_griglia < griglia_livello.getDimGrigliaY()) {
+            gluUnProject(mouse_x_fin, altezza_fin - mouse_y_fin, (GLdouble) depth / (GLdouble) (GLuint) (-1), matrice_model_griglia, matrice_proj, matrice_view, &pos_x_griglia, &pos_y_griglia, &pos_z_griglia);
+            indice_x_griglia = pos_x_griglia / (GLfloat) ALTEZZA_PEZZO;
+            indice_y_griglia = pos_y_griglia / (GLfloat) ALTEZZA_PEZZO;
+            if (indice_x_griglia < griglia_livello.getDimGrigliaX() && indice_y_griglia < griglia_livello.getDimGrigliaY()) {
                 pos_griglia_ok = true;
             } else {
                 pos_griglia_ok = false;
@@ -369,51 +372,56 @@ int Livello::gestisciInput(SDL_Event *evento) {
 int Livello::video() {
     static GLfloat lightpos_ambient[] = {60, 120, 150, 0};
     static GLfloat colorwhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
+
+    /* Ambient Light Values ( NEW ) */
+//GLfloat LightAmbient[]  = { 0.5f, 0.5f, 0.5f, 1.0f };
+///* Diffuse Light Values ( NEW ) */
+//GLfloat LightDiffuse[]  = { 1.0f, 1.0f, 1.0f, 1.0f };
+///* Light Position ( NEW ) */
+//GLfloat LightPosition[] = { 0.0f, 0.0f, 2.0f, 1.0f };
+
     glPushMatrix();
+
     if (tipo_proiezione == PROSPETTICA) {
         glRotatef(angolo_telecamera_y, 1, 0, 0);
         glRotatef(-angolo_telecamera_x, 0, 1, 0);
     }
 
     //STO inserendo la pallina per colpire gli oggetti ma manca la struttura dati di supporto
-    //poi bisogna cambiare dove si pulisce il buffer OPENGL perchè altrimenti le cose di grafica fatte fuori da questa funzione non si vedono
     //Poi devo recuperare il caricatore del ds e del computer che fava che sono!
 
     glTranslatef(griglia_livello.getGriglia().x, griglia_livello.getGriglia().y, 0);
     glScalef(griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom);
-    glGetDoublev(GL_MODELVIEW_MATRIX, matrice_model_griglia);
+
+    if (griglia_livello.in_partita) {
+        GLUquadric *myQuad;
+        GLint slices, stacks;
+        glPushMatrix();
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, colorwhite);
+        glTranslatef(pos_x_griglia, pos_y_griglia, pos_z_griglia + ALTEZZA_PEZZO/2.0);
+        slices = stacks = 50;
+        myQuad = gluNewQuadric();
+        gluSphere(myQuad, 3, slices, stacks);
+        glPopMatrix();
+    }
 
     //glLightfv(GL_LIGHT0, GL_DIFFUSE, colorwhite);
     //glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
     glLightfv(GL_LIGHT1, GL_DIFFUSE, colorwhite);
     glLightfv(GL_LIGHT1, GL_POSITION, lightpos_ambient);
 
+//        /* Setup The Ambient Light */
+//    glLightfv( GL_LIGHT1, GL_AMBIENT, LightAmbient );
+//
+//    /* Setup The Diffuse Light */
+//    glLightfv( GL_LIGHT1, GL_DIFFUSE, LightDiffuse );
+//
+//    /* Position The Light */
+//    glLightfv( GL_LIGHT1, GL_POSITION, LightPosition );
+//
+
     stampaSuperficeBase();
     griglia_livello.stampa();
-
-    //    for (unsigned i = 0; i < griglia_livello.getDimGrigliaX(); i++) {
-    //        for (unsigned j = 0; j < griglia_livello.getDimGrigliaY(); j++) {
-    //            //            if (cubo_selezione[i][j] > 0) {
-    //            //                stampaQuadrato(i, j, cubo_selezione[i][j]);
-    //            //                cubo_selezione[i][j] -= 0.05;
-    //            //            }
-    //            if (griglia_livello.getSelezione(i,j,ELEM_PEZZO) > 0) {
-    //                Pezzo::stampa(true, i, j, griglia_livello.getSelezione(i,j,ELEM_PEZZO));
-    //                griglia_livello.aggiornaSelezione(i,j,ELEM_PEZZO);
-    //            }
-    //            if (griglia_livello.getSelezione(i,j,ELEM_BASE) > 0) {
-    //                Base::stampa(true, i, j, griglia_livello.getSelezione(i,j,ELEM_BASE));
-    //                griglia_livello.aggiornaSelezione(i,j,ELEM_BASE);
-    //            }
-    //            if (griglia_livello.getOccupato(i,j) && griglia_livello.getTipo(i,j) == ELEM_PEZZO) {
-    //                griglia_livello.aggiornaStatoPezzo(i,j);
-    //                griglia_livello.stampa(i,j);
-    //            }
-    //            if (griglia_livello.getOccupato(i,j) && griglia_livello.getTipo(i,j) == ELEM_BASE) {
-    //                griglia_livello.stampa(i,j);
-    //            }
-    //        }
-    //    }
 
     glPopMatrix();
     return 1;
@@ -450,20 +458,20 @@ int Livello::mouseSelezione(int altezza_fin) {
             int indice = 1;
             for (int i = -1; i < 2; i++) {
                 for (int j = -1; j < 2; j++) {
-                    if ((int) pos_x_griglia + i >= 0 && (int) pos_x_griglia + i < (int) griglia_livello.getDimGrigliaX() && (int) pos_y_griglia + j >= 0 && (int) pos_y_griglia + j < (int) griglia_livello.getDimGrigliaY()) {
-                        if (griglia_livello.getOccupato(pos_x_griglia + i, pos_y_griglia + j)) {
-                            if (griglia_livello.getTipo(pos_x_griglia + i, pos_y_griglia + j) == ELEM_PEZZO) {
+                    if ((int) indice_x_griglia + i >= 0 && (int) indice_x_griglia + i < (int) griglia_livello.getDimGrigliaX() && (int) indice_y_griglia + j >= 0 && (int) indice_y_griglia + j < (int) griglia_livello.getDimGrigliaY()) {
+                        if (griglia_livello.getOccupato(indice_x_griglia + i, indice_y_griglia + j)) {
+                            if (griglia_livello.getTipo(indice_x_griglia + i, indice_y_griglia + j) == ELEM_PEZZO) {
                                 glLoadName((i + 1) * 3 + (j + 1) + 1);
-                                Pezzo::stampaPezzoCollisione(pos_x_griglia + i, pos_y_griglia + j);
+                                Pezzo::stampaPezzoCollisione(indice_x_griglia + i, indice_y_griglia + j);
                             } else {
                                 glLoadName(11 + (i + 1) * 3 + (j + 1));
-                                Base::stampaBaseCollisione(pos_x_griglia + i, pos_y_griglia + j);
+                                Base::stampaBaseCollisione(indice_x_griglia + i, indice_y_griglia + j);
                             }
                         } else {
                             glLoadName((i + 1) * 3 + (j + 1) + 1);
-                            Pezzo::stampaPezzoCollisione(pos_x_griglia + i, pos_y_griglia + j);
+                            Pezzo::stampaPezzoCollisione(indice_x_griglia + i, indice_y_griglia + j);
                             glLoadName(11 + (i + 1) * 3 + (j + 1));
-                            Base::stampaBaseCollisione(pos_x_griglia + i, pos_y_griglia + j);
+                            Base::stampaBaseCollisione(indice_x_griglia + i, indice_y_griglia + j);
                         }
                         indice++;
                     }
@@ -489,8 +497,8 @@ int Livello::mouseSelezione(int altezza_fin) {
                     }
                     caratteristiche_selezione = DAVANTI_PEZZO;
                     distanza = buffer[loop * 4 + 1];
-                    x_pezzo_selezionato = pos_x_griglia + ((buffer[loop * 4 + 3] - 1) / 3 - 1);
-                    y_pezzo_selezionato = pos_y_griglia + ((buffer[loop * 4 + 3] - 1) % 3 - 1);
+                    x_pezzo_selezionato = indice_x_griglia + ((buffer[loop * 4 + 3] - 1) / 3 - 1);
+                    y_pezzo_selezionato = indice_y_griglia + ((buffer[loop * 4 + 3] - 1) % 3 - 1);
                 }
             } else {
                 if (distanza > buffer[loop * 4 + 1]) {
@@ -499,8 +507,8 @@ int Livello::mouseSelezione(int altezza_fin) {
                     }
                     caratteristiche_selezione = DAVANTI_BASE;
                     distanza = buffer[loop * 4 + 1];
-                    x_base_selezionata = pos_x_griglia + ((buffer[loop * 4 + 3] - 11) / 3 - 1);
-                    y_base_selezionata = pos_y_griglia + ((buffer[loop * 4 + 3] - 11) % 3 - 1);
+                    x_base_selezionata = indice_x_griglia + ((buffer[loop * 4 + 3] - 11) / 3 - 1);
+                    y_base_selezionata = indice_y_griglia + ((buffer[loop * 4 + 3] - 11) % 3 - 1);
                 }
             }
         }
@@ -515,13 +523,14 @@ void Livello::stampaSuperficeBase() {
     glMaterialfv(GL_FRONT, GL_DIFFUSE, colorblue);
     glTranslatef(0.0, 0.0, POSIZIONE_SUPERFICE);
     glColor3f(1.0f, 1.0f, 0.0f);
+    //glBindTexture(GL_TEXTURE_2D, indice_texture[0]);
     glBegin(GL_QUADS);
     {
         glNormal3f(0.0, 0.0, 1.0);
-        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
-        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+        /*glTexCoord2f(0.0f, 0.0f),*/ glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+        /*glTexCoord2f(1.0f, 0.0f),*/ glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+        /*glTexCoord2f(1.0f, 1.0f),*/ glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+        /*glTexCoord2f(0.0f, 1.0f),*/ glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
     }
     glEnd();
 

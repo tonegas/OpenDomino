@@ -12,9 +12,11 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_opengl.h>
 #include <stdlib.h>
+#include <string>
 #include <iostream>
 #include <math.h>
 
+#include "Texture.h"
 #include "Posizione.h"
 #include "basi/Base.h"
 #include "pezzi/Pezzo.h"

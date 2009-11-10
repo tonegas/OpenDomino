@@ -9,15 +9,22 @@
 //#include "../../include/pezzi/Pezzo.h"
 //#include"../../include/Griglia.h"
 
-Pezzo::Pezzo(unsigned x_aux, unsigned y_aux) : Elemento(x_aux, y_aux) {
+//GLuint Pezzo::texture;// = Texture::loadTextures("crate.bmp");
+int Pezzo::texture = -1;
+
+Pezzo::Pezzo(unsigned x_aux, unsigned y_aux) : Elemento(x_aux, y_aux){
     stato = IN_PIEDI;
+    if(Pezzo::texture == -1)
+        Pezzo::texture = loadTextures("crate.bmp");
+    cout << Pezzo::texture << flush;
+    //texture = loadTextures("prova.jpg");
 
     angolo_destro = false;
     angolo = 0.0;
     dx = dy = dz = 0;
 }
 
-Pezzo::Pezzo(const Pezzo& orig) : Elemento(orig) {
+Pezzo::Pezzo(const Pezzo& orig) : Elemento(orig){
     stato = orig.stato;
 
     angolo_destro = orig.angolo_destro;
@@ -43,7 +50,7 @@ void Pezzo::aggiornaStato(Griglia &griglia) {
     int x_successiva = 0;
     switch (stato) {
         case IN_PIEDI:
-            if (dy >= 0 && !griglia.getOccupato(x,y - 1)) {
+            if (dy >= 0 && !griglia.getOccupato(x, y - 1)) {
                 stato = CADE_GIU;
             }
             break;
@@ -55,12 +62,12 @@ void Pezzo::aggiornaStato(Griglia &griglia) {
             x_successiva = x + 1;
             break;
         case CADE_GIU:
-            dy -=(GLdouble) ALTEZZA_PEZZO/8.0;
+            dy -= (GLdouble) ALTEZZA_PEZZO / 8.0;
             if (dy<-((GLdouble) ALTEZZA_PEZZO / 2.0)) {
                 griglia.spostaElementoAttivo(x, y, x, y - 1);
                 dy = -dy;
             }
-            if (dy <= 0 && griglia.getOccupato(x,y - 1)) {
+            if (dy <= 0 && griglia.getOccupato(x, y - 1)) {
                 stato = IN_PIEDI;
                 dy = 0;
             }
@@ -242,6 +249,9 @@ void Pezzo::stampa() {
     }
     glTranslated(angolo / 90.0 * ((GLdouble) SPESSORE_PEZZO / 2.0), 0, 0);
     glRotated(angolo, 0, 0, 1);
+    //cout<<"\""<<Pezzo::texture<<"\""<<flush;
+    glBindTexture(GL_TEXTURE_2D, Pezzo::texture);
+    //fprintf(stderr, "Errore: %s\n", gluErrorString(glGetError()));
     glBegin(GL_QUADS);
     {
         glNormal3f(0.0, 0.0, -1.0);
@@ -251,10 +261,10 @@ void Pezzo::stampa() {
         glVertex3f(SPESSORE_PEZZO, 0.0, 0.0);
 
         glNormal3f(1.0, 0.0, 0.0);
-        glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, 0.0);
-        glVertex3f(SPESSORE_PEZZO, 0.0, 0.0);
-        glVertex3f(SPESSORE_PEZZO, 0.0, LARGHEZZA_PEZZO);
-        glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
+        glTexCoord2f(1.0f, 0.0f), glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
+        glTexCoord2f(0.0f, 0.0f), glVertex3f(SPESSORE_PEZZO, 0.0, LARGHEZZA_PEZZO);
+        glTexCoord2f(0.0f, 1.0f), glVertex3f(SPESSORE_PEZZO, 0.0, 0.0);
+        glTexCoord2f(1.0f, 1.0f), glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, 0.0);
 
         glNormal3f(0.0, 0.0, 1.0);
         glVertex3f(SPESSORE_PEZZO, 0.0, LARGHEZZA_PEZZO);
@@ -263,10 +273,10 @@ void Pezzo::stampa() {
         glVertex3f(0.0, 0.0, LARGHEZZA_PEZZO);
 
         glNormal3f(-1.0, 0.0, 0.0);
-        glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
-        glVertex3f(0.0, 0.0, LARGHEZZA_PEZZO);
-        glVertex3f(0.0, 0.0, 0.0);
-        glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
+        glTexCoord2f(1.0f, 1.0f), glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
+        glTexCoord2f(0.0f, 1.0f), glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
+        glTexCoord2f(0.0f, 0.0f), glVertex3f(0.0, 0.0, 0.0);
+        glTexCoord2f(1.0f, 0.0f), glVertex3f(0.0, 0.0, LARGHEZZA_PEZZO);
 
         glNormal3f(0.0, 1.0, 0.0);
         glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);

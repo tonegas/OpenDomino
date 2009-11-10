@@ -62,20 +62,31 @@ Gioco::Gioco() : domino_editor(this) {
     //setWindowLA(videoInfo->current_h, videoInfo->current_h);
     setWindowLA(LARGHEZZA_FIN, ALTEZZA_FIN);
 
+    /* Enable Texture Mapping ( NEW ) */
+    glEnable(GL_TEXTURE_2D);
+
+    /* Enable smooth shading */
+    glShadeModel(GL_SMOOTH);
+
+    /* Set the background black */
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+    /* Depth buffer setup */
+    glClearDepth(1.0f);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //glBlendFunc(GL_SRC_ALPHA_SATURATE, GL_ONE);
 
-    glHint(GL_POINT_SMOOTH, GL_NICEST);
-    glHint(GL_LINE_SMOOTH, GL_NICEST);
-    glHint(GL_POLYGON_SMOOTH, GL_NICEST);
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
     glEnable(GL_POINT_SMOOTH);
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_POLYGON_SMOOTH);
 
     glEnable(GL_DEPTH_TEST); //questa andrà attivata
+    /* The Type Of Depth Test To Do */
+    glDepthFunc(GL_LEQUAL);
 
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);
@@ -112,7 +123,7 @@ void Gioco::loop() {
         //cout<<"dopo Input!!\n"<<flush;
         domino->aggiornaStato();
         //cout<<"dopo Stato!!\n"<<flush;
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         domino->video();
         SDL_GL_SwapBuffers();
         //cout<<"dopo Video!!\n"<<flush;

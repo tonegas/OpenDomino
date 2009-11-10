@@ -24,7 +24,8 @@ class Griglia;
 //#include "../Posizione.h"
 //#include "../Griglia.h"
 
-class Pezzo : public Elemento{
+class Pezzo : public Elemento, public Texture{
+    static int texture;
     StatoPezzo stato;
 
     bool angolo_destro;
