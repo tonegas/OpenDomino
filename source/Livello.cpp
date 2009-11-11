@@ -396,9 +396,8 @@ int Livello::video() {
     //GLfloat LightPosition[] = { 0.0f, 0.0f, 2.0f, 1.0f };
 
     glPushMatrix();
-    
-    stampaSfondo();
 
+    stampaSfondo();
     if (tipo_proiezione == PROSPETTICA) {
         glRotatef(angolo_telecamera_y, 1, 0, 0);
         glRotatef(-angolo_telecamera_x, 0, 1, 0);
@@ -406,7 +405,6 @@ int Livello::video() {
 
     //STO inserendo la pallina per colpire gli oggetti ma manca la struttura dati di supporto
     //Poi devo recuperare il caricatore del ds e del computer che fava che sono!
-
     glTranslatef(griglia_livello.getGriglia().x, griglia_livello.getGriglia().y, 0);
     glScalef(griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom);
 
@@ -536,7 +534,7 @@ int Livello::mouseSelezione(int altezza_fin) {
 }
 
 void Livello::stampaSuperficeBase() {
-    static GLfloat colorblue [] = {0.0f, 0.0f, 1.0f, 1.0f};
+    static GLfloat colorblue [] = {0.0f, 0.0f, 1.0f, 0.7f};
     glPushMatrix();
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, colorblue);
@@ -558,24 +556,25 @@ void Livello::stampaSuperficeBase() {
 }
 
 void Livello::stampaSfondo() {
-    static GLfloat cieloAzzurro [] = {37.0 / 255.0, 104.0 / 255.0, 246.0 / 255.0, 1.0f};
-    glPushMatrix();
-
-    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, cieloAzzurro);
-    //glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, colorblue);
-    glTranslatef(0.0, 0.0, -1000.0);
-    //glColor3f(1.0f, 1.0f, 0.0f);
-    //glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_PEZZO]);
-    glBegin(GL_QUADS);
-    {
-        glNormal3f(0.0, 0.0, 1.0);
-        glVertex3f(-10000.0, -10000.0, 0.0);
-        glVertex3f(-1000.0, 10000.0, 0.0);
-        glVertex3f(10000.0, 10000.0, 0.0);
-        glVertex3f(10000.0, -10000.0, 0.0);
-
-    }
-    glEnd();
-
-    glPopMatrix();
+    glClearColor(37.0 / 255.0, 104.0 / 255.0, 246.0 / 255.0, 1.0f);
+    //    static GLfloat cieloAzzurro [] = {37.0 / 255.0, 104.0 / 255.0, 246.0 / 255.0, 1.0f};
+    //    glPushMatrix();
+    //    glDisable(GL_LIGHTING);
+    //    //glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, cieloAzzurro);
+    //    //glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, colorblue);
+    //    glTranslatef(0.0, 0.0, -1000.0);
+    //    glColor4fv(cieloAzzurro);
+    //    //glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_PEZZO]);
+    //    glBegin(GL_QUADS);
+    //    {
+    //        glNormal3f(0.0, 0.0, 1.0);
+    //        glVertex3f(-10000.0, -10000.0, 0.0);
+    //        glVertex3f(-1000.0, 10000.0, 0.0);
+    //        glVertex3f(10000.0, 10000.0, 0.0);
+    //        glVertex3f(10000.0, -10000.0, 0.0);
+    //
+    //    }
+    //    glEnd();
+    //    glEnable(GL_LIGHTING);
+    //    glPopMatrix();
 }

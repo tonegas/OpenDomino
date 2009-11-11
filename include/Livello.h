@@ -11,7 +11,7 @@
 
 #define H_TELECAMERA 200
 #define FOVY    40
-#define ZNEAR   2
+#define ZNEAR   1
 #define ZFAR    10000
 
 #define MAX_ZOOM_ASSIONOMETRIA 23

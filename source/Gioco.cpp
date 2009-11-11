@@ -97,6 +97,19 @@ Gioco::Gioco() : domino_editor(this) {
 
     glEnable(GL_MULTISAMPLE);
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+
+//    GLuint fogMode[] = { GL_EXP, GL_EXP2, GL_LINEAR };
+//    GLfloat fogColor[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
+//
+//       /* Setup the Fog */
+//    glFogi( GL_FOG_MODE,GL_LINEAR ); /* Fog Mode */
+//    glFogfv( GL_FOG_COLOR, fogColor );         /* Set Fog Color */
+//    glFogf (GL_FOG_DENSITY, 0.01f );           /* How Dense Will The Fog Be */
+//    glHint( GL_FOG_HINT, GL_NICEST );       /* Fog Hint Value */
+//    glFogf( GL_FOG_START, 10000.0f );              /* Fog Start Depth */
+//    glFogf( GL_FOG_END, 10000.0f );                /* Fog End Depth */
+//    glEnable( GL_FOG );
+
     //se lo attivo sparisce anche le faccie laterali
     //glEnable(GL_CULL_FACE); //disattuva le faccie posteriori
 
