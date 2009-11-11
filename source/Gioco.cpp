@@ -68,11 +68,11 @@ Gioco::Gioco() : domino_editor(this) {
     /* Enable smooth shading */
     glShadeModel(GL_SMOOTH);
 
-    /* Set the background black */
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-    /* Depth buffer setup */
-    glClearDepth(1.0f);
+//    /* Set the background black */
+//    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+//
+//    /* Depth buffer setup */
+//    glClearDepth(1.0f);
 
 
     glEnable(GL_BLEND);
@@ -98,17 +98,17 @@ Gioco::Gioco() : domino_editor(this) {
     glEnable(GL_MULTISAMPLE);
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
 
-//    GLuint fogMode[] = { GL_EXP, GL_EXP2, GL_LINEAR };
-//    GLfloat fogColor[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
-//
-//       /* Setup the Fog */
-//    glFogi( GL_FOG_MODE,GL_LINEAR ); /* Fog Mode */
-//    glFogfv( GL_FOG_COLOR, fogColor );         /* Set Fog Color */
-//    glFogf (GL_FOG_DENSITY, 0.01f );           /* How Dense Will The Fog Be */
-//    glHint( GL_FOG_HINT, GL_NICEST );       /* Fog Hint Value */
-//    glFogf( GL_FOG_START, 10000.0f );              /* Fog Start Depth */
-//    glFogf( GL_FOG_END, 10000.0f );                /* Fog End Depth */
-//    glEnable( GL_FOG );
+    GLuint fogMode[] = { GL_EXP, GL_EXP2, GL_LINEAR };
+    GLfloat fogColor[4] = {37.0 / 255.0, 104.0 / 255.0, 246.0 / 255.0, 1.0f};//{ 0.5f, 0.5f, 0.5f, 1.0f };
+
+       /* Setup the Fog */
+    glFogi( GL_FOG_MODE,fogMode[2] ); /* Fog Mode */
+    glFogfv( GL_FOG_COLOR, fogColor );         /* Set Fog Color */
+    glFogf (GL_FOG_DENSITY, 0.01f );           /* How Dense Will The Fog Be */
+    glHint( GL_FOG_HINT, GL_NICEST );       /* Fog Hint Value */
+    glFogf( GL_FOG_START, 500.0f );              /* Fog Start Depth */
+    glFogf( GL_FOG_END, 1000.0f );                /* Fog End Depth */
+    glEnable( GL_FOG );
 
     //se lo attivo sparisce anche le faccie laterali
     //glEnable(GL_CULL_FACE); //disattuva le faccie posteriori
