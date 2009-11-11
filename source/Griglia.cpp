@@ -235,6 +235,36 @@ void Griglia::aggiornaStato() {
     }
 }
 
+void Griglia::aggiornaStatoEStampa() {
+    ElementoAttivo* aux = testa_elementi;
+    bool elimina;
+    while (aux != NULL) {
+        elimina = true;
+        if (aux->selezione_pezzo > 0) {
+            Pezzo::stampaSelezione(aux->x, aux->y, aux->selezione_pezzo);
+            aux->selezione_pezzo -= 0.05;
+            elimina = false;
+        }
+        if (aux->selezione_base > 0) {
+            Base::stampaSelezione(aux->x, aux->y, aux->selezione_base);
+            aux->selezione_base -= 0.05;
+            elimina = false;
+        }
+        if (aux->elem != NULL) {
+            aux->elem->stampa();
+            if (in_partita) {
+                aux->elem->aggiornaStato(*this);
+            }
+            elimina = false;
+        }
+        if (elimina == true) {
+            eliminaElementoAttivo(aux);
+        }
+        aux = aux->next;
+    }
+
+}
+
 void Griglia::setInPartita(bool aux_in_partita) {
     in_partita = aux_in_partita;
 }
@@ -268,10 +298,10 @@ void Griglia::setGrigliaXY(GLfloat x, GLfloat y) {
 
 bool Griglia::setStato(unsigned x, unsigned y, StatoPezzo stato) {
     if (x < num_x_colonne && y < num_y_righe) {
-    if (matrice_elementi[x][y]->getOccupato() && matrice_elementi[x][y]->tipo == ELEM_PEZZO) {
-        matrice_elementi[x][y]->elem->setStato(&stato);
-    }
-    return true;
+        if (matrice_elementi[x][y]->getOccupato() && matrice_elementi[x][y]->tipo == ELEM_PEZZO) {
+            matrice_elementi[x][y]->elem->setStato(&stato);
+        }
+        return true;
     }
     return false;
 }

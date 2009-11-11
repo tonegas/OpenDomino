@@ -18,9 +18,13 @@ public:
     Partita(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux);
     Partita(const Partita& orig);
     Partita(const Livello& orig);
-    int aggiornaStato();
-    int gestisciInput(SDL_Event *evento);
-    int video();
+//    int aggiornaStato();
+//    int gestisciInput(SDL_Event *evento);
+//    int video();
+
+    void mouseButtonDown(SDL_Event *evento);
+    void mouseMotion(SDL_Event *evento);
+    void attivaSelezioni();
     //virtual ~Partita();
 };
 

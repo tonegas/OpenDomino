@@ -16,10 +16,9 @@
 
 #define POSIZIONE_SUPERFICE -0.001
 
-#define POSIZIONA_PEZZI 1
-#define POSIZIONA_BASI 2
-#define ELIMINA_PEZZI -1
-#define ELIMINA_BASI -2
+enum AzioneMouse {
+    NESSUNA_AZIONE, POSIZIONA_PEZZI, POSIZIONA_BASI, ELIMINA_PEZZI, ELIMINA_BASI
+};
 
 class Partita;
 class Livello;
@@ -30,16 +29,10 @@ class Gioco;
 //#include "Partita.h"
 
 class Editor : public Livello {
-    bool test_partita_allocata;
-    Partita *test;
-
     int num_x_colonne;
     int num_y_righe;
 
-    bool posiziona_pezzi, posiziona_basi;
-    int azione_continua;
-
-    //GLfloat **cubo_selezione;
+    AzioneMouse azione_continua;
 
 public:
     Editor(Gioco *gioco_aux, int num_x_colonne_aux = GRIGLIA_EDITOR_X, int num_y_righe_aux = GRIGLIA_EDITOR_Y);
@@ -51,13 +44,15 @@ public:
     int video();
     int gestisciInput(SDL_Event *evento);
 
-    int aggiornaStatoEditor();
-    int videoEditor();
-    int gestisciInputEditor(SDL_Event *evento);
+    void mouseButtonDown(SDL_Event *evento);
+    void mouseMotion(SDL_Event *evento);
+    void mouseButtonUp(SDL_Event *evento);
+    void attivaSelezioni();
 
-    void stampaSuperficeBase();
-    void stampaQuadrato(int x, int y, GLfloat attivo);
 
+//    int aggiornaStatoEditor();
+//    int videoEditor();
+//    int gestisciInputEditor(SDL_Event *evento);
 };
 
 

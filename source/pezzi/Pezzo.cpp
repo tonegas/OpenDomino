@@ -11,7 +11,7 @@
 
 //GLuint Pezzo::texture;// = Texture::loadTextures("crate.bmp");
 
-Pezzo::Pezzo(unsigned x_aux, unsigned y_aux) : Elemento(x_aux, y_aux){
+Pezzo::Pezzo(unsigned x_aux, unsigned y_aux) : Elemento(x_aux, y_aux) {
     stato = IN_PIEDI;
     //texture = loadTextures("prova.jpg");
 
@@ -20,7 +20,7 @@ Pezzo::Pezzo(unsigned x_aux, unsigned y_aux) : Elemento(x_aux, y_aux){
     dx = dy = dz = 0;
 }
 
-Pezzo::Pezzo(const Pezzo& orig) : Elemento(orig){
+Pezzo::Pezzo(const Pezzo& orig) : Elemento(orig) {
     stato = orig.stato;
 
     angolo_destro = orig.angolo_destro;
@@ -229,7 +229,6 @@ void Pezzo::stampa() {
     sposto_y = ((GLfloat) ALTEZZA_PEZZO) * yf;
 
     glPushMatrix();
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, coloryellow);
     glTranslatef(sposto_x, sposto_y, Z_PEZZO);
 
     glTranslated(dx, dy, dz);
@@ -246,7 +245,7 @@ void Pezzo::stampa() {
     glTranslated(angolo / 90.0 * ((GLdouble) SPESSORE_PEZZO / 2.0), 0, 0);
     glRotated(angolo, 0, 0, 1);
     //cout<<"\""<<Pezzo::texture<<"\""<<flush;
-    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_PEZZO]);
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, coloryellow);
     //fprintf(stderr, "Errore: %s\n", gluErrorString(glGetError()));
     glBegin(GL_QUADS);
     {
@@ -255,6 +254,11 @@ void Pezzo::stampa() {
         glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
         glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, 0.0);
         glVertex3f(SPESSORE_PEZZO, 0.0, 0.0);
+    }
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_PEZZO]);
+    glBegin(GL_QUADS);
+    {
 
         glNormal3f(1.0, 0.0, 0.0);
         glTexCoord2f(1.0f, 0.0f), glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
@@ -263,16 +267,21 @@ void Pezzo::stampa() {
         glTexCoord2f(1.0f, 1.0f), glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, 0.0);
 
         glNormal3f(0.0, 0.0, 1.0);
-        glVertex3f(SPESSORE_PEZZO, 0.0, LARGHEZZA_PEZZO);
-        glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
-        glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
-        glVertex3f(0.0, 0.0, LARGHEZZA_PEZZO);
+        glTexCoord2f(1.0f, 0.0f), glVertex3f(SPESSORE_PEZZO, 0.0, LARGHEZZA_PEZZO);
+        glTexCoord2f(1.0f, 1.0f), glVertex3f(SPESSORE_PEZZO, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
+        glTexCoord2f(0.0f, 1.0f), glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
+        glTexCoord2f(0.0f, 0.0f), glVertex3f(0.0, 0.0, LARGHEZZA_PEZZO);
 
         glNormal3f(-1.0, 0.0, 0.0);
         glTexCoord2f(1.0f, 1.0f), glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);
         glTexCoord2f(0.0f, 1.0f), glVertex3f(0.0, ALTEZZA_PEZZO, 0.0);
         glTexCoord2f(0.0f, 0.0f), glVertex3f(0.0, 0.0, 0.0);
         glTexCoord2f(1.0f, 0.0f), glVertex3f(0.0, 0.0, LARGHEZZA_PEZZO);
+    }
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBegin(GL_QUADS);
+    {
 
         glNormal3f(0.0, 1.0, 0.0);
         glVertex3f(0.0, ALTEZZA_PEZZO, LARGHEZZA_PEZZO);

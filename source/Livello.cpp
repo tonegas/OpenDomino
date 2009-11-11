@@ -207,49 +207,57 @@ void Livello::setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin,
     gluProject(0.0, 0.0, 0.0, matrice_model, matrice_proj, matrice_view, &mouse_x, &mouse_y, &superfice_z);
 }
 
-int Livello::aggiornaStato() {
-    if (mouvi_zoom) {
-        if (fabs(griglia_livello.getGriglia().zoom - aux_griglia.zoom) >= 0.001) {
-            griglia_livello.setGrigliaXY(griglia_livello.getGriglia().x + ((aux_griglia.x - griglia_livello.getGriglia().x) / 10),
-                    griglia_livello.getGriglia().y + ((aux_griglia.y - griglia_livello.getGriglia().y) / 10));
+//int Livello::aggiornaStato() {
+//    if (mouvi_zoom) {
+//        if (fabs(griglia_livello.getGriglia().zoom - aux_griglia.zoom) >= 0.001) {
+//            griglia_livello.setGrigliaXY(griglia_livello.getGriglia().x + ((aux_griglia.x - griglia_livello.getGriglia().x) / 10),
+//                    griglia_livello.getGriglia().y + ((aux_griglia.y - griglia_livello.getGriglia().y) / 10));
+//
+//            griglia_livello.setGrigliaZoom(griglia_livello.getGriglia().zoom + (aux_griglia.zoom - griglia_livello.getGriglia().zoom) / 10);
+//        } else {
+//            mouvi_zoom = false;
+//            griglia_livello.setGrigliaXY(aux_griglia.x, aux_griglia.y);
+//            griglia_livello.setGrigliaZoom(aux_griglia.zoom);
+//        }
+//    }
+//
+//    if (griglia_livello.getGriglia().x > 0) {
+//        griglia_livello.setGrigliaXY(0, griglia_livello.getGriglia().y);
+//    } else {
+//        if (griglia_livello.getGriglia().x < -(GLdouble) (griglia_livello.num_x_colonne * ALTEZZA_PEZZO) * griglia_livello.getGriglia().zoom) {
+//            griglia_livello.setGrigliaXY(-(GLdouble) (griglia_livello.num_x_colonne * ALTEZZA_PEZZO) * griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().y);
+//        }
+//    }
+//    if (griglia_livello.getGriglia().y > 0) {
+//        griglia_livello.setGrigliaXY(griglia_livello.getGriglia().x, 0);
+//    } else {
+//        if (griglia_livello.getGriglia().y < -(GLdouble) (griglia_livello.num_y_righe * ALTEZZA_PEZZO) * griglia_livello.getGriglia().zoom) {
+//            griglia_livello.setGrigliaXY(griglia_livello.getGriglia().x, -(GLdouble) (griglia_livello.num_y_righe * ALTEZZA_PEZZO) * griglia_livello.getGriglia().zoom);
+//        }
+//    }
+//    if (delta_zoom > DELTA_ZOOM) {
+//        tempo_reset_delta_zoom++;
+//        if (tempo_reset_delta_zoom == frame_rate) {
+//            tempo_reset_delta_zoom = 0;
+//            delta_zoom = DELTA_ZOOM;
+//        }
+//    }
+//    griglia_livello.aggiornaStato();
+//    return 1;
+//}
+//
 
-            griglia_livello.setGrigliaZoom(griglia_livello.getGriglia().zoom + (aux_griglia.zoom - griglia_livello.getGriglia().zoom) / 10);
-        } else {
-            mouvi_zoom = false;
-            griglia_livello.setGrigliaXY(aux_griglia.x, aux_griglia.y);
-            griglia_livello.setGrigliaZoom(aux_griglia.zoom);
-        }
-    }
-
-    if (griglia_livello.getGriglia().x > 0) {
-        griglia_livello.setGrigliaXY(0, griglia_livello.getGriglia().y);
+void Livello::keyDownF5(SDL_Event *evento) {
+    if (gioco->getStato() == EDITOR_TEST) {
+        gioco->setStato(EDITOR_COSTRUISCI);
     } else {
-        if (griglia_livello.getGriglia().x < -(GLdouble) (griglia_livello.num_x_colonne * ALTEZZA_PEZZO) * griglia_livello.getGriglia().zoom) {
-            griglia_livello.setGrigliaXY(-(GLdouble) (griglia_livello.num_x_colonne * ALTEZZA_PEZZO) * griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().y);
-        }
+        gioco->setStato(EDITOR_TEST);
     }
-    if (griglia_livello.getGriglia().y > 0) {
-        griglia_livello.setGrigliaXY(griglia_livello.getGriglia().x, 0);
-    } else {
-        if (griglia_livello.getGriglia().y < -(GLdouble) (griglia_livello.num_y_righe * ALTEZZA_PEZZO) * griglia_livello.getGriglia().zoom) {
-            griglia_livello.setGrigliaXY(griglia_livello.getGriglia().x, -(GLdouble) (griglia_livello.num_y_righe * ALTEZZA_PEZZO) * griglia_livello.getGriglia().zoom);
-        }
-    }
-    if (delta_zoom > DELTA_ZOOM) {
-        tempo_reset_delta_zoom++;
-        if (tempo_reset_delta_zoom == frame_rate) {
-            tempo_reset_delta_zoom = 0;
-            delta_zoom = DELTA_ZOOM;
-        }
-    }
-    griglia_livello.aggiornaStato();
-    return 1;
 }
 
-int Livello::gestisciInput(SDL_Event *evento) {
+void Livello::gestisciInput(SDL_Event *evento) {
     if (evento->type == SDL_QUIT) {
         gioco->gameExit();
-        return 0;
     }
     switch (evento->type) {
         case SDL_KEYDOWN:
@@ -260,6 +268,9 @@ int Livello::gestisciInput(SDL_Event *evento) {
                 case SDLK_PAGEUP:
                     if (gioco->getFrames() > 1)
                         gioco->setFrames(gioco->getFrames() - 1);
+                    break;
+                case SDLK_F5:
+                    keyDownF5(evento);
                     break;
                 case SDLK_PAGEDOWN:
                     gioco->setFrames(gioco->getFrames() + 1);
@@ -339,6 +350,7 @@ int Livello::gestisciInput(SDL_Event *evento) {
                 pos_y_iniziali = pos_y;
                 bottone_centrale = true;
             }
+            mouseButtonDown(evento);
             break;
         case SDL_MOUSEMOTION:
             getMousePosGrigliaXY(gioco->getWindowA(), evento->button.x, evento->button.y);
@@ -366,6 +378,7 @@ int Livello::gestisciInput(SDL_Event *evento) {
                         angolo_telecamera_y = MAX_ANGOLO_TELECAMERA_XY;
                 }
             }
+            mouseMotion(evento);
             break;
         case SDL_MOUSEBUTTONUP:
             if (evento->button.button == SDL_BUTTON_RIGHT) {
@@ -374,6 +387,7 @@ int Livello::gestisciInput(SDL_Event *evento) {
             if (evento->button.button == SDL_BUTTON_MIDDLE) {
                 bottone_centrale = false;
             }
+            mouseButtonUp(evento);
             break;
         case SDL_VIDEORESIZE:
             gioco->setWindowLA(evento->resize.w, evento->resize.h);
@@ -381,23 +395,95 @@ int Livello::gestisciInput(SDL_Event *evento) {
         default:
             break;
     }
-    return 1;
 }
 
-int Livello::video() {
-    static GLfloat lightpos_ambient[] = {60, 120, 150, 0.0};
-    static GLfloat colorwhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
+//
+//int Livello::video() {
+//    glPushMatrix();
+//
+//    stampaSfondo();
+//
+//    if (tipo_proiezione == PROSPETTICA) {
+//        glRotatef(angolo_telecamera_y, 1, 0, 0);
+//        glRotatef(-angolo_telecamera_x, 0, 1, 0);
+//    }
+//
+//    //STO inserendo la pallina per colpire gli oggetti ma manca la struttura dati di supporto
+//    //Poi devo recuperare il caricatore del ds e del computer che fava che sono!
+//    glTranslatef(griglia_livello.getGriglia().x, griglia_livello.getGriglia().y, 0);
+//    glScalef(griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom);
+//
+////    if (griglia_livello.in_partita) {
+////        GLUquadric *myQuad;
+////        GLint slices, stacks;
+////        glPushMatrix();
+////        glMaterialfv(GL_FRONT, GL_DIFFUSE, colorwhite);
+////        glTranslatef(pos_x_griglia, pos_y_griglia, pos_z_griglia + ALTEZZA_PEZZO / 2.0);
+////        slices = stacks = 50;
+////        myQuad = gluNewQuadric();
+////        gluSphere(myQuad, 3, slices, stacks);
+////        glPopMatrix();
+////    }
+//
+//    stampaSuperficeBase();
+//
+//    griglia_livello.stampa();
+//
+//    glPopMatrix();
+//    return 1;
+//}
 
-    /* Ambient Light Values ( NEW ) */
-    //static GLfloat LightAmbient[]  = { 0.5f, 0.5f, 0.5f, 1.0f };
-    ///* Diffuse Light Values ( NEW ) */
-    //GLfloat LightDiffuse[]  = { 1.0f, 1.0f, 1.0f, 1.0f };
-    ///* Light Position ( NEW ) */
-    //GLfloat LightPosition[] = { 0.0f, 0.0f, 2.0f, 1.0f };
+void Livello::aggiornaPosizioneGriglia() {
+    if (mouvi_zoom) {
+        if (fabs(griglia_livello.getGriglia().zoom - aux_griglia.zoom) >= 0.001) {
+            griglia_livello.setGrigliaXY(griglia_livello.getGriglia().x + ((aux_griglia.x - griglia_livello.getGriglia().x) / 10),
+                    griglia_livello.getGriglia().y + ((aux_griglia.y - griglia_livello.getGriglia().y) / 10));
+
+            griglia_livello.setGrigliaZoom(griglia_livello.getGriglia().zoom + (aux_griglia.zoom - griglia_livello.getGriglia().zoom) / 10);
+        } else {
+            mouvi_zoom = false;
+            griglia_livello.setGrigliaXY(aux_griglia.x, aux_griglia.y);
+            griglia_livello.setGrigliaZoom(aux_griglia.zoom);
+        }
+    }
+
+    if (griglia_livello.getGriglia().x > 0) {
+        griglia_livello.setGrigliaXY(0, griglia_livello.getGriglia().y);
+    } else {
+        if (griglia_livello.getGriglia().x < -(GLdouble) (griglia_livello.num_x_colonne * ALTEZZA_PEZZO) * griglia_livello.getGriglia().zoom) {
+            griglia_livello.setGrigliaXY(-(GLdouble) (griglia_livello.num_x_colonne * ALTEZZA_PEZZO) * griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().y);
+        }
+    }
+    if (griglia_livello.getGriglia().y > 0) {
+        griglia_livello.setGrigliaXY(griglia_livello.getGriglia().x, 0);
+    } else {
+        if (griglia_livello.getGriglia().y < -(GLdouble) (griglia_livello.num_y_righe * ALTEZZA_PEZZO) * griglia_livello.getGriglia().zoom) {
+            griglia_livello.setGrigliaXY(griglia_livello.getGriglia().x, -(GLdouble) (griglia_livello.num_y_righe * ALTEZZA_PEZZO) * griglia_livello.getGriglia().zoom);
+        }
+    }
+    if (delta_zoom > DELTA_ZOOM) {
+        tempo_reset_delta_zoom++;
+        if (tempo_reset_delta_zoom == frame_rate) {
+            tempo_reset_delta_zoom = 0;
+            delta_zoom = DELTA_ZOOM;
+        }
+    }
+}
+
+void Livello::cicloGioco(SDL_Event *evento) {
+    SDL_PumpEvents();
+    while (SDL_PollEvent(evento)) {
+        gestisciInput(evento);
+    }
+
+    aggiornaPosizioneGriglia();
+
+    attivaSelezioni();
 
     glPushMatrix();
 
     stampaSfondo();
+
     if (tipo_proiezione == PROSPETTICA) {
         glRotatef(angolo_telecamera_y, 1, 0, 0);
         glRotatef(-angolo_telecamera_x, 0, 1, 0);
@@ -408,40 +494,24 @@ int Livello::video() {
     glTranslatef(griglia_livello.getGriglia().x, griglia_livello.getGriglia().y, 0);
     glScalef(griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom, griglia_livello.getGriglia().zoom);
 
-    if (griglia_livello.in_partita) {
-        GLUquadric *myQuad;
-        GLint slices, stacks;
-        glPushMatrix();
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, colorwhite);
-        glTranslatef(pos_x_griglia, pos_y_griglia, pos_z_griglia + ALTEZZA_PEZZO / 2.0);
-        slices = stacks = 50;
-        myQuad = gluNewQuadric();
-        gluSphere(myQuad, 3, slices, stacks);
-        glPopMatrix();
-    }
-
-    //glLightfv(GL_LIGHT0, GL_DIFFUSE, colorwhite);
-    //glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
-    // glLightfv(GL_LIGHT1, GL_AMBIENT, colorwhite);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, colorwhite);
-    //glLightfv(GL_LIGHT1, GL_SPECULAR, colorwhite);
-    glLightfv(GL_LIGHT1, GL_POSITION, lightpos_ambient);
-
-    //        /* Setup The Ambient Light */
-    //    glLightfv( GL_LIGHT1, GL_AMBIENT, LightAmbient );
-    //
-    //    /* Setup The Diffuse Light */
-    //    glLightfv( GL_LIGHT1, GL_DIFFUSE, LightDiffuse );
-    //
-    //    /* Position The Light */
-    //    glLightfv( GL_LIGHT1, GL_POSITION, LightPosition );
-    //
+    //    if (griglia_livello.in_partita) {
+    //        GLUquadric *myQuad;
+    //        GLint slices, stacks;
+    //        glPushMatrix();
+    //        glMaterialfv(GL_FRONT, GL_DIFFUSE, colorwhite);
+    //        glTranslatef(pos_x_griglia, pos_y_griglia, pos_z_griglia + ALTEZZA_PEZZO / 2.0);
+    //        slices = stacks = 50;
+    //        myQuad = gluNewQuadric();
+    //        gluSphere(myQuad, 3, slices, stacks);
+    //        glPopMatrix();
+    //    }
 
     stampaSuperficeBase();
-    griglia_livello.stampa();
+
+    griglia_livello.aggiornaStatoEStampa();
 
     glPopMatrix();
-    return 1;
+
 }
 
 int Livello::mouseSelezione(int altezza_fin) {
@@ -535,9 +605,16 @@ int Livello::mouseSelezione(int altezza_fin) {
 
 void Livello::stampaSuperficeBase() {
     static GLfloat colorblue [] = {0.0f, 0.0f, 1.0f, 0.7f};
+    static GLfloat lightpos_ambient[] = {60, 120, 150, 0.0};
+    static GLfloat colorwhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
+    static GLfloat colorwhite2 [] = {0.1f, 0.1f, 0.1f, 0.5f};
+
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, colorwhite);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, colorwhite2);
+    glLightfv(GL_LIGHT1, GL_POSITION, lightpos_ambient);
     glPushMatrix();
 
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, colorblue);
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, colorblue);
     //glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, colorblue);
     glTranslatef(0.0, 0.0, POSIZIONE_SUPERFICE);
     //glColor3f(1.0f, 1.0f, 0.0f);
@@ -551,7 +628,6 @@ void Livello::stampaSuperficeBase() {
         glTexCoord2f(0.0f, 1.0f), glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
     }
     glEnd();
-
     glPopMatrix();
 }
 

@@ -11,6 +11,7 @@
 Gioco::Gioco() : domino_editor(this) {
     bpp = BPP_FIN;
 
+    test_partita_allocata = false;
     fullscreen = false;
     stato = EDITOR_COSTRUISCI;
     cambia_stato = false;
@@ -68,11 +69,11 @@ Gioco::Gioco() : domino_editor(this) {
     /* Enable smooth shading */
     glShadeModel(GL_SMOOTH);
 
-//    /* Set the background black */
-//    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-//
-//    /* Depth buffer setup */
-//    glClearDepth(1.0f);
+    //    /* Set the background black */
+    //    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    //
+    //    /* Depth buffer setup */
+    //    glClearDepth(1.0f);
 
 
     glEnable(GL_BLEND);
@@ -90,7 +91,7 @@ Gioco::Gioco() : domino_editor(this) {
     glDepthFunc(GL_LEQUAL);
 
 
-//    glEnable(GL_LIGHT0);
+    //    glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);
     glEnable(GL_LIGHTING);
     glEnable(GL_NORMALIZE);
@@ -98,27 +99,32 @@ Gioco::Gioco() : domino_editor(this) {
     glEnable(GL_MULTISAMPLE);
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
 
-    GLuint fogMode[] = { GL_EXP, GL_EXP2, GL_LINEAR };
-    GLfloat fogColor[4] = {37.0 / 255.0, 104.0 / 255.0, 246.0 / 255.0, 1.0f};//{ 0.5f, 0.5f, 0.5f, 1.0f };
+    GLuint fogMode[] = {GL_EXP, GL_EXP2, GL_LINEAR};
+    GLfloat fogColor[4] = {37.0 / 255.0, 104.0 / 255.0, 246.0 / 255.0, 1.0f}; //{ 0.5f, 0.5f, 0.5f, 1.0f };
 
-       /* Setup the Fog */
-    glFogi( GL_FOG_MODE,fogMode[2] ); /* Fog Mode */
-    glFogfv( GL_FOG_COLOR, fogColor );         /* Set Fog Color */
-    glFogf (GL_FOG_DENSITY, 0.01f );           /* How Dense Will The Fog Be */
-    glHint( GL_FOG_HINT, GL_NICEST );       /* Fog Hint Value */
-    glFogf( GL_FOG_START, 500.0f );              /* Fog Start Depth */
-    glFogf( GL_FOG_END, 1000.0f );                /* Fog End Depth */
-    glEnable( GL_FOG );
+    /* Setup the Fog */
+    glFogi(GL_FOG_MODE, fogMode[2]); /* Fog Mode */
+    glFogfv(GL_FOG_COLOR, fogColor); /* Set Fog Color */
+    glFogf(GL_FOG_DENSITY, 0.01f); /* How Dense Will The Fog Be */
+    glHint(GL_FOG_HINT, GL_NICEST); /* Fog Hint Value */
+    glFogf(GL_FOG_START, 500.0f); /* Fog Start Depth */
+    glFogf(GL_FOG_END, 1000.0f); /* Fog End Depth */
+    glEnable(GL_FOG);
 
     //se lo attivo sparisce anche le faccie laterali
     //glEnable(GL_CULL_FACE); //disattuva le faccie posteriori
 
-//        Texture::loadTextures("crate.bmp", TEX_PEZZO);
+    Texture::loadTextures("crate.bmp", TEX_PEZZO);
 
     if (stato == EDITOR_COSTRUISCI) {
         domino = &domino_editor;
         domino->inizializza();
     }
+}
+
+Gioco::~Gioco() {
+    if (test_partita_allocata)
+        delete domino;
 }
 
 void Gioco::loop() {
@@ -130,18 +136,40 @@ void Gioco::loop() {
     }
     while (alive) {
         if (cambia_stato) {
-            stato = stato_temporaneo;
+            switch (stato) {
+                case EDITOR_TEST:
+                    if (test_partita_allocata) {
+                        delete domino;
+                        domino = new Partita(domino_editor);
+                    } else {
+                        test_partita_allocata = true;
+                        domino = new Partita(domino_editor);
+                    }
+                    break;
+                case EDITOR_COSTRUISCI:
+                    if (test_partita_allocata) {
+                        delete domino;
+                    }
+                    test_partita_allocata = false;
+                    domino = &domino_editor;
+                    break;
+            }
+            cout<<"CISONO"<<flush;
             cambia_stato = false;
             domino->inizializza();
         }
+
         inizio = SDL_GetTicks();
 
-        domino->gestisciInput(&evento);
-        //cout<<"dopo Input!!\n"<<flush;
-        domino->aggiornaStato();
-        //cout<<"dopo Stato!!\n"<<flush;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        domino->video();
+        domino->cicloGioco(&evento);
+
+        //        domino->gestisciInput(&evento);
+        //        //cout<<"dopo Input!!\n"<<flush;
+        //        domino->aggiornaStato();
+        //        //cout<<"dopo Stato!!\n"<<flush;
+        //
+        //        domino->video();
         SDL_GL_SwapBuffers();
         //cout<<"dopo Video!!\n"<<flush;
 
@@ -169,8 +197,10 @@ void Gioco::loop() {
 }
 
 void Gioco::setStato(Stato stato_aux) {
-    cambia_stato = true;
-    stato_temporaneo = stato_aux;
+    if (stato_aux != stato) {
+        cambia_stato = true;
+        stato = stato_aux;
+    }
 }
 
 Stato Gioco::getStato() const {

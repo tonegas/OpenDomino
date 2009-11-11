@@ -59,4 +59,5 @@ void Texture::loadTextures(string nome_immagine, Tex numero_tex_caricate) {
         printf("ERRORE di caricamento immagine SDL: %s.\n", SDL_GetError());
         exit(-1);
     }
+    glBindTexture(GL_TEXTURE_2D,0);
 }

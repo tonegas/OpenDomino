@@ -45,7 +45,7 @@ const GLfloat cavalier[] = {
     0, 0, 0, 1
 };
 
-class Livello : public Texture{
+class Livello {
 protected:
     //puntatore al gioco per interagire sulle funzionidi gioco
     Gioco *gioco; //ok
@@ -96,7 +96,7 @@ protected:
     //posizione 3d del mouse assolute
     GLdouble pos_x, pos_y, pos_z; //si inizializzano nella getMousePosGrigliaXY
     //posizione 3d del mouse rispetto alla griglia
-    GLdouble pos_x_griglia, pos_y_griglia,pos_z_griglia;
+    GLdouble pos_x_griglia, pos_y_griglia, pos_z_griglia;
     //posizione 3d iniziali del mouse per lo spostamento della griglia
     GLdouble pos_x_iniziali, pos_y_iniziali; //questi si inizializzano da soli quando premo
 
@@ -128,17 +128,35 @@ public:
 
     void setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin, bool reset = false);
 
-    void stampaSuperficeBase();
+    int inizializza();
 
-    void stampaSfondo();
+    void cicloGioco(SDL_Event *evento);
 
+    void gestisciInput(SDL_Event *evento);
+
+    void aggiornaPosizioneGriglia();
+
+    virtual void stampaSuperficeBase();
+    
+    virtual void stampaSfondo();
+
+    virtual void attivaSelezioni() {}
+
+    virtual void mouseButtonDown(SDL_Event *evento) {}
+
+    virtual void mouseMotion(SDL_Event *evento) {}
+
+    virtual void keyDownF5(SDL_Event *evento);
+
+    virtual void mouseButtonUp(SDL_Event *evento) {}
+
+    /*
     virtual int aggiornaStato();
 
     virtual int gestisciInput(SDL_Event *evento);
 
     virtual int video();
-
-    int inizializza();
+     */
 };
 
 #endif	/* _LIVELLO_H */

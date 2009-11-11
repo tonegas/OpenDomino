@@ -67,10 +67,6 @@ public:
 
     TipoElemento getTipo(unsigned x, unsigned y);
 
-    void stampa();
-
-    void aggiornaStato();
-
     bool spostaElementoAttivo(unsigned x_sorg, unsigned y_sorg, unsigned x_dest, unsigned y_dest);
 
     //    ElementoAttivo* getPosizione(int i, int j);
@@ -88,6 +84,13 @@ public:
     unsigned getDimGrigliaX() const;
 
     unsigned getDimGrigliaY() const;
+
+
+    void stampa();
+
+    void aggiornaStato();
+
+    void aggiornaStatoEStampa();
 };
 
 #endif	/* _GRIGLIA_H */

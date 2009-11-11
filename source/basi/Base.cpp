@@ -155,7 +155,7 @@ void Base::stampa() {
     sposto_y = ((GLfloat) ALTEZZA_PEZZO) * yf;
 
     glPushMatrix();
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, colorgreen);
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, colorgreen);
     glTranslatef(sposto_x, sposto_y + ALTEZZA_PEZZO - ALTEZZA_BASE, 0.0);
 
     glBegin(GL_QUADS);

@@ -48,7 +48,6 @@ class Gioco {
 
     //stato del gioco
     Stato stato;
-    Stato stato_temporaneo;
     //flag che indica il cambiamento dello stato
     bool cambia_stato;
 
@@ -60,6 +59,7 @@ class Gioco {
 
     //Oggetto editor per la gestione della grafica della partita
     Editor domino_editor;
+    bool test_partita_allocata;
 
     //Puntatore a domino in eseguzione
     Livello *domino;
@@ -69,6 +69,8 @@ class Gioco {
 public:
 
     Gioco();
+
+    ~Gioco();
 
     void loop();
 
