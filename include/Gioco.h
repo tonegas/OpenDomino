@@ -27,8 +27,6 @@ class Partita;
 class Livello;
 
 #include "Domino.h"
-//#include "Partita.h"
-//#include "Editor.h"
 
 class Gioco {
     //parametri finestra

@@ -25,8 +25,6 @@ class Livello;
 class Gioco;
 
 #include "Domino.h"
-//#include "Livello.h"
-//#include "Partita.h"
 
 class Editor : public Livello {
     int num_x_colonne;
@@ -34,25 +32,15 @@ class Editor : public Livello {
 
     AzioneMouse azione_continua;
 
-public:
-    Editor(Gioco *gioco_aux, int num_x_colonne_aux = GRIGLIA_EDITOR_X, int num_y_righe_aux = GRIGLIA_EDITOR_Y);
-
-    ~Editor();
-
-    int inizializza();
-    int aggiornaStato();
-    int video();
-    int gestisciInput(SDL_Event *evento);
-
+protected:
     void mouseButtonDown(SDL_Event *evento);
     void mouseMotion(SDL_Event *evento);
     void mouseButtonUp(SDL_Event *evento);
     void attivaSelezioni();
 
-
-//    int aggiornaStatoEditor();
-//    int videoEditor();
-//    int gestisciInputEditor(SDL_Event *evento);
+public:
+    Editor(Gioco *gioco_aux, int num_x_colonne_aux = GRIGLIA_EDITOR_X, int num_y_righe_aux = GRIGLIA_EDITOR_Y);
+    ~Editor();
 };
 
 

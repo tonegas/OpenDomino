@@ -9,8 +9,6 @@
 #define	_GRIGLIA_H
 
 #include "Domino.h"
-//#include "Posizione.h"
-//#include "pezzi/Pezzo.h"
 
 class PosXYZoom {
 public:

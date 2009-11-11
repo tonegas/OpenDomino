@@ -13,15 +13,9 @@ SDL_Surface* Texture::texture[NUMERO_TEXTURES];
 GLuint Texture::indice_texture[NUMERO_TEXTURES];
 
 Texture::Texture() {
-    //    Texture::numero_textures = NUMERO_TEXTURES;
-    //    Texture::numero_tex_caricate = 0;
-
 }
 
 Texture::~Texture() {
-    //    for (int i = 0; i < (int) Texture::numero_tex_caricate; i++)
-    //        SDL_FreeSurface(Texture::texture[i]);
-
 }
 
 void Texture::loadTextures(string nome_immagine, Tex numero_tex_caricate) {

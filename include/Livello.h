@@ -35,7 +35,6 @@ enum Selezione {
 class Gioco;
 
 #include "Domino.h"
-//#include "Griglia.h"
 
 
 const GLfloat cavalier[] = {
@@ -114,49 +113,46 @@ protected:
     unsigned x_pezzo_selezionato, y_pezzo_selezionato;
     unsigned x_base_selezionata, y_base_selezionata;
 
+    void gestisciInput(SDL_Event *evento);
+
+    void aggiornaPosizioneGriglia();
+
+    int mouseSelezione(int altezza_fin);
+
+    void setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin, bool reset = false);
+
+    bool getMousePosGrigliaXY(int altezza_fin, int mouse_x_fin_aux, int mouse_y_fin_aux);
+
+    bool getMousePosGrigliaXY(int altezza_fin);
+
+protected:
+    virtual void stampaSuperficeBase();
+
+    virtual void stampaSfondo();
+
+    virtual void keyDownF5(SDL_Event *evento);
+
+    virtual void attivaSelezioni() {
+    }
+
+    virtual void mouseButtonDown(SDL_Event *evento) {
+    }
+
+    virtual void mouseMotion(SDL_Event *evento) {
+    }
+
+    virtual void mouseButtonUp(SDL_Event *evento) {
+    }
+
 public:
 
     Livello(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux, int frame_rate);
 
     Livello(const Livello &orig);
 
-    bool getMousePosGrigliaXY(int altezza_fin, int mouse_x_fin_aux, int mouse_y_fin_aux);
-
-    bool getMousePosGrigliaXY(int altezza_fin);
-
-    int mouseSelezione(int altezza_fin);
-
-    void setProiezione(Proiezione tipo, int larghezza_fin, int altezza_fin, bool reset = false);
-
     int inizializza();
 
     void cicloGioco(SDL_Event *evento);
-
-    void gestisciInput(SDL_Event *evento);
-
-    void aggiornaPosizioneGriglia();
-
-    virtual void stampaSuperficeBase();
-    
-    virtual void stampaSfondo();
-
-    virtual void attivaSelezioni() {}
-
-    virtual void mouseButtonDown(SDL_Event *evento) {}
-
-    virtual void mouseMotion(SDL_Event *evento) {}
-
-    virtual void keyDownF5(SDL_Event *evento);
-
-    virtual void mouseButtonUp(SDL_Event *evento) {}
-
-    /*
-    virtual int aggiornaStato();
-
-    virtual int gestisciInput(SDL_Event *evento);
-
-    virtual int video();
-     */
 };
 
 #endif	/* _LIVELLO_H */

@@ -6,10 +6,6 @@
  */
 
 #include "../../include/Domino.h"
-//#include "../../include/pezzi/Pezzo.h"
-//#include"../../include/Griglia.h"
-
-//GLuint Pezzo::texture;// = Texture::loadTextures("crate.bmp");
 
 Pezzo::Pezzo(unsigned x_aux, unsigned y_aux) : Elemento(x_aux, y_aux) {
     stato = IN_PIEDI;

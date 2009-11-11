@@ -15,7 +15,7 @@ enum TipoElemento {
 class Griglia;
 
 #include "Domino.h"
-//#include "Griglia.h"
+
 
 class Elemento {
 protected:

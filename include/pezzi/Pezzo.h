@@ -21,8 +21,7 @@ enum StatoPezzo{
 class Griglia;
 
 #include "../Domino.h"
-//#include "../Posizione.h"
-//#include "../Griglia.h"
+
 
 class Pezzo : public Elemento, public Texture{
     StatoPezzo stato;

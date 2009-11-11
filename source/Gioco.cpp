@@ -6,7 +6,7 @@
  */
 
 #include "../include/Domino.h"
-//#include "../include/Gioco.h"
+
 
 Gioco::Gioco() : domino_editor(this) {
     bpp = BPP_FIN;
@@ -152,6 +152,8 @@ void Gioco::loop() {
                     }
                     test_partita_allocata = false;
                     domino = &domino_editor;
+                    break;
+                default:
                     break;
             }
             cout<<"CISONO"<<flush;

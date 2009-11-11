@@ -6,7 +6,6 @@
  */
 
 #include "../include/Domino.h"
-//#include "../include/Griglia.h"
 
 Griglia::Griglia(unsigned num_x_colonne_aux, unsigned num_y_righe_aux) {
     in_partita = false;
