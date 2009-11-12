@@ -83,7 +83,7 @@ Griglia::~Griglia() {
     }
 }
 
-PosXYZoom Griglia::getGriglia() {
+PosXYZeZoom Griglia::getGriglia() {
     return griglia;
 }
 
@@ -288,6 +288,10 @@ void Griglia::setInPartita(bool aux_in_partita) {
 
 void Griglia::setGrigliaZoom(GLfloat zoom) {
     griglia.zoom = zoom;
+}
+
+void Griglia::setGrigliaZ(GLfloat z) {
+    griglia.z = z;
 }
 
 void Griglia::setGrigliaXY(GLfloat x, GLfloat y) {

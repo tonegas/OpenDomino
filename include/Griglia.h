@@ -10,29 +10,32 @@
 
 #include "Domino.h"
 
-class PosXYZoom {
+class PosXYZeZoom {
 public:
     GLfloat x;
     GLfloat y;
+    GLfloat z;
     GLfloat zoom;
 
-    PosXYZoom(GLfloat x_aux = 0, GLfloat y_aux = 0, GLfloat zoom_aux = 1) {
+    PosXYZeZoom(GLfloat x_aux = 0, GLfloat y_aux = 0, GLfloat z_aux = 0, GLfloat zoom_aux = 1) {
         x = x_aux;
         y = y_aux;
+        z = z_aux;
         zoom = zoom_aux;
     }
 
-    PosXYZoom(const PosXYZoom &orig) {
+    PosXYZeZoom(const PosXYZeZoom &orig) {
         x = orig.x;
         y = orig.y;
+        z = orig.z;
         zoom = orig.zoom;
     }
 };
 
 class Griglia {
     friend class Pezzo;
-    PosXYZoom griglia;
-    
+    PosXYZeZoom griglia;
+
 public:
     bool in_partita;
     ElementoAttivo *testa_elementi;
@@ -55,7 +58,7 @@ public:
 
     bool getOccupato(unsigned x, unsigned y);
 
-    PosXYZoom getGriglia();
+    PosXYZeZoom getGriglia();
 
     bool attivaSelezione(unsigned x, unsigned y, TipoElemento tipo);
 
@@ -76,6 +79,8 @@ public:
     void setInPartita(bool aux_in_partita);
 
     void setGrigliaZoom(GLfloat zoom);
+
+    void setGrigliaZ(GLfloat z);
 
     void setGrigliaXY(GLfloat x, GLfloat y);
 

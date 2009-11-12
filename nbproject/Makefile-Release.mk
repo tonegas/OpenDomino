@@ -35,8 +35,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Texture.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Partita.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/pezzi/Pezzo.o \
-	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Giocatore.o \
 	${OBJECTDIR}/main.o \
+	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Giocatore.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Gioco.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/basi/Base.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Posizione.o \
@@ -87,15 +87,15 @@ ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/pezzi/Pezz
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/pezzi/Pezzo.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/pezzi/Pezzo.cpp
 
-${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Giocatore.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/Giocatore.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source
-	${RM} $@.d
-	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Giocatore.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/Giocatore.cpp
-
 ${OBJECTDIR}/main.o: nbproject/Makefile-${CND_CONF}.mk main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
+
+${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Giocatore.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/Giocatore.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Giocatore.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/Giocatore.cpp
 
 ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Gioco.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/Gioco.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source

@@ -10,8 +10,12 @@
 
 #include "Domino.h"
 
-
 class Giocatore {
+    //xercesc::XercesDOMParser *parser;
+    //   DOMDocument*   myDocument;
+    //   DOMNode*       aNode;
+    //   DOMText*       someText;
+
     string nome;
     fstream file_giocatore;
     //vector<CaratteristicheLivello> lista_livelli;

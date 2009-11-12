@@ -55,16 +55,16 @@ protected:
     //flag che indica se è incorso un animazione sullo zoom
     bool mouvi_zoom; //inizializzati nella setProiezione
     //struttura ausiliaria per il movimento della griglia
-    PosXYZoom aux_griglia; //ok
+    PosXYZeZoom aux_griglia; //ok
 
     //proiezione della griglia a schermo
     Proiezione tipo_proiezione; //inizializzati nella setProiezione
     //massimo livello di zoom per la proiezione corrente
     GLfloat max_zoom, min_zoom; //inizializzati nella setProiezione
     //struttura ausiliaria per il movimento della griglia
-    PosXYZoom griglia_assionometrica; //ok
+    PosXYZeZoom griglia_assionometrica; //ok
     //struttura ausiliaria per il movimento della griglia
-    PosXYZoom griglia_prospettica; //ok
+    PosXYZeZoom griglia_prospettica; //ok
     //modifica degli angoli di vista della telecamera
     GLfloat angolo_telecamera_x, angolo_telecamera_y; //ok
     GLfloat angolo_telecamera_x_iniziale, angolo_telecamera_y_iniziale; //si inizializzano prima di usarli nella funzione di imput

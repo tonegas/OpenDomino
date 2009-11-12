@@ -58,7 +58,7 @@
         <linkerTool>
           <linkerLibItems>
           </linkerLibItems>
-          <commandLine>`pkg-config --libs sdl` -lGL -lGLU</commandLine>
+          <commandLine>`pkg-config --libs sdl` -lGL -lGLU -lxerces-c</commandLine>
         </linkerTool>
       </compileType>
     </conf>
