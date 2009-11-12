@@ -556,6 +556,7 @@ void Livello::stampaSuperficeBase() {
 
 void Livello::stampaSfondo() {
     glClearColor(37.0 / 255.0, 104.0 / 255.0, 246.0 / 255.0, 1.0f);
+
     //    static GLfloat cieloAzzurro [] = {37.0 / 255.0, 104.0 / 255.0, 246.0 / 255.0, 1.0f};
     //    glPushMatrix();
     //    glDisable(GL_LIGHTING);

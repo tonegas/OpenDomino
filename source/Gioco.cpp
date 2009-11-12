@@ -11,6 +11,7 @@
 Gioco::Gioco() : domino_editor(this) {
     bpp = BPP_FIN;
 
+    giocatore = new Giocatore("Gas");
     test_partita_allocata = false;
     fullscreen = false;
     stato = EDITOR_COSTRUISCI;

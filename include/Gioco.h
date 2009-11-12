@@ -53,7 +53,7 @@ class Gioco {
     int frame_ms;
 
     //giocatore
-    //Giocatore giocatore;
+    Giocatore *giocatore;
 
     //Oggetto editor per la gestione della grafica della partita
     Editor domino_editor;
@@ -65,6 +65,7 @@ class Gioco {
     //indica se il gioco deve smettere di ciclare
     bool alive;
 public:
+
 
     Gioco();
 

@@ -13,8 +13,12 @@
 #include <SDL/SDL_opengl.h>
 #include <stdlib.h>
 #include <string>
+#include <vector>
+#include <fstream>
 #include <iostream>
 #include <math.h>
+
+using namespace std;
 
 #include "Texture.h"
 #include "Posizione.h"
@@ -24,9 +28,8 @@
 #include "Livello.h"
 #include "Partita.h"
 #include "Editor.h"
+#include "Giocatore.h"
 #include "Gioco.h"
-
-using namespace std;
 
 #endif	/* _DOMINO_ */
 
