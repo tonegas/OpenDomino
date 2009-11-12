@@ -44,6 +44,25 @@ const GLfloat cavalier[] = {
     0, 0, 0, 1
 };
 
+struct movimento_assionometria {
+    //struttura ausiliaria per il movimento della griglia
+    PosXYZeZoom griglia_assionometrica; //ok
+    //massimo livello di zoom per la proiezione corrente
+    GLfloat max_zoom, min_zoom; //inizializzati nella setProiezione
+    //variazione del delta di incremento dello zoom
+    GLfloat delta_zoom; //ok
+    //tempo per il reset del delta_zoom
+    int tempo_reset_delta_zoom; //ok
+};
+
+struct movimento_prospettica {
+    //struttura ausiliaria per il movimento della griglia
+    PosXYZeZoom griglia_prospettica; //ok
+    //modifica degli angoli di vista della telecamera
+    GLfloat angolo_telecamera_x, angolo_telecamera_y; //ok
+    GLfloat angolo_telecamera_x_iniziale, angolo_telecamera_y_iniziale; //si inizializzano prima di usarli nella funzione di imput
+};
+
 class Livello {
 protected:
     //puntatore al gioco per interagire sulle funzionidi gioco
@@ -52,32 +71,20 @@ protected:
     //matrici dinamiche di pezzi e basi
     Griglia griglia_livello; //ok
 
+    //proiezione della griglia a schermo
+    Proiezione tipo_proiezione; //inizializzati nella setProiezione
+
     //flag che indica se è incorso un animazione sullo zoom
     bool mouvi_zoom; //inizializzati nella setProiezione
     //struttura ausiliaria per il movimento della griglia
     PosXYZeZoom aux_griglia; //ok
 
-    //proiezione della griglia a schermo
-    Proiezione tipo_proiezione; //inizializzati nella setProiezione
-    //massimo livello di zoom per la proiezione corrente
-    GLfloat max_zoom, min_zoom; //inizializzati nella setProiezione
-    //struttura ausiliaria per il movimento della griglia
-    PosXYZeZoom griglia_assionometrica; //ok
-    //struttura ausiliaria per il movimento della griglia
-    PosXYZeZoom griglia_prospettica; //ok
-    //modifica degli angoli di vista della telecamera
-    GLfloat angolo_telecamera_x, angolo_telecamera_y; //ok
-    GLfloat angolo_telecamera_x_iniziale, angolo_telecamera_y_iniziale; //si inizializzano prima di usarli nella funzione di imput
-
-
     //per ora sono solo due bottoni ma penso che diventerà una struttura per gestire l'input in maniera
     //differente a seconda che il livello si editor partita o altro
     bool bottone_sinistro, bottone_destro, bottone_centrale; //ok
 
-    //variazione del delta di incremento dello zoom
-    GLfloat delta_zoom; //ok
-    //tempo per il reset del delta_zoom
-    int tempo_reset_delta_zoom; //ok
+
+
     //velocita di frame rate per temporizzare le cose
     int frame_rate; //ok
 
@@ -99,16 +106,20 @@ protected:
     //posizione 3d iniziali del mouse per lo spostamento della griglia
     GLdouble pos_x_iniziali, pos_y_iniziali; //questi si inizializzano da soli quando premo
 
+
+
+
+    //posizione 2d del mouse sulla finestra
+    int mouse_x_fin, mouse_y_fin; //si inizializzano nella getMousePosGrigliaXY
+
     //indice sulla griglia del mouse
     unsigned indice_x_griglia, indice_y_griglia; //si inizializzano nella getMousePosGrigliaXY
     //indicatore booleano che indica se l'indice sulla griglia è più o meno sensato
     bool pos_griglia_ok; //si inizializzano nella getMousePosGrigliaXY
 
-    //posizione 2d del mouse sulla finestra
-    int mouse_x_fin, mouse_y_fin; //si inizializzano nella getMousePosGrigliaXY
-
     //variabili per la selezione dei pezzi
     Selezione caratteristiche_selezione;
+    //flag che indica se ho selezionato sia 
     bool entrambi;
     unsigned x_pezzo_selezionato, y_pezzo_selezionato;
     unsigned x_base_selezionata, y_base_selezionata;
