@@ -10,6 +10,70 @@
 
 #include "Domino.h"
 
+class PosTeleXY {
+protected:
+    GLfloat x;
+    GLfloat y;
+public:
+
+    PosTeleXY(GLfloat x_aux = 0, GLfloat y_aux = 0) {
+        x = x_aux;
+        y = y_aux;
+    }
+
+    PosTeleXY(const PosTeleXY &orig) {
+        x = orig.x;
+        y = orig.y;
+    }
+};
+
+class PosTeleProsp : public PosTeleXY {
+    GLfloat z;
+    GLfloat ang_x;
+    GLfloat ang_y;
+public:
+
+    PosTeleProsp(GLfloat x_aux = 0, GLfloat y_aux = 0, GLfloat z_aux = 0, GLfloat ang_x_aux = 0, GLfloat ang_y_aux = 0) {
+        x = x_aux;
+        y = y_aux;
+        z = z_aux;
+        ang_x = ang_x_aux;
+        ang_x = ang_y_aux;
+    }
+
+    PosTeleProsp(const PosTeleProsp& orig) {
+        x = orig.x;
+        y = orig.y;
+        z = orig.z;
+        ang_x = orig.ang_x;
+        ang_x = orig.ang_y;
+    }
+};
+
+class PosTeleAssio : public PosTeleXY {
+    GLfloat zoom;
+public:
+    PosTeleAssio(GLfloat x_aux = 0, GLfloat y_aux = 0, GLfloat zoom_aux = 1) {
+        x = x_aux;
+        y = y_aux;
+        zoom = zoom_aux;
+    }
+
+    PosTeleAssio(const PosTeleAssio& orig) {
+        x = orig.x;
+        y = orig.y;
+        zoom = orig.zoom;
+    }
+};
+
+//calsse per il salvataggio delle telecamere
+
+class PosTelecamere {
+public:
+    PosTeleProsp telecamera_prospettica;
+    PosTeleAssio telecamera_assionometrica;
+};
+
 class PosXYZeZoom {
 public:
     GLfloat x;
@@ -34,6 +98,9 @@ public:
 
 class Griglia {
     friend class Pezzo;
+
+    //la posizione della griglia sparirà di qui e andrà tutta contrentrata sull'utilizzo delle telecamere
+    //dentro il livello
     PosXYZeZoom griglia;
 
 public:

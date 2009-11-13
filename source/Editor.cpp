@@ -8,12 +8,14 @@
 #include "../include/Domino.h"
 
 Editor::Editor(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux)
-: Livello(gioco_aux, num_x_colonne_aux, num_y_righe_aux, FRAMERATE) {
-    tipo_proiezione = ASSIONOMETRICA;
+: Livello(gioco_aux, num_x_colonne_aux, num_y_righe_aux) {
     num_y_righe = num_y_righe_aux;
     num_x_colonne = num_x_colonne_aux;
     azione_continua = NESSUNA_AZIONE;
-    entrambi = false;
+    //esempio configurazione telecamera per livello
+//    PosTeleAssio aux_tele(100,213,2);
+//    tele_assio = aux_tele;
+    //---------------------------------
 }
 
 Editor::~Editor() {
@@ -30,7 +32,7 @@ void Editor::attivaSelezioni() {
 }
 
 void Editor::mouseButtonDown(SDL_Event *evento) {
-    if (evento->button.button == SDL_BUTTON_LEFT && pos_griglia_ok) {
+    if (evento->button.button == SDL_BUTTON_LEFT && indice_griglia_ok) {
         mouseSelezione(gioco->getWindowA());
         if (caratteristiche_selezione == DAVANTI_PEZZO) {
             if (griglia_livello.getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
@@ -55,7 +57,7 @@ void Editor::mouseButtonDown(SDL_Event *evento) {
 }
 
 void Editor::mouseMotion(SDL_Event *evento) {
-    if (pos_griglia_ok) {
+    if (indice_griglia_ok) {
         mouseSelezione(gioco->getWindowA());
         switch (azione_continua) {
             case POSIZIONA_PEZZI:

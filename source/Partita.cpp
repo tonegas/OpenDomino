@@ -8,7 +8,7 @@
 #include "../include/Domino.h"
 
 Partita::Partita(Gioco *gioco_aux, int num_y_righe_aux, int num_x_colonne_aux)
-: Livello(gioco_aux, num_x_colonne_aux, num_y_righe_aux, FRAMERATE) {
+: Livello(gioco_aux, num_x_colonne_aux, num_y_righe_aux) {
     griglia_livello.setInPartita(true);
 }
 
@@ -21,7 +21,7 @@ Partita::Partita(const Livello& orig) : Livello(orig) {
 }
 
 void Partita::mouseButtonDown(SDL_Event *evento) {
-    if (evento->button.button == SDL_BUTTON_LEFT && pos_griglia_ok) {
+    if (evento->button.button == SDL_BUTTON_LEFT && indice_griglia_ok) {
         mouseSelezione(gioco->getWindowA());
         if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {
             if (griglia_livello.getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
@@ -33,7 +33,7 @@ void Partita::mouseButtonDown(SDL_Event *evento) {
 }
 
 void Partita::mouseMotion(SDL_Event *evento) {
-    if (pos_griglia_ok) {
+    if (indice_griglia_ok) {
         mouseSelezione(gioco->getWindowA());
         if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {
             if (griglia_livello.getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
