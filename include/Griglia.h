@@ -12,9 +12,9 @@
 
 class PosTeleXY {
 protected:
+public:
     GLfloat x;
     GLfloat y;
-public:
 
     PosTeleXY(GLfloat x_aux = 0, GLfloat y_aux = 0) {
         x = x_aux;
@@ -28,12 +28,12 @@ public:
 };
 
 class PosTeleProsp : public PosTeleXY {
+public:
     GLfloat z;
     GLfloat ang_x;
     GLfloat ang_y;
-public:
 
-    PosTeleProsp(GLfloat x_aux = 0, GLfloat y_aux = 0, GLfloat z_aux = 0, GLfloat ang_x_aux = 0, GLfloat ang_y_aux = 0) {
+    PosTeleProsp(GLfloat x_aux = 0, GLfloat y_aux = 0, GLfloat z_aux = 1, GLfloat ang_x_aux = 0, GLfloat ang_y_aux = 0) {
         x = x_aux;
         y = y_aux;
         z = z_aux;
@@ -51,8 +51,9 @@ public:
 };
 
 class PosTeleAssio : public PosTeleXY {
-    GLfloat zoom;
 public:
+    GLfloat zoom;
+
     PosTeleAssio(GLfloat x_aux = 0, GLfloat y_aux = 0, GLfloat zoom_aux = 1) {
         x = x_aux;
         y = y_aux;
@@ -154,7 +155,6 @@ public:
     unsigned getDimGrigliaX() const;
 
     unsigned getDimGrigliaY() const;
-
 
     void stampa();
 

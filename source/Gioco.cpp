@@ -157,7 +157,6 @@ void Gioco::loop() {
                 default:
                     break;
             }
-            cout<<"CISONO"<<flush;
             cambia_stato = false;
             domino->inizializza();
         }

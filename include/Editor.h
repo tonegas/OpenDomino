@@ -34,7 +34,7 @@ class Editor : public Livello {
 
 protected:
     void mouseButtonDown(SDL_Event *evento);
-    void mouseMotion(SDL_Event *evento);
+    void mouseMotion();
     void mouseButtonUp(SDL_Event *evento);
     void attivaSelezioni();
 

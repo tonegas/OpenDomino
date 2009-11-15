@@ -14,6 +14,9 @@
       <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/Partita.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/pezzi/Pezzo.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/Posizione.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/Telecamera.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/TelecameraAssionometrica.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/TelecameraProspettica.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/Texture.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -32,6 +35,9 @@
       <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/Partita.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/pezzi/Pezzo.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/Posizione.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/Telecamera.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/TelecameraAssionometrica.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/TelecameraProspettica.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/Texture.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
