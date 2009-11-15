@@ -27,10 +27,10 @@ Griglia::Griglia(const Griglia& orig) {
     cout << "costruttore di copia\n" << flush;
     testa_elementi = NULL;
     in_partita = orig.in_partita;
-    griglia = orig.griglia;
+    //griglia = orig.griglia;
     num_y_righe = orig.num_y_righe;
     num_x_colonne = orig.num_x_colonne;
-    cout << "griglia\"" << griglia.x << ' ' << griglia.y << ' ' << griglia.zoom << '\"' << '\n' << flush;
+    //cout << "griglia\"" << griglia.x << ' ' << griglia.y << ' ' << griglia.zoom << '\"' << '\n' << flush;
     cout << "numYX\"" << num_y_righe << ' ' << num_x_colonne << "\"\n" << flush;
     matrice_elementi = new ElementoAttivo* *[num_x_colonne];
     for (unsigned i = 0; i < num_x_colonne; i++) {
@@ -81,10 +81,6 @@ Griglia::~Griglia() {
         delete aux;
         aux = testa_elementi;
     }
-}
-
-PosXYZeZoom Griglia::getGriglia() {
-    return griglia;
 }
 
 bool Griglia::attivaSelezione(unsigned x, unsigned y, TipoElemento tipo) {
@@ -268,12 +264,6 @@ void Griglia::setInPartita(bool aux_in_partita) {
     in_partita = aux_in_partita;
 }
 
-//void Griglia::stampa(int x, int y) {
-//    //    matrice_posizioni[x][y].elem->stampa();
-//    if (matrice_elementi[x][y] != NULL && matrice_elementi[x][y]->elem != NULL)
-//        matrice_elementi[x][y]->elem->stampa();
-//}
-
 //ElementoAttivo* Griglia::getPosizione(int i, int j) {
 //    return &matrice_posizioni[i][j];
 //}
@@ -285,19 +275,6 @@ void Griglia::setInPartita(bool aux_in_partita) {
 //Base& Griglia::getBase(int i, int j) {
 //    return *(Base*) matrice_posizioni[i][j].elem;
 //}
-
-void Griglia::setGrigliaZoom(GLfloat zoom) {
-    griglia.zoom = zoom;
-}
-
-void Griglia::setGrigliaZ(GLfloat z) {
-    griglia.z = z;
-}
-
-void Griglia::setGrigliaXY(GLfloat x, GLfloat y) {
-    griglia.x = x;
-    griglia.y = y;
-}
 
 bool Griglia::setStato(unsigned x, unsigned y, StatoPezzo stato) {
     if (x < num_x_colonne && y < num_y_righe) {

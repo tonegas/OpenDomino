@@ -10,6 +10,71 @@
 
 class Livello;
 
+class PosTeleXY {
+protected:
+public:
+    GLfloat x;
+    GLfloat y;
+
+    PosTeleXY(GLfloat x_aux = 0, GLfloat y_aux = 0) {
+        x = x_aux;
+        y = y_aux;
+    }
+
+    PosTeleXY(const PosTeleXY &orig) {
+        x = orig.x;
+        y = orig.y;
+    }
+};
+
+class PosTeleProsp : public PosTeleXY {
+public:
+    GLfloat z;
+    GLfloat ang_x;
+    GLfloat ang_y;
+
+    PosTeleProsp(GLfloat x_aux = 0, GLfloat y_aux = 0, GLfloat z_aux = 1, GLfloat ang_x_aux = 0, GLfloat ang_y_aux = 0) {
+        x = x_aux;
+        y = y_aux;
+        z = z_aux;
+        ang_x = ang_x_aux;
+        ang_x = ang_y_aux;
+    }
+
+    PosTeleProsp(const PosTeleProsp& orig) {
+        x = orig.x;
+        y = orig.y;
+        z = orig.z;
+        ang_x = orig.ang_x;
+        ang_x = orig.ang_y;
+    }
+};
+
+class PosTeleAssio : public PosTeleXY {
+public:
+    GLfloat zoom;
+
+    PosTeleAssio(GLfloat x_aux = 0, GLfloat y_aux = 0, GLfloat zoom_aux = 1) {
+        x = x_aux;
+        y = y_aux;
+        zoom = zoom_aux;
+    }
+
+    PosTeleAssio(const PosTeleAssio& orig) {
+        x = orig.x;
+        y = orig.y;
+        zoom = orig.zoom;
+    }
+};
+
+//calsse per il salvataggio delle telecamere
+
+class PosTelecamere {
+public:
+    PosTeleProsp telecamera_prospettica;
+    PosTeleAssio telecamera_assionometrica;
+};
+
 #include "Domino.h"
 
 class Telecamera {
@@ -78,6 +143,8 @@ public:
     virtual void cambiaXY() = 0;
 
     virtual void cambiaAngolazione(){}
+
+    virtual void aggiorna(unsigned dim_grilia_X, unsigned dim_grilia_Y, int frame_ms);
 
     virtual void animaZoom() = 0;
 

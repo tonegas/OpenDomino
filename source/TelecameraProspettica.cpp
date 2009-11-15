@@ -95,13 +95,10 @@ bool TelecameraProspettica::getMousePosGrigliaXY(unsigned dim_grilia_X, unsigned
     hits = glRenderMode(GL_RENDER);
     if (hits > 0) // If There Were More Than 0 Hits
     {
-        //int choose = buffer[3]; // Make Our Selection The First Object
         GLuint depth = buffer[2]; // Store How Far Away It Is
-        //cout << "depth:" << (GLfloat) depth / (GLfloat) (GLuint) (-1) << '\t' << superfice_z << '\n' << flush;
         gluUnProject(mouse_x_fin, (GLfloat) (matrice_view[3] - mouse_y_fin), (GLdouble) depth / (GLdouble) (GLuint) (-1), matrice_model_griglia, matrice_proj, matrice_view, &pos_x_griglia, &pos_y_griglia, &pos_z_griglia);
         indice_x_griglia = pos_x_griglia / (GLfloat) ALTEZZA_PEZZO;
         indice_y_griglia = pos_y_griglia / (GLfloat) ALTEZZA_PEZZO;
-        //cout<<indice_x_griglia<<' '<<indice_y_griglia<<'\n'<<flush;
         if (indice_x_griglia < dim_grilia_X && indice_y_griglia < dim_grilia_Y) {
             indice_griglia_ok = true;
         } else {
@@ -135,7 +132,6 @@ bool TelecameraProspettica::mouseSelezione(Livello *liv, Griglia* griglia_livell
             glTranslatef(posizione_telecamera.x, posizione_telecamera.y, 0);
             glScalef(posizione_telecamera.z, posizione_telecamera.z, posizione_telecamera.z);
             int indice = 1;
-            cout << indice_x_griglia << ' ' << indice_y_griglia << '\n' << flush;
             for (int i = -1; i < 2; i++) {
                 for (int j = -1; j < 2; j++) {
                     if ((int) indice_x_griglia + i >= 0 && (int) indice_x_griglia + i < (int) griglia_livello->getDimGrigliaX() &&

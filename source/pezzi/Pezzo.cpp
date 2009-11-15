@@ -240,7 +240,6 @@ void Pezzo::stampa() {
     }
     glTranslated(angolo / 90.0 * ((GLdouble) SPESSORE_PEZZO / 2.0), 0, 0);
     glRotated(angolo, 0, 0, 1);
-    //cout<<"\""<<Pezzo::texture<<"\""<<flush;
     glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, coloryellow);
     //fprintf(stderr, "Errore: %s\n", gluErrorString(glGetError()));
     glBegin(GL_QUADS);

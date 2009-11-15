@@ -165,15 +165,8 @@ void Gioco::loop() {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         domino->cicloGioco(&evento);
-
-        //        domino->gestisciInput(&evento);
-        //        //cout<<"dopo Input!!\n"<<flush;
-        //        domino->aggiornaStato();
-        //        //cout<<"dopo Stato!!\n"<<flush;
-        //
-        //        domino->video();
         SDL_GL_SwapBuffers();
-        //cout<<"dopo Video!!\n"<<flush;
+
 
         fine = SDL_GetTicks();
         durata = fine - inizio;
