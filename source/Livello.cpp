@@ -117,9 +117,9 @@ void Livello::gestisciInput(SDL_Event *evento) {
             }
             break;
         case SDL_MOUSEBUTTONDOWN:
-            telecamera_attuale->getMousePosGrigliaXY(evento->button.x, evento->button.y, griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY());
+            //telecamera_attuale->getMousePosGrigliaXY(evento->button.x, evento->button.y, griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY());
             if (evento->button.button == SDL_BUTTON_RIGHT) {
-                telecamera_attuale->registraPosizione();
+                telecamera_attuale->registraPosizioneMovimento(evento->button.x, evento->button.y, griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY());
                 bottone_destro = true;
             }
             if (!bottone_destro && (evento->button.button == SDL_BUTTON_WHEELUP || evento->button.button == SDL_BUTTON_WHEELDOWN)) {
@@ -127,27 +127,28 @@ void Livello::gestisciInput(SDL_Event *evento) {
                     telecamera_attuale->registraZoomAvanti();
                 } else {
                     telecamera_attuale->registraZoomIndietro();
-                   
+
                 }
             }
             if (!bottone_destro && evento->button.button == SDL_BUTTON_MIDDLE && tipo_proiezione == PROSPETTICA) {
-                telecamera_attuale->registraPosizione();
+                telecamera_attuale->registraPosizioneRotazione(evento->button.x, evento->button.y, griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY());
                 bottone_centrale = true;
             }
             mouseButtonDown(evento);
             break;
         case SDL_MOUSEMOTION:
-            telecamera_attuale->getMousePosGrigliaXY(evento->button.x, evento->button.y, griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY());
+            //telecamera_attuale->getMousePosGrigliaXY(evento->button.x, evento->button.y, griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY());
             if (bottone_destro) {
-                telecamera_attuale->cambiaXY();
+                telecamera_attuale->cambiaXY(evento->button.x, evento->button.y, griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY());
             }
             if (bottone_centrale) {
-                telecamera_attuale->cambiaAngolazione();
+                telecamera_attuale->cambiaAngolazione(evento->button.x, evento->button.y, griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY());
             }
             mouseMotion();
             break;
         case SDL_MOUSEBUTTONUP:
             if (evento->button.button == SDL_BUTTON_RIGHT) {
+                //telecamera_attuale->registraPosizione();
                 bottone_destro = false;
             }
             if (evento->button.button == SDL_BUTTON_MIDDLE) {
@@ -169,7 +170,7 @@ void Livello::cicloGioco(SDL_Event *evento) {
         gestisciInput(evento);
     }
 
-    telecamera_attuale->aggiorna(griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY(),gioco->getFrames());
+    telecamera_attuale->aggiorna(griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY(), gioco->getFrames());
 
     attivaSelezioni();
 
@@ -230,26 +231,35 @@ void Livello::stampaSuperficeBase() {
 void Livello::stampaSfondo() {
     glClearColor(37.0 / 255.0, 104.0 / 255.0, 246.0 / 255.0, 1.0f);
 
-    //    static GLfloat cieloAzzurro [] = {37.0 / 255.0, 104.0 / 255.0, 246.0 / 255.0, 1.0f};
-    //    glPushMatrix();
-    //    glDisable(GL_LIGHTING);
-    //    //glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, cieloAzzurro);
-    //    //glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, colorblue);
-    //    glTranslatef(0.0, 0.0, -1000.0);
-    //    glColor4fv(cieloAzzurro);
-    //    //glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_PEZZO]);
-    //    glBegin(GL_QUADS);
-    //    {
-    //        glNormal3f(0.0, 0.0, 1.0);
-    //        glVertex3f(-10000.0, -10000.0, 0.0);
-    //        glVertex3f(-1000.0, 10000.0, 0.0);
-    //        glVertex3f(10000.0, 10000.0, 0.0);
-    //        glVertex3f(10000.0, -10000.0, 0.0);
-    //
-    //    }
-    //    glEnd();
-    //    glEnable(GL_LIGHTING);
-    //    glPopMatrix();
+    static GLfloat cieloAzzurro [] = {1.0f,1.0f,1.0f,1.0f};
+    static GLfloat x = 0, y = 0;
+    glPushMatrix();
+    glDisable(GL_LIGHTING);
+    glDisable(GL_FOG);
+    //glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, cieloAzzurro);
+    //glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, colorblue);
+    x += 1;
+    y += 0.003;
+    x = x > 10000 ? -10000 : x;
+    y = y > 10000 ? -10000 : y;
+    glTranslatef(x, sin(y)*100, -10000.0);
+    glColor4fv(cieloAzzurro);
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, cieloAzzurro);
+    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA1]);
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(0.0, 0.0, 1.0);
+        glTexCoord2f(1.0f, 0.0f), glVertex3f(-2000.0, -2000.0, 0.0);
+        glTexCoord2f(0.0f, 0.0f), glVertex3f(-2000.0, 2000.0, 0.0);
+        glTexCoord2f(0.0f, 1.0f), glVertex3f(2000.0, 2000.0, 0.0);
+        glTexCoord2f(1.0f, 1.0f), glVertex3f(2000.0, -2000.0, 0.0);
+
+    }
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_FOG);
+    glPopMatrix();
 }
 
 void Livello::resettaSelezione() {

@@ -79,8 +79,6 @@ public:
 
 class Telecamera {
 protected:
-    //posizione 3d iniziali del mouse per lo spostamento della griglia
-    GLdouble pos_x_iniziali, pos_y_iniziali; //questi si inizializzano da soli quando premo
     //matrici per il recupero dell'input del muose
     //inizializzate della classe che deriva livello
     GLdouble matrice_model[16]; //inizializzati nella setProiezione
@@ -128,21 +126,25 @@ public:
 
     virtual void setProiezioneTelecamera(int larghezza_fin, int altezza_fin) = 0;
 
-    bool getMousePosGrigliaXY(int mouse_x_fin_aux, int mouse_y_fin_aux, unsigned dim_grilia_X, unsigned dim_grilia_Y);
+    //bool getMousePosGrigliaXY(int mouse_x_fin_aux, int mouse_y_fin_aux, unsigned dim_grilia_X, unsigned dim_grilia_Y);
 
     virtual bool getMousePosGrigliaXY(unsigned dim_grilia_X, unsigned dim_grilia_Y) = 0;
 
     virtual bool mouseSelezione(Livello *liv, Griglia* griglia_livello) = 0;
 
-    virtual void registraPosizione() = 0;
+    //-------------------------------
+    virtual void registraPosizioneMovimento(int mouse_x_fin_aux, int mouse_y_fin_aux, unsigned dim_grilia_X, unsigned dim_grilia_Y){}
+
+    virtual void registraPosizioneRotazione(int mouse_x_fin_aux, int mouse_y_fin_aux, unsigned dim_grilia_X, unsigned dim_grilia_Y){}
+
+    virtual void cambiaXY(int mouse_x_fin_aux, int mouse_y_fin_aux, unsigned dim_grilia_X, unsigned dim_grilia_Y){}
+
+    virtual void cambiaAngolazione(int mouse_x_fin_aux, int mouse_y_fin_aux, unsigned dim_grilia_X, unsigned dim_grilia_Y){}
+    //-------------------------------
 
     virtual void registraZoomAvanti() = 0;
 
     virtual void registraZoomIndietro() = 0;
-
-    virtual void cambiaXY() = 0;
-
-    virtual void cambiaAngolazione(){}
 
     virtual void aggiorna(unsigned dim_grilia_X, unsigned dim_grilia_Y, int frame_ms);
 

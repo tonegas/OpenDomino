@@ -106,16 +106,17 @@ Gioco::Gioco() : domino_editor(this) {
     /* Setup the Fog */
     glFogi(GL_FOG_MODE, fogMode[2]); /* Fog Mode */
     glFogfv(GL_FOG_COLOR, fogColor); /* Set Fog Color */
-    glFogf(GL_FOG_DENSITY, 0.01f); /* How Dense Will The Fog Be */
+    glFogf(GL_FOG_DENSITY, 0.001f); /* How Dense Will The Fog Be */
     glHint(GL_FOG_HINT, GL_NICEST); /* Fog Hint Value */
-    glFogf(GL_FOG_START, 500.0f); /* Fog Start Depth */
-    glFogf(GL_FOG_END, 1000.0f); /* Fog End Depth */
+    glFogf(GL_FOG_START, 1500.0f); /* Fog Start Depth */
+    glFogf(GL_FOG_END, 10000.0f); /* Fog End Depth */
     glEnable(GL_FOG);
 
     //se lo attivo sparisce anche le faccie laterali
     //glEnable(GL_CULL_FACE); //disattuva le faccie posteriori
 
     Texture::loadTextures("crate.bmp", TEX_PEZZO);
+    Texture::loadTextures("nuvola1.bmp", TEX_NUVOLA1);
 
     if (stato == EDITOR_COSTRUISCI) {
         domino = &domino_editor;

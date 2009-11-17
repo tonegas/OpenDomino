@@ -62,9 +62,6 @@ void Editor::mouseButtonDown(SDL_Event *evento) {
 void Editor::mouseMotion() {
     if (telecamera_attuale->indice_griglia_ok) {
         telecamera_attuale->mouseSelezione(this,&griglia_livello);
-        //??????????????
-        //mouseSelezione(gioco->getWindowA());
-        //??????????????
         switch (azione_continua) {
             case POSIZIONA_PEZZI:
                 if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {

@@ -11,7 +11,7 @@
 #define NUMERO_TEXTURES 10
 
 enum Tex {
-    TEX_PEZZO, TEX_BASE
+    TEX_NUVOLA1 ,TEX_PEZZO, TEX_BASE
 };
 
 using std::string;

@@ -42,7 +42,7 @@ void Texture::loadTextures(string nome_immagine, Tex numero_tex_caricate) {
         //7:GL_ALPHA,GL_LUMINANCE,GL_LUMINANCE_ALPHA,GL_RGB,GL_RGBA
         /* Generate The Texture */
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Texture::texture[numero_tex_caricate]->w,
-                Texture::texture[numero_tex_caricate]->h, 0, GL_RGB,
+                Texture::texture[numero_tex_caricate]->h, 0, GL_BGR,
                 GL_UNSIGNED_BYTE, Texture::texture[numero_tex_caricate]->pixels);
 
         /* Linear Filtering */

@@ -8,23 +8,6 @@
 #ifndef _LIVELLO_H
 #define	_LIVELLO_H
 
-//?????????????????????????queste si tolgono
-#define H_TELECAMERA 200
-#define FOVY    40
-#define ZNEAR   1
-#define ZFAR    20000
-
-#define MAX_ZOOM_ASSIONOMETRIA 23
-#define MIN_ZOOM_ASSIONOMETRIA 0.25
-
-#define MAX_ZOOM_PROSPETTICA 3
-#define MIN_ZOOM_PROSPETTICA 0.035
-#define MAX_ANGOLO_TELECAMERA_XY 70
-
-#define DELTA_ZOOM 1.1
-#define INCREMENTO_DELTA_ZOOM 1.1
-//???????????????????????????????
-
 enum Proiezione {
     ASSIONOMETRICA, PROSPETTICA
 };
@@ -44,7 +27,7 @@ const GLfloat cavalier[] = {
     0, 0, 0, 1
 };
 
-class Livello {
+class Livello:public Texture {
 protected:
     //puntatore al gioco per interagire sulle funzionidi gioco
     Gioco *gioco; //ok

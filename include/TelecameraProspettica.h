@@ -8,14 +8,14 @@
 #ifndef _TELECAMERAPROSPETTICA_H
 #define	_TELECAMERAPROSPETTICA_H
 
-#define PROSPETTICA_Z_MAX 3
-#define PROSPETTICA_Z_MIN 0.035
-#define PROSPETTICA_DELTA_Z 1.1
-#define PROSPETTICA_INCREMENTO_DELTA_Z 1.1
+#define PROSPETTICA_Z_MAX 960
+#define PROSPETTICA_Z_MIN 0
+#define PROSPETTICA_DELTA_Z 1.05
+#define PROSPETTICA_INCREMENTO_DELTA_Z 1.2
 #define PROSPETTICA_FOVY 40
 #define PROSPETTICA_ZFAR 20000
 #define PROSPETTICA_ZNEAR 1
-#define PROSPETTICA_Z_TELECAMERA 200
+#define PROSPETTICA_Z_TELECAMERA 1000
 #define PROSPETTICA_Y_TELECAMERA 0
 #define PROSPETTICA_X_TELECAMERA 0
 #define PROSPETTICA_MAX_ANGOLO_TELECAMERA 70
@@ -23,10 +23,18 @@
 #include "Domino.h"
 
 class TelecameraProspettica : public Telecamera {
-    PosTeleProsp aux_posizione_telecamera;
+    PosTeleProsp posizione_telecamera_iniziale;
     PosTeleProsp posizione_telecamera;
-    //flag che indica se è incorso un animazione sullo zoom
 
+    //posizione 3d del mouse rispetto alla griglia ausiliaria
+    //variabili per lo spostamento della griglia
+    GLdouble pos_x_iniziale_griglia_iniziale, pos_y_iniziale_griglia_iniziale;
+    GLdouble pos_x_griglia_iniziale, pos_y_griglia_iniziale, pos_z_griglia_iniziale;
+
+    //posizione 3d iniziali del mouse per lo spostamento della griglia
+    GLdouble pos_x_iniziali_griglia, pos_y_iniziali_griglia; //questi si inizializzano da soli quando premo
+    GLdouble pos_x_iniziali, pos_y_iniziali; //questi si inizializzano da soli quando premo
+    //flag che indica se è incorso un animazione sullo zoom
     bool mouvi_z; //inizializzati nella setProiezione
     //massimo livello di zoom per la proiezione corrente
     GLfloat max_z, min_z; //inizializzati nella setProiezione
@@ -47,17 +55,21 @@ public:
 
     bool getMousePosGrigliaXY(unsigned dim_grilia_X, unsigned dim_grilia_Y);
 
+    bool getMousePosGrigliaXYIniziale(unsigned dim_grilia_X, unsigned dim_grilia_Y);
+
     bool mouseSelezione(Livello *liv, Griglia* griglia_livello);
 
-    void registraPosizione();
+    void registraPosizioneMovimento(int mouse_x_fin_aux, int mouse_y_fin_aux, unsigned dim_grilia_X, unsigned dim_grilia_Y);
+
+    void registraPosizioneRotazione(int mouse_x_fin_aux, int mouse_y_fin_aux, unsigned dim_grilia_X, unsigned dim_grilia_Y);
+
+    void cambiaXY(int mouse_x_fin_aux, int mouse_y_fin_aux, unsigned dim_grilia_X, unsigned dim_grilia_Y);
+
+    void cambiaAngolazione(int mouse_x_fin_aux, int mouse_y_fin_aux, unsigned dim_grilia_X, unsigned dim_grilia_Y);
 
     void registraZoomAvanti();
 
     void registraZoomIndietro();
-
-    void cambiaXY();
-
-    void cambiaAngolazione();
 
     void animaZoom();
 
@@ -66,6 +78,8 @@ public:
     void resettaDeltaZoom(int frame_ms);
 
     void visualeOpenGL();
+
+    void visualeOpenGLIniziale();
 };
 
 

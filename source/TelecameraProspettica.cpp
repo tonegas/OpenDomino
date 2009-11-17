@@ -20,7 +20,7 @@ TelecameraProspettica::TelecameraProspettica(const TelecameraProspettica& orig) 
     min_z = PROSPETTICA_Z_MIN;
     delta_z = PROSPETTICA_DELTA_Z;
     posizione_telecamera = orig.posizione_telecamera;
-    aux_posizione_telecamera = orig.aux_posizione_telecamera;
+    posizione_telecamera_iniziale = orig.posizione_telecamera_iniziale;
     tempo_reset_delta_z = 0;
     mouvi_z = false;
 }
@@ -52,13 +52,13 @@ void TelecameraProspettica::setProiezioneTelecamera(int larghezza_fin, int altez
     mouvi_z = false;
     //        //recupero pa posizione z della superfice
     GLdouble mouse_x, mouse_y;
-    gluProject(0.0, 0.0, 0.0, matrice_model, matrice_proj, matrice_view, &mouse_x, &mouse_y, &mouse_z_fin_double);
+    gluProject(0.0, 0.0, posizione_telecamera.z, matrice_model, matrice_proj, matrice_view, &mouse_x, &mouse_y, &mouse_z_fin_double);
 }
 
 bool TelecameraProspettica::getMousePosGrigliaXY(unsigned dim_grilia_X, unsigned dim_grilia_Y) {
-    GLuint buffer[512]; // Set Up A Selection Buffer
+    GLuint buffer[4]; // Set Up A Selection Buffer
     GLint hits;
-    glSelectBuffer(512, buffer);
+    glSelectBuffer(4, buffer);
     glRenderMode(GL_SELECT);
     glInitNames();
     glPushName(0);
@@ -67,15 +67,12 @@ bool TelecameraProspettica::getMousePosGrigliaXY(unsigned dim_grilia_X, unsigned
     {
         glLoadIdentity();
         gluPickMatrix((GLdouble) mouse_x_fin, (GLdouble) (matrice_view[3] - mouse_y_fin), 1.0f, 1.0f, matrice_view);
-        gluPerspective(FOVY, (GLfloat) matrice_view[2] / (GLfloat) matrice_view[3], PROSPETTICA_ZNEAR, PROSPETTICA_ZFAR);
+        gluPerspective(PROSPETTICA_FOVY, (GLfloat) matrice_view[2] / (GLfloat) matrice_view[3], PROSPETTICA_ZNEAR, PROSPETTICA_ZFAR);
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
         {
             glLoadName(0);
-            glRotatef(posizione_telecamera.ang_y, 1, 0, 0);
-            glRotatef(-posizione_telecamera.ang_x, 0, 1, 0);
-            glTranslatef(posizione_telecamera.x, posizione_telecamera.y, 0);
-            glScalef(posizione_telecamera.z, posizione_telecamera.z, posizione_telecamera.z);
+            visualeOpenGL();
             glGetDoublev(GL_MODELVIEW_MATRIX, matrice_model_griglia);
             glBegin(GL_QUADS);
             {
@@ -111,6 +108,46 @@ bool TelecameraProspettica::getMousePosGrigliaXY(unsigned dim_grilia_X, unsigned
     return indice_griglia_ok;
 }
 
+bool TelecameraProspettica::getMousePosGrigliaXYIniziale(unsigned dim_grilia_X, unsigned dim_grilia_Y) {
+    GLuint buffer[4]; // Set Up A Selection Buffer
+    GLint hits;
+    glSelectBuffer(4, buffer);
+    glRenderMode(GL_SELECT);
+    glInitNames();
+    glPushName(0);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    {
+        glLoadIdentity();
+        gluPickMatrix((GLdouble) mouse_x_fin, (GLdouble) (matrice_view[3] - mouse_y_fin), 1.0f, 1.0f, matrice_view);
+        gluPerspective(PROSPETTICA_FOVY, (GLfloat) matrice_view[2] / (GLfloat) matrice_view[3], PROSPETTICA_ZNEAR, PROSPETTICA_ZFAR);
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        {
+            glLoadName(0);
+            visualeOpenGLIniziale();
+            glGetDoublev(GL_MODELVIEW_MATRIX, matrice_model_griglia);
+            glBegin(GL_QUADS);
+            {
+                glNormal3f(0.0, 0.0, 1.0);
+                glVertex3f(-ALTEZZA_PEZZO * 100, -ALTEZZA_PEZZO * 100, 0);
+                glVertex3f(dim_grilia_X * ALTEZZA_PEZZO + ALTEZZA_PEZZO * 100, -ALTEZZA_PEZZO * 100, 0);
+                glVertex3f(dim_grilia_X * ALTEZZA_PEZZO + ALTEZZA_PEZZO * 100, dim_grilia_Y * ALTEZZA_PEZZO + ALTEZZA_PEZZO * 100, 0);
+                glVertex3f(-ALTEZZA_PEZZO * 100, dim_grilia_Y * ALTEZZA_PEZZO + ALTEZZA_PEZZO * 100, 0);
+            }
+            glEnd();
+        }
+        glPopMatrix();
+        glMatrixMode(GL_PROJECTION);
+    }
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    hits = glRenderMode(GL_RENDER);
+    if (hits > 0) { // If There Were More Than 0 Hits
+        gluUnProject(mouse_x_fin, (GLfloat) (matrice_view[3] - mouse_y_fin), (GLdouble) buffer[2] / (GLdouble) (GLuint) (-1), matrice_model_griglia, matrice_proj, matrice_view, &pos_x_griglia_iniziale, &pos_y_griglia_iniziale, &pos_z_griglia_iniziale);
+    }
+}
+
 bool TelecameraProspettica::mouseSelezione(Livello *liv, Griglia* griglia_livello) {
     GLuint buffer[512]; // Set Up A Selection Buffer
     GLint hits = 0;
@@ -123,14 +160,11 @@ bool TelecameraProspettica::mouseSelezione(Livello *liv, Griglia* griglia_livell
     {
         glLoadIdentity();
         gluPickMatrix((GLdouble) mouse_x_fin, (GLdouble) ((GLfloat) (matrice_view[3] - matrice_view[1]) - mouse_y_fin), 1.0f, 1.0f, matrice_view);
-        gluPerspective(FOVY, (GLfloat) (matrice_view[2] - matrice_view[0]) / (GLfloat) (matrice_view[3] - matrice_view[1]), ZNEAR, ZFAR);
+        gluPerspective(PROSPETTICA_FOVY, (GLfloat) (matrice_view[2] - matrice_view[0]) / (GLfloat) (matrice_view[3] - matrice_view[1]), PROSPETTICA_ZNEAR, PROSPETTICA_ZFAR);
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
         {
-            glRotatef(posizione_telecamera.ang_y, 1, 0, 0);
-            glRotatef(-posizione_telecamera.ang_x, 0, 1, 0);
-            glTranslatef(posizione_telecamera.x, posizione_telecamera.y, 0);
-            glScalef(posizione_telecamera.z, posizione_telecamera.z, posizione_telecamera.z);
+            visualeOpenGL();
             int indice = 1;
             for (int i = -1; i < 2; i++) {
                 for (int j = -1; j < 2; j++) {
@@ -182,24 +216,40 @@ bool TelecameraProspettica::mouseSelezione(Livello *liv, Griglia* griglia_livell
     return 0;
 }
 
-void TelecameraProspettica::registraPosizione() {
+void TelecameraProspettica::registraPosizioneMovimento(int mouse_x_fin_aux, int mouse_y_fin_aux, unsigned dim_grilia_X, unsigned dim_grilia_Y) {
+    mouse_x_fin = mouse_x_fin_aux;
+    mouse_y_fin = mouse_y_fin_aux;
+    getMousePosGrigliaXYIniziale(dim_grilia_X, dim_grilia_Y);
+    pos_x_iniziale_griglia_iniziale = pos_x_griglia_iniziale;
+    pos_y_iniziale_griglia_iniziale = pos_y_griglia_iniziale;
+    posizione_telecamera_iniziale.x = posizione_telecamera.x;
+    posizione_telecamera_iniziale.y = posizione_telecamera.y;
+    //cout << "PUSH= telecamera x:" << posizione_telecamera.x << " y:" << posizione_telecamera.y << '\n' << flush;
+}
+
+void TelecameraProspettica::registraPosizioneRotazione(int mouse_x_fin_aux, int mouse_y_fin_aux, unsigned dim_grilia_X, unsigned dim_grilia_Y) {
+    mouse_x_fin = mouse_x_fin_aux;
+    mouse_y_fin = mouse_y_fin_aux;
+    getMousePosGrigliaXY(dim_grilia_X, dim_grilia_Y);
     pos_x_iniziali = pos_x;
     pos_y_iniziali = pos_y;
-    aux_posizione_telecamera = posizione_telecamera;
+    posizione_telecamera_iniziale.ang_x = posizione_telecamera.ang_x;
+    posizione_telecamera_iniziale.ang_y = posizione_telecamera.ang_y;
+    cout << "PUSH= telecamera x:" << posizione_telecamera.x << " y:" << posizione_telecamera.y << '\n' << flush;
 }
 
 void TelecameraProspettica::registraZoomAvanti() {
     if (posizione_telecamera.z < max_z) {
         if (posizione_telecamera.z * delta_z < max_z) {
-            aux_posizione_telecamera.z = posizione_telecamera.z * delta_z;
-            aux_posizione_telecamera.x = posizione_telecamera.x + (1 - delta_z)*(pos_x - posizione_telecamera.x);
-            aux_posizione_telecamera.y = posizione_telecamera.y + (1 - delta_z)*(pos_y - posizione_telecamera.y);
+            posizione_telecamera_iniziale.z = posizione_telecamera.z * delta_z;
+            //            aux_posizione_telecamera.x = posizione_telecamera.x + (1 - delta_z)*(pos_x - posizione_telecamera.x);
+            //            aux_posizione_telecamera.y = posizione_telecamera.y + (1 - delta_z)*(pos_y - posizione_telecamera.y);
             delta_z *= PROSPETTICA_INCREMENTO_DELTA_Z;
         } else {
             delta_z = PROSPETTICA_DELTA_Z;
-            aux_posizione_telecamera.z = max_z;
-            aux_posizione_telecamera.x = posizione_telecamera.x + (1 - (GLfloat) max_z / posizione_telecamera.z)*(pos_x - posizione_telecamera.x);
-            aux_posizione_telecamera.y = posizione_telecamera.y + (1 - (GLfloat) max_z / posizione_telecamera.z)*(pos_y - posizione_telecamera.y);
+            posizione_telecamera_iniziale.z = max_z;
+            //            aux_posizione_telecamera.x = posizione_telecamera.x + (1 - (GLfloat) max_z / posizione_telecamera.z)*(pos_x - posizione_telecamera.x);
+            //            aux_posizione_telecamera.y = posizione_telecamera.y + (1 - (GLfloat) max_z / posizione_telecamera.z)*(pos_y - posizione_telecamera.y);
         }
         mouvi_z = true;
     }
@@ -208,28 +258,36 @@ void TelecameraProspettica::registraZoomAvanti() {
 void TelecameraProspettica::registraZoomIndietro() {
     if (posizione_telecamera.z > min_z) {
         if (posizione_telecamera.z / delta_z > min_z) {
-            aux_posizione_telecamera.z = posizione_telecamera.z / delta_z;
-            aux_posizione_telecamera.x = posizione_telecamera.x + ((delta_z - 1) / delta_z)*(pos_x - posizione_telecamera.x);
-            aux_posizione_telecamera.y = posizione_telecamera.y + ((delta_z - 1) / delta_z)*(pos_y - posizione_telecamera.y);
+            posizione_telecamera_iniziale.z = posizione_telecamera.z / delta_z;
+            //            aux_posizione_telecamera.x = posizione_telecamera.x + ((delta_z - 1) / delta_z)*(pos_x - posizione_telecamera.x);
+            //            aux_posizione_telecamera.y = posizione_telecamera.y + ((delta_z - 1) / delta_z)*(pos_y - posizione_telecamera.y);
             delta_z *= PROSPETTICA_INCREMENTO_DELTA_Z;
         } else {
             delta_z = PROSPETTICA_DELTA_Z;
-            aux_posizione_telecamera.z = min_z;
-            aux_posizione_telecamera.x = posizione_telecamera.x + (((posizione_telecamera.z / (GLfloat) min_z) - 1) / (posizione_telecamera.z / (GLfloat) min_z))*(pos_x - posizione_telecamera.x);
-            aux_posizione_telecamera.y = posizione_telecamera.y + (((posizione_telecamera.z / (GLfloat) min_z) - 1) / (posizione_telecamera.z / (GLfloat) min_z))*(pos_y - posizione_telecamera.y);
+            posizione_telecamera_iniziale.z = min_z;
+            //            aux_posizione_telecamera.x = posizione_telecamera.x + (((posizione_telecamera.z / (GLfloat) min_z) - 1) / (posizione_telecamera.z / (GLfloat) min_z))*(pos_x - posizione_telecamera.x);
+            //            aux_posizione_telecamera.y = posizione_telecamera.y + (((posizione_telecamera.z / (GLfloat) min_z) - 1) / (posizione_telecamera.z / (GLfloat) min_z))*(pos_y - posizione_telecamera.y);
         }
         mouvi_z = true;
     }
 }
 
-void TelecameraProspettica::cambiaXY() {
-    posizione_telecamera.x = aux_posizione_telecamera.x + (pos_x - pos_x_iniziali);
-    posizione_telecamera.y = aux_posizione_telecamera.y + (pos_y - pos_y_iniziali);
+void TelecameraProspettica::cambiaXY(int mouse_x_fin_aux, int mouse_y_fin_aux, unsigned dim_grilia_X, unsigned dim_grilia_Y) {
+    mouse_x_fin = mouse_x_fin_aux;
+    mouse_y_fin = mouse_y_fin_aux;
+    getMousePosGrigliaXYIniziale(dim_grilia_X, dim_grilia_Y);
+    posizione_telecamera.x = posizione_telecamera_iniziale.x + (pos_x_griglia_iniziale - pos_x_iniziale_griglia_iniziale);
+    posizione_telecamera.y = posizione_telecamera_iniziale.y + (pos_y_griglia_iniziale - pos_y_iniziale_griglia_iniziale);
+    cout << "telecamera x:" << posizione_telecamera.x << " y:" << posizione_telecamera.y << '\n' << flush;
+    cout << "telecamera aux x:" << posizione_telecamera_iniziale.x << " y:" << posizione_telecamera_iniziale.y << '\n' << flush;
 }
 
-void TelecameraProspettica::cambiaAngolazione() {
-    GLfloat nuovo_angolo_x = aux_posizione_telecamera.ang_x + (pos_x_iniziali - pos_x);
-    GLfloat nuovo_angolo_y = aux_posizione_telecamera.ang_y + (pos_y_iniziali - pos_y);
+void TelecameraProspettica::cambiaAngolazione(int mouse_x_fin_aux, int mouse_y_fin_aux, unsigned dim_grilia_X, unsigned dim_grilia_Y) {
+    mouse_x_fin = mouse_x_fin_aux;
+    mouse_y_fin = mouse_y_fin_aux;
+    getMousePosGrigliaXY(dim_grilia_X, dim_grilia_Y);
+    GLfloat nuovo_angolo_x = posizione_telecamera_iniziale.ang_x + (pos_x_iniziali - pos_x) / 10;
+    GLfloat nuovo_angolo_y = posizione_telecamera_iniziale.ang_y + (pos_y_iniziali - pos_y) / 10;
     if (fabs(nuovo_angolo_x) < PROSPETTICA_MAX_ANGOLO_TELECAMERA) {
         posizione_telecamera.ang_x = nuovo_angolo_x;
     } else {
@@ -250,15 +308,15 @@ void TelecameraProspettica::cambiaAngolazione() {
 
 void TelecameraProspettica::animaZoom() {
     if (mouvi_z) {
-        if (fabs(posizione_telecamera.z - aux_posizione_telecamera.z) >= 0.001) {
-            posizione_telecamera.x += (aux_posizione_telecamera.x - posizione_telecamera.x) / 10;
-            posizione_telecamera.y += (aux_posizione_telecamera.y - posizione_telecamera.y) / 10;
-            posizione_telecamera.z += (aux_posizione_telecamera.z - posizione_telecamera.z) / 10;
+        if (fabs(posizione_telecamera.z - posizione_telecamera_iniziale.z) >= 0.001) {
+            //            posizione_telecamera.x += (aux_posizione_telecamera.x - posizione_telecamera.x) / 10;
+            //            posizione_telecamera.y += (aux_posizione_telecamera.y - posizione_telecamera.y) / 10;
+            posizione_telecamera.z += (posizione_telecamera_iniziale.z - posizione_telecamera.z) / 10;
         } else {
             mouvi_z = false;
-            posizione_telecamera.x = aux_posizione_telecamera.x;
-            posizione_telecamera.y = aux_posizione_telecamera.y;
-            posizione_telecamera.z = aux_posizione_telecamera.z;
+            //            posizione_telecamera.x = aux_posizione_telecamera.x;
+            //            posizione_telecamera.y = aux_posizione_telecamera.y;
+            posizione_telecamera.z = posizione_telecamera_iniziale.z;
         }
     }
 }
@@ -267,15 +325,15 @@ void TelecameraProspettica::controlloPosizione(unsigned dim_grilia_X, unsigned d
     if (posizione_telecamera.x > 0) {
         posizione_telecamera.x = 0;
     } else {
-        if (posizione_telecamera.x < -(GLdouble) (dim_grilia_X * ALTEZZA_PEZZO) * posizione_telecamera.z) {
-            posizione_telecamera.x = -(GLdouble) (dim_grilia_X * ALTEZZA_PEZZO) * posizione_telecamera.z;
+        if (posizione_telecamera.x < -(GLdouble) (dim_grilia_X * ALTEZZA_PEZZO)) {
+            posizione_telecamera.x = -(GLdouble) (dim_grilia_X * ALTEZZA_PEZZO);
         }
     }
     if (posizione_telecamera.y > 0) {
         posizione_telecamera.y = 0;
     } else {
-        if (posizione_telecamera.y < -(GLdouble) (dim_grilia_Y * ALTEZZA_PEZZO) * posizione_telecamera.z) {
-            posizione_telecamera.y = -(GLdouble) (dim_grilia_Y * ALTEZZA_PEZZO) * posizione_telecamera.z;
+        if (posizione_telecamera.y < -(GLdouble) (dim_grilia_Y * ALTEZZA_PEZZO)) {
+            posizione_telecamera.y = -(GLdouble) (dim_grilia_Y * ALTEZZA_PEZZO);
         }
     }
 }
@@ -291,9 +349,23 @@ void TelecameraProspettica::resettaDeltaZoom(int frame_ms) {
 }
 
 void TelecameraProspettica::visualeOpenGL() {
+    glTranslatef(0, 0, posizione_telecamera.z);
     glRotatef(posizione_telecamera.ang_y, 1, 0, 0);
     glRotatef(-posizione_telecamera.ang_x, 0, 1, 0);
     glTranslatef(posizione_telecamera.x, posizione_telecamera.y, 0);
-    glScalef(posizione_telecamera.z, posizione_telecamera.z, posizione_telecamera.z);
+    //??????????????????
+    //    glTranslatef(posizione_telecamera.x, posizione_telecamera.y, 0);
+    //    glScalef(posizione_telecamera.z, posizione_telecamera.z, posizione_telecamera.z);
+    //??????????????????
 }
 
+void TelecameraProspettica::visualeOpenGLIniziale() {
+    glTranslatef(0, 0, posizione_telecamera_iniziale.z);
+    glRotatef(posizione_telecamera_iniziale.ang_y, 1, 0, 0);
+    glRotatef(-posizione_telecamera_iniziale.ang_x, 0, 1, 0);
+    glTranslatef(posizione_telecamera_iniziale.x, posizione_telecamera_iniziale.y, 0);
+    //??????????????????
+    //    glTranslatef(posizione_telecamera.x, posizione_telecamera.y, 0);
+    //    glScalef(posizione_telecamera.z, posizione_telecamera.z, posizione_telecamera.z);
+    //??????????????????
+}
