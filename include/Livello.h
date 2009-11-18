@@ -8,23 +8,6 @@
 #ifndef _LIVELLO_H
 #define	_LIVELLO_H
 
-//?????????????????????????queste si tolgono
-#define H_TELECAMERA 200
-#define FOVY    40
-#define ZNEAR   1
-#define ZFAR    20000
-
-#define MAX_ZOOM_ASSIONOMETRIA 23
-#define MIN_ZOOM_ASSIONOMETRIA 0.25
-
-#define MAX_ZOOM_PROSPETTICA 3
-#define MIN_ZOOM_PROSPETTICA 0.035
-#define MAX_ANGOLO_TELECAMERA_XY 70
-
-#define DELTA_ZOOM 1.1
-#define INCREMENTO_DELTA_ZOOM 1.1
-//???????????????????????????????
-
 enum Proiezione {
     ASSIONOMETRICA, PROSPETTICA
 };
@@ -88,7 +71,7 @@ protected:
     virtual void mouseButtonDown(SDL_Event *evento) {
     }
 
-    virtual void mouseMotion() {
+    virtual void mouseMotion(SDL_Event *evento) {
     }
 
     virtual void mouseButtonUp(SDL_Event *evento) {

@@ -15,7 +15,7 @@ class Livello;
 class Partita : public Livello {
 protected:
     void mouseButtonDown(SDL_Event *evento);
-    void mouseMotion();
+    void mouseMotion(SDL_Event *evento);
     void attivaSelezioni();
 
 public:

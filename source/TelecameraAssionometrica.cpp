@@ -7,7 +7,8 @@
 
 #include "../include/Domino.h"
 
-TelecameraAssionometrica::TelecameraAssionometrica() : Telecamera() {
+TelecameraAssionometrica::TelecameraAssionometrica(unsigned dim_grilia_X_aux, unsigned dim_grilia_Y_aux)
+: Telecamera(dim_grilia_X_aux,dim_grilia_Y_aux) {
     delta_zoom = ASSIONOMETRICA_DELTA_ZOOM;
     max_zoom = ASSIONOMETRICA_ZOOM_MAX;
     min_zoom = ASSIONOMETRICA_ZOOM_MIN;
@@ -15,17 +16,18 @@ TelecameraAssionometrica::TelecameraAssionometrica() : Telecamera() {
     mouvi_zoom = false;
 }
 
-TelecameraAssionometrica::TelecameraAssionometrica(const TelecameraAssionometrica& orig) {
+TelecameraAssionometrica::TelecameraAssionometrica(const TelecameraAssionometrica& orig) :Telecamera(orig){
     delta_zoom = ASSIONOMETRICA_DELTA_ZOOM;
     max_zoom = ASSIONOMETRICA_ZOOM_MAX;
     min_zoom = ASSIONOMETRICA_ZOOM_MIN;
     posizione_telecamera = orig.posizione_telecamera;
-    aux_posizione_telecamera = orig.aux_posizione_telecamera;
+    posizione_telecamera_iniziale = orig.posizione_telecamera_iniziale;
     tempo_reset_delta_zoom = 0;
     mouvi_zoom = false;
 }
 
-TelecameraAssionometrica::TelecameraAssionometrica(PosTeleAssio &pos_tele_aux) {
+TelecameraAssionometrica::TelecameraAssionometrica(PosTeleAssio &pos_tele_aux, unsigned dim_grilia_X_aux, unsigned dim_grilia_Y_aux)
+: Telecamera(dim_grilia_X_aux,dim_grilia_Y_aux){
     posizione_telecamera = pos_tele_aux;
 }
 
@@ -58,9 +60,10 @@ void TelecameraAssionometrica::setProiezioneTelecamera(int larghezza_fin, int al
     //        //recupero pa posizione z della superfice
     GLdouble mouse_x, mouse_y;
     gluProject(0.0, 0.0, 0.0, matrice_model, matrice_proj, matrice_view, &mouse_x, &mouse_y, &mouse_z_fin_double);
+    getMousePosGrigliaXY();
 }
 
-bool TelecameraAssionometrica::getMousePosGrigliaXY(unsigned dim_grilia_X, unsigned dim_grilia_Y) {
+bool TelecameraAssionometrica::getMousePosGrigliaXY() {
     gluUnProject(mouse_x_fin, matrice_view[3] - mouse_y_fin, mouse_z_fin_double, matrice_model, matrice_proj, matrice_view, &pos_x, &pos_y, &pos_z);
     pos_x_griglia = ((pos_x - posizione_telecamera.x) / posizione_telecamera.zoom);
     pos_y_griglia = ((pos_y - posizione_telecamera.y) / posizione_telecamera.zoom);
@@ -75,9 +78,9 @@ bool TelecameraAssionometrica::getMousePosGrigliaXY(unsigned dim_grilia_X, unsig
 }
 
 bool TelecameraAssionometrica::mouseSelezione(Livello *liv, Griglia* griglia_livello) {
-    GLuint buffer[512]; // Set Up A Selection Buffer
+    GLuint buffer[36]; // Set Up A Selection Buffer
     GLint hits = 0;
-    glSelectBuffer(512, buffer);
+    glSelectBuffer(36, buffer);
     glRenderMode(GL_SELECT);
     glInitNames();
     glPushName(0);
@@ -91,8 +94,7 @@ bool TelecameraAssionometrica::mouseSelezione(Livello *liv, Griglia* griglia_liv
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
         {
-            glTranslatef(posizione_telecamera.x, posizione_telecamera.y, 0);
-            glScalef(posizione_telecamera.zoom, posizione_telecamera.zoom, posizione_telecamera.zoom);
+            visualeOpenGL();
             int indice = 1;
             for (int i = -1; i < 2; i++) {
                 for (int j = -1; j < 2; j++) {
@@ -145,23 +147,23 @@ bool TelecameraAssionometrica::mouseSelezione(Livello *liv, Griglia* griglia_liv
 }
 
 void TelecameraAssionometrica::registraPosizione() {
-    pos_x_iniziali = pos_x;
-    pos_y_iniziali = pos_y;
-    aux_posizione_telecamera = posizione_telecamera;
+    pos_x_iniziale = pos_x;
+    pos_y_iniziale = pos_y;
+    posizione_telecamera_iniziale = posizione_telecamera;
 }
 
 void TelecameraAssionometrica::registraZoomAvanti() {
     if (posizione_telecamera.zoom < max_zoom) {
         if (posizione_telecamera.zoom * delta_zoom < max_zoom) {
-            aux_posizione_telecamera.zoom = posizione_telecamera.zoom * delta_zoom;
-            aux_posizione_telecamera.x = posizione_telecamera.x + (1 - delta_zoom)*(pos_x - posizione_telecamera.x);
-            aux_posizione_telecamera.y = posizione_telecamera.y + (1 - delta_zoom)*(pos_y - posizione_telecamera.y);
+            posizione_telecamera_iniziale.zoom = posizione_telecamera.zoom * delta_zoom;
+            posizione_telecamera_iniziale.x = posizione_telecamera.x + (1 - delta_zoom)*(pos_x - posizione_telecamera.x);
+            posizione_telecamera_iniziale.y = posizione_telecamera.y + (1 - delta_zoom)*(pos_y - posizione_telecamera.y);
             delta_zoom *= ASSIONOMETRICA_INCREMENTO_DELTA_ZOOM;
         } else {
             delta_zoom = ASSIONOMETRICA_DELTA_ZOOM;
-            aux_posizione_telecamera.zoom = max_zoom;
-            aux_posizione_telecamera.x = posizione_telecamera.x + (1 - (GLfloat) max_zoom / posizione_telecamera.zoom)*(pos_x - posizione_telecamera.x);
-            aux_posizione_telecamera.y = posizione_telecamera.y + (1 - (GLfloat) max_zoom / posizione_telecamera.zoom)*(pos_y - posizione_telecamera.y);
+            posizione_telecamera_iniziale.zoom = max_zoom;
+            posizione_telecamera_iniziale.x = posizione_telecamera.x + (1 - (GLfloat) max_zoom / posizione_telecamera.zoom)*(pos_x - posizione_telecamera.x);
+            posizione_telecamera_iniziale.y = posizione_telecamera.y + (1 - (GLfloat) max_zoom / posizione_telecamera.zoom)*(pos_y - posizione_telecamera.y);
         }
         mouvi_zoom = true;
     }
@@ -170,41 +172,41 @@ void TelecameraAssionometrica::registraZoomAvanti() {
 void TelecameraAssionometrica::registraZoomIndietro() {
     if (posizione_telecamera.zoom > min_zoom) {
         if (posizione_telecamera.zoom / delta_zoom > min_zoom) {
-            aux_posizione_telecamera.zoom = posizione_telecamera.zoom / delta_zoom;
-            aux_posizione_telecamera.x = posizione_telecamera.x + ((delta_zoom - 1) / delta_zoom)*(pos_x - posizione_telecamera.x);
-            aux_posizione_telecamera.y = posizione_telecamera.y + ((delta_zoom - 1) / delta_zoom)*(pos_y - posizione_telecamera.y);
+            posizione_telecamera_iniziale.zoom = posizione_telecamera.zoom / delta_zoom;
+            posizione_telecamera_iniziale.x = posizione_telecamera.x + ((delta_zoom - 1) / delta_zoom)*(pos_x - posizione_telecamera.x);
+            posizione_telecamera_iniziale.y = posizione_telecamera.y + ((delta_zoom - 1) / delta_zoom)*(pos_y - posizione_telecamera.y);
             delta_zoom *= ASSIONOMETRICA_INCREMENTO_DELTA_ZOOM;
         } else {
             delta_zoom = ASSIONOMETRICA_DELTA_ZOOM;
-            aux_posizione_telecamera.zoom = min_zoom;
-            aux_posizione_telecamera.x = posizione_telecamera.x + (((posizione_telecamera.zoom / (GLfloat) min_zoom) - 1) / (posizione_telecamera.zoom / (GLfloat) min_zoom))*(pos_x - posizione_telecamera.x);
-            aux_posizione_telecamera.y = posizione_telecamera.y + (((posizione_telecamera.zoom / (GLfloat) min_zoom) - 1) / (posizione_telecamera.zoom / (GLfloat) min_zoom))*(pos_y - posizione_telecamera.y);
+            posizione_telecamera_iniziale.zoom = min_zoom;
+            posizione_telecamera_iniziale.x = posizione_telecamera.x + (((posizione_telecamera.zoom / (GLfloat) min_zoom) - 1) / (posizione_telecamera.zoom / (GLfloat) min_zoom))*(pos_x - posizione_telecamera.x);
+            posizione_telecamera_iniziale.y = posizione_telecamera.y + (((posizione_telecamera.zoom / (GLfloat) min_zoom) - 1) / (posizione_telecamera.zoom / (GLfloat) min_zoom))*(pos_y - posizione_telecamera.y);
         }
         mouvi_zoom = true;
     }
 }
 
 void TelecameraAssionometrica::cambiaXY() {
-    posizione_telecamera.x = aux_posizione_telecamera.x + (pos_x - pos_x_iniziali);
-    posizione_telecamera.y = aux_posizione_telecamera.y + (pos_y - pos_y_iniziali);
+    posizione_telecamera.x = posizione_telecamera_iniziale.x + (pos_x - pos_x_iniziale);
+    posizione_telecamera.y = posizione_telecamera_iniziale.y + (pos_y - pos_y_iniziale);
 }
 
 void TelecameraAssionometrica::animaZoom() {
     if (mouvi_zoom) {
-        if (fabs(posizione_telecamera.zoom - aux_posizione_telecamera.zoom) >= 0.001) {
-            posizione_telecamera.x += (aux_posizione_telecamera.x - posizione_telecamera.x) / 10;
-            posizione_telecamera.y += (aux_posizione_telecamera.y - posizione_telecamera.y) / 10;
-            posizione_telecamera.zoom += (aux_posizione_telecamera.zoom - posizione_telecamera.zoom) / 10;
+        if (fabs(posizione_telecamera.zoom - posizione_telecamera_iniziale.zoom) >= 0.001) {
+            posizione_telecamera.x += (posizione_telecamera_iniziale.x - posizione_telecamera.x) / 10;
+            posizione_telecamera.y += (posizione_telecamera_iniziale.y - posizione_telecamera.y) / 10;
+            posizione_telecamera.zoom += (posizione_telecamera_iniziale.zoom - posizione_telecamera.zoom) / 10;
         } else {
             mouvi_zoom = false;
-            posizione_telecamera.x = aux_posizione_telecamera.x;
-            posizione_telecamera.y = aux_posizione_telecamera.y;
-            posizione_telecamera.zoom = aux_posizione_telecamera.zoom;
+            posizione_telecamera.x = posizione_telecamera_iniziale.x;
+            posizione_telecamera.y = posizione_telecamera_iniziale.y;
+            posizione_telecamera.zoom = posizione_telecamera_iniziale.zoom;
         }
     }
 }
 
-void TelecameraAssionometrica::controlloPosizione(unsigned dim_grilia_X, unsigned dim_grilia_Y) {
+void TelecameraAssionometrica::controlloPosizione() {
     if (posizione_telecamera.x > 0) {
         posizione_telecamera.x = 0;
     } else {

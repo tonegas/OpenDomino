@@ -21,8 +21,12 @@
 #include "Domino.h"
 
 class TelecameraAssionometrica : public Telecamera {
-    PosTeleAssio aux_posizione_telecamera;
+    PosTeleAssio posizione_telecamera_iniziale;
     PosTeleAssio posizione_telecamera;
+
+    //posizione 3d iniziali del mouse per lo spostamento della griglia
+    GLdouble pos_x_iniziale, pos_y_iniziale; //questi si inizializzano da soli quando premo
+
     //flag che indica se è incorso un animazione sullo zoom
     bool mouvi_zoom; //inizializzati nella setProiezione
     //massimo livello di zoom per la proiezione corrente
@@ -33,15 +37,15 @@ class TelecameraAssionometrica : public Telecamera {
     int tempo_reset_delta_zoom; //ok
 public:
 
-    TelecameraAssionometrica();
+    TelecameraAssionometrica(unsigned dim_grilia_X_aux, unsigned dim_grilia_Y_aux);
 
     TelecameraAssionometrica(const TelecameraAssionometrica& orig);
 
-    TelecameraAssionometrica(PosTeleAssio &pos_tele_aux);
+    TelecameraAssionometrica(PosTeleAssio &pos_tele_aux, unsigned dim_grilia_X_aux, unsigned dim_grilia_Y_aux);
 
     void setProiezioneTelecamera(int larghezza_fin, int altezza_fin);
 
-    bool getMousePosGrigliaXY(unsigned dim_grilia_X, unsigned dim_grilia_Y);
+    bool getMousePosGrigliaXY();
 
     bool mouseSelezione(Livello *liv, Griglia* griglia_livello);
 
@@ -55,7 +59,7 @@ public:
 
     void animaZoom();
 
-    void controlloPosizione(unsigned dim_grilia_X, unsigned dim_grilia_Y);
+    void controlloPosizione();
 
     void resettaDeltaZoom(int frame_ms);
 

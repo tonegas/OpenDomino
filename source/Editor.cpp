@@ -34,9 +34,6 @@ void Editor::attivaSelezioni() {
 void Editor::mouseButtonDown(SDL_Event *evento) {
     if (evento->button.button == SDL_BUTTON_LEFT && telecamera_attuale->indice_griglia_ok) {
         telecamera_attuale->mouseSelezione(this,&griglia_livello);
-        //??????????????
-        //mouseSelezione(gioco->getWindowA());
-        //?????????????
         if (caratteristiche_selezione == DAVANTI_PEZZO) {
             if (griglia_livello.getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
                 griglia_livello.eliminaElemento(x_pezzo_selezionato, y_pezzo_selezionato);
@@ -59,12 +56,9 @@ void Editor::mouseButtonDown(SDL_Event *evento) {
     }
 }
 
-void Editor::mouseMotion() {
+void Editor::mouseMotion(SDL_Event *evento) {
     if (telecamera_attuale->indice_griglia_ok) {
         telecamera_attuale->mouseSelezione(this,&griglia_livello);
-        //??????????????
-        //mouseSelezione(gioco->getWindowA());
-        //??????????????
         switch (azione_continua) {
             case POSIZIONA_PEZZI:
                 if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {

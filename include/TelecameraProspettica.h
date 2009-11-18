@@ -23,9 +23,14 @@
 #include "Domino.h"
 
 class TelecameraProspettica : public Telecamera {
-    PosTeleProsp aux_posizione_telecamera;
+    PosTeleProsp posizione_telecamera_iniziale;
     PosTeleProsp posizione_telecamera;
     //flag che indica se è incorso un animazione sullo zoom
+
+    //posizione 3d iniziali del mouse per lo spostamento della griglia
+    GLdouble pos_x_griglia_iniziale, pos_y_griglia_iniziale; //questi si inizializzano da soli quando premo
+    //posizione 3d iniziali del mouse per la rotazione della griglia
+    GLdouble pos_x_iniziale, pos_y_iniziale; //questi si inizializzano da soli quando premo
 
     bool mouvi_z; //inizializzati nella setProiezione
     //massimo livello di zoom per la proiezione corrente
@@ -37,15 +42,17 @@ class TelecameraProspettica : public Telecamera {
 
 public:
 
-    TelecameraProspettica();
+    TelecameraProspettica(unsigned dim_grilia_X_aux, unsigned dim_grilia_Y_aux);
 
     TelecameraProspettica(const TelecameraProspettica& orig);
 
-    TelecameraProspettica(PosTeleProsp &pos_tele_aux);
+    TelecameraProspettica(PosTeleProsp &pos_tele_aux, unsigned dim_grilia_X_aux, unsigned dim_grilia_Y_aux);
 
     void setProiezioneTelecamera(int larghezza_fin, int altezza_fin);
 
-    bool getMousePosGrigliaXY(unsigned dim_grilia_X, unsigned dim_grilia_Y);
+    bool getMousePosGrigliaXY();
+
+    bool getMousePosGrigliaXYIniziale();
 
     bool mouseSelezione(Livello *liv, Griglia* griglia_livello);
 
@@ -61,11 +68,13 @@ public:
 
     void animaZoom();
 
-    void controlloPosizione(unsigned dim_grilia_X, unsigned dim_grilia_Y);
+    void controlloPosizione();
 
     void resettaDeltaZoom(int frame_ms);
 
     void visualeOpenGL();
+
+    void visualeOpenGLIniziale();
 };
 
 

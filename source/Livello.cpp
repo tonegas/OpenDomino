@@ -11,7 +11,9 @@
 using namespace std;
 
 Livello::Livello(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux) :
-griglia_livello(num_x_colonne_aux, num_y_righe_aux) {
+griglia_livello(num_x_colonne_aux, num_y_righe_aux),
+tele_assio(num_x_colonne_aux, num_y_righe_aux),
+tele_prosp(num_x_colonne_aux, num_y_righe_aux) {
     gioco = gioco_aux;
 
     bottone_destro = false;
@@ -24,7 +26,9 @@ griglia_livello(num_x_colonne_aux, num_y_righe_aux) {
 }
 
 Livello::Livello(const Livello& orig) :
-griglia_livello(orig.griglia_livello) {
+griglia_livello(orig.griglia_livello),
+tele_assio(orig.tele_assio),
+tele_prosp(orig.tele_prosp) {
     gioco = orig.gioco;
 
     bottone_destro = orig.bottone_destro;
@@ -41,7 +45,7 @@ griglia_livello(orig.griglia_livello) {
 }
 
 int Livello::inizializza() {
-    int aux_mx, aux_my;
+    //int aux_mx, aux_my;
     switch (tipo_proiezione) {
         case ASSIONOMETRICA:
             telecamera_attuale = &tele_assio;
@@ -51,9 +55,10 @@ int Livello::inizializza() {
             break;
     }
     telecamera_attuale->setProiezioneTelecamera(gioco->getWindowL(), gioco->getWindowA());
-    SDL_GetMouseState(&aux_mx, &aux_my);
-    telecamera_attuale->getMousePosGrigliaXY(aux_mx, aux_my, griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY());
-    mouseMotion();
+    //anche qui l'ho tolto ma serve per la selezione quando passo da editor a gioco
+    //SDL_GetMouseState(&aux_mx, &aux_my);
+    //telecamera_attuale->getMousePosGrigliaXY(aux_mx, aux_my);
+    //mouseMotion(SDL_Event *evento);
     return 1;
 }
 
@@ -89,15 +94,21 @@ void Livello::gestisciInput(SDL_Event *evento) {
                     telecamera_attuale = &tele_prosp;
                     tipo_proiezione = PROSPETTICA;
                     telecamera_attuale->setProiezioneTelecamera(gioco->getWindowL(), gioco->getWindowA());
-                    telecamera_attuale->getMousePosGrigliaXY(griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY());
-                    mouseMotion();
+                    telecamera_attuale->mouseSelezione(this,&griglia_livello);
+                    attivaSelezioni();
+                    //qui devo usare attiva selezioni e non mouseMotion()
+                    //lo tolgo ma devo risolvere il problema delle selezioni
+                    //telecamera_attuale->getMousePosGrigliaXY(griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY());
+                    //mouseMotion();
                     break;
                 case SDLK_a:
                     telecamera_attuale = &tele_assio;
                     tipo_proiezione = ASSIONOMETRICA;
                     telecamera_attuale->setProiezioneTelecamera(gioco->getWindowL(), gioco->getWindowA());
-                    telecamera_attuale->getMousePosGrigliaXY(griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY());
-                    mouseMotion();
+                    telecamera_attuale->mouseSelezione(this,&griglia_livello);
+                    attivaSelezioni();
+                    //telecamera_attuale->getMousePosGrigliaXY(griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY());
+                    //mouseMotion();
                     break;
                 case SDLK_f:
                     if (gioco->getFullScreen()) {
@@ -117,40 +128,44 @@ void Livello::gestisciInput(SDL_Event *evento) {
             }
             break;
         case SDL_MOUSEBUTTONDOWN:
-            telecamera_attuale->getMousePosGrigliaXY(evento->button.x, evento->button.y, griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY());
-            if (evento->button.button == SDL_BUTTON_RIGHT) {
-                telecamera_attuale->registraPosizione();
-                bottone_destro = true;
-            }
-            if (!bottone_destro && (evento->button.button == SDL_BUTTON_WHEELUP || evento->button.button == SDL_BUTTON_WHEELDOWN)) {
-                if (evento->button.button == SDL_BUTTON_WHEELUP) {
-                    telecamera_attuale->registraZoomAvanti();
-                } else {
-                    telecamera_attuale->registraZoomIndietro();
-                   
-                }
-            }
-            if (!bottone_destro && evento->button.button == SDL_BUTTON_MIDDLE && tipo_proiezione == PROSPETTICA) {
-                telecamera_attuale->registraPosizione();
-                bottone_centrale = true;
+            telecamera_attuale->getMousePosGrigliaXY(evento->button.x, evento->button.y);
+            switch (evento->button.button) {
+                case SDL_BUTTON_RIGHT:
+                    telecamera_attuale->registraPosizione();
+                    bottone_destro = true;
+                    break;
+                case SDL_BUTTON_WHEELUP: case SDL_BUTTON_WHEELDOWN:
+                    if (!bottone_destro) {
+                        if (evento->button.button == SDL_BUTTON_WHEELUP) {
+                            telecamera_attuale->registraZoomAvanti();
+                        } else {
+                            telecamera_attuale->registraZoomIndietro();
+
+                        }
+                    }
+                    break;
+                case SDL_BUTTON_MIDDLE:
+                    if (tipo_proiezione == PROSPETTICA && !bottone_destro) {
+                        telecamera_attuale->registraPosizione();
+                        bottone_centrale = true;
+                    }
+                    break;
             }
             mouseButtonDown(evento);
             break;
         case SDL_MOUSEMOTION:
-            telecamera_attuale->getMousePosGrigliaXY(evento->button.x, evento->button.y, griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY());
+            telecamera_attuale->getMousePosGrigliaXY(evento->button.x, evento->button.y);
             if (bottone_destro) {
                 telecamera_attuale->cambiaXY();
-            }
-            if (bottone_centrale) {
+            } else if (bottone_centrale) {
                 telecamera_attuale->cambiaAngolazione();
             }
-            mouseMotion();
+            mouseMotion(evento);
             break;
         case SDL_MOUSEBUTTONUP:
             if (evento->button.button == SDL_BUTTON_RIGHT) {
                 bottone_destro = false;
-            }
-            if (evento->button.button == SDL_BUTTON_MIDDLE) {
+            } else if (evento->button.button == SDL_BUTTON_MIDDLE) {
                 bottone_centrale = false;
             }
             mouseButtonUp(evento);
@@ -169,7 +184,7 @@ void Livello::cicloGioco(SDL_Event *evento) {
         gestisciInput(evento);
     }
 
-    telecamera_attuale->aggiorna(griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY(),gioco->getFrames());
+    telecamera_attuale->aggiorna(gioco->getFrames());
 
     attivaSelezioni();
 
