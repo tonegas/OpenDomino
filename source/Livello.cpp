@@ -288,7 +288,8 @@ void Livello::stampaSfondo() {
     //    static GLfloat luce_ambiente [] = {0.3f, 0.3f, 0.3f, 0.5f};
     //    static GLfloat luce_posizione[] = {1.0, 50.0, -1.0, 0.0};
 
-    static GLfloat cieloAzzurro [] = {1.0f, 1.0f, 1.0f, 1.0f};
+    static GLfloat cieloAzzurro [] = {1.0f, 1.0f, 1.0f, 0.6f};
+    glBlendColor(1.0f,0.0f,1.0f,0.0f);
     glPushMatrix();
     glEnable(GL_BLEND);
     glDisable(GL_LIGHTING);
@@ -300,46 +301,7 @@ void Livello::stampaSfondo() {
     //    glLightfv(GL_LIGHT0, GL_AMBIENT, luce_ambiente);
     //    glLightfv(GL_LIGHT0, GL_POSITION, luce_posizione);
     glColor4fv(cieloAzzurro);
-    glBlendFunc(GL_DST_COLOR, GL_ZERO);
-    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA1_MASK]);
-    glBegin(GL_QUADS);
-    {
-        glNormal3f(0.0, 0.0, 1.0);
-        glTexCoord2f(1.0f, 0.0f), glVertex3f(-100.0, -100.0, 0.0);
-        glTexCoord2f(0.0f, 0.0f), glVertex3f(-100.0, 100.0, 0.0);
-        glTexCoord2f(0.0f, 1.0f), glVertex3f(100.0, 100.0, 0.0);
-        glTexCoord2f(1.0f, 1.0f), glVertex3f(100.0, -100.0, 0.0);
-
-    }
-    glEnd();
-    glBlendFunc( GL_ONE, GL_ONE );
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA1]);
-    glBegin(GL_QUADS);
-    {
-        glNormal3f(0.0, 0.0, 1.0);
-        glTexCoord2f(1.0f, 0.0f), glVertex3f(-100.0, -100.0, 0.0);
-        glTexCoord2f(0.0f, 0.0f), glVertex3f(-100.0, 100.0, 0.0);
-        glTexCoord2f(0.0f, 1.0f), glVertex3f(100.0, 100.0, 0.0);
-        glTexCoord2f(1.0f, 1.0f), glVertex3f(100.0, -100.0, 0.0);
-
-    }
-    glEnd();
-    glTranslatef(50.0, 0.0, 0.0);
-    glBlendFunc(GL_DST_COLOR, GL_ZERO);
-    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA2_MASK]);
-    glBegin(GL_QUADS);
-    {
-        glNormal3f(0.0, 0.0, 1.0);
-        glTexCoord2f(1.0f, 0.0f), glVertex3f(-100.0, -100.0, 0.0);
-        glTexCoord2f(0.0f, 0.0f), glVertex3f(-100.0, 100.0, 0.0);
-        glTexCoord2f(0.0f, 1.0f), glVertex3f(100.0, 100.0, 0.0);
-        glTexCoord2f(1.0f, 1.0f), glVertex3f(100.0, -100.0, 0.0);
-
-    }
-    glEnd();
-    glBlendFunc( GL_ONE, GL_ONE );
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glBlendFunc(GL_DST_COLOR, GL_CONSTANT_COLOR);
     glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA2]);
     glBegin(GL_QUADS);
     {
@@ -351,6 +313,45 @@ void Livello::stampaSfondo() {
 
     }
     glEnd();
+//    glBlendFunc( GL_ONE, GL_ONE );
+//    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA2]);
+//    glBegin(GL_QUADS);
+//    {
+//        glNormal3f(0.0, 0.0, 1.0);
+//        glTexCoord2f(1.0f, 0.0f), glVertex3f(-100.0, -100.0, 0.0);
+//        glTexCoord2f(0.0f, 0.0f), glVertex3f(-100.0, 100.0, 0.0);
+//        glTexCoord2f(0.0f, 1.0f), glVertex3f(100.0, 100.0, 0.0);
+//        glTexCoord2f(1.0f, 1.0f), glVertex3f(100.0, -100.0, 0.0);
+//
+//    }
+//    glEnd();
+//    glTranslatef(50.0, 0.0, 0.0);
+//    glBlendFunc(GL_DST_COLOR, GL_ZERO);
+//    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA2_MASK]);
+//    glBegin(GL_QUADS);
+//    {
+//        glNormal3f(0.0, 0.0, 1.0);
+//        glTexCoord2f(1.0f, 0.0f), glVertex3f(-100.0, -100.0, 0.0);
+//        glTexCoord2f(0.0f, 0.0f), glVertex3f(-100.0, 100.0, 0.0);
+//        glTexCoord2f(0.0f, 1.0f), glVertex3f(100.0, 100.0, 0.0);
+//        glTexCoord2f(1.0f, 1.0f), glVertex3f(100.0, -100.0, 0.0);
+//
+//    }
+//    glEnd();
+//    glBlendFunc( GL_ONE, GL_ONE );
+//    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA2]);
+//    glBegin(GL_QUADS);
+//    {
+//        glNormal3f(0.0, 0.0, 1.0);
+//        glTexCoord2f(1.0f, 0.0f), glVertex3f(-100.0, -100.0, 0.0);
+//        glTexCoord2f(0.0f, 0.0f), glVertex3f(-100.0, 100.0, 0.0);
+//        glTexCoord2f(0.0f, 1.0f), glVertex3f(100.0, 100.0, 0.0);
+//        glTexCoord2f(1.0f, 1.0f), glVertex3f(100.0, -100.0, 0.0);
+//
+//    }
+//    glEnd();
     glEnable(GL_LIGHTING);
     glEnable(GL_DEPTH_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
