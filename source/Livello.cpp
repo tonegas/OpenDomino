@@ -94,7 +94,7 @@ void Livello::gestisciInput(SDL_Event *evento) {
                     telecamera_attuale = &tele_prosp;
                     tipo_proiezione = PROSPETTICA;
                     telecamera_attuale->setProiezioneTelecamera(gioco->getWindowL(), gioco->getWindowA());
-                    telecamera_attuale->mouseSelezione(this,&griglia_livello);
+                    telecamera_attuale->mouseSelezione(this, &griglia_livello);
                     attivaSelezioni();
                     //qui devo usare attiva selezioni e non mouseMotion()
                     //lo tolgo ma devo risolvere il problema delle selezioni
@@ -105,7 +105,7 @@ void Livello::gestisciInput(SDL_Event *evento) {
                     telecamera_attuale = &tele_assio;
                     tipo_proiezione = ASSIONOMETRICA;
                     telecamera_attuale->setProiezioneTelecamera(gioco->getWindowL(), gioco->getWindowA());
-                    telecamera_attuale->mouseSelezione(this,&griglia_livello);
+                    telecamera_attuale->mouseSelezione(this, &griglia_livello);
                     attivaSelezioni();
                     //telecamera_attuale->getMousePosGrigliaXY(griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY());
                     //mouseMotion();
@@ -215,7 +215,7 @@ void Livello::cicloGioco(SDL_Event *evento) {
 }
 
 void Livello::stampaSuperficeBase() {
-    static GLfloat colorblue [] = {0.0f, 0.0f, 1.0f, 0.7f};
+    static GLfloat colorblue [] = {0.0f, 0.0f, 1.0f, 0.9f};
     static GLfloat lightpos_ambient[] = {60, 120, 150, 0.0};
     static GLfloat colorwhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
     static GLfloat colorwhite2 [] = {0.1f, 0.1f, 0.1f, 0.5f};
@@ -225,46 +225,98 @@ void Livello::stampaSuperficeBase() {
     glLightfv(GL_LIGHT1, GL_POSITION, lightpos_ambient);
     glPushMatrix();
 
-    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, colorblue);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, colorblue);
+    glColor4fv(colorblue);
     //glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, colorblue);
     glTranslatef(0.0, 0.0, POSIZIONE_SUPERFICE);
-    //glColor3f(1.0f, 1.0f, 0.0f);
-    //glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_PEZZO]);
+
     glBegin(GL_QUADS);
     {
         glNormal3f(0.0, 0.0, 1.0);
-        glTexCoord2f(0.0f, 0.0f), glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-        glTexCoord2f(1.0f, 0.0f), glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-        glTexCoord2f(1.0f, 1.0f), glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
-        glTexCoord2f(0.0f, 1.0f), glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
     }
     glEnd();
+
+
+    //glColor3f(1.0f, 1.0f, 0.0f);
+    //glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_PEZZO]);
+
+    //    glDisable(GL_DEPTH_TEST);
+    //    glEnable(GL_BLEND);
+    //    glBegin(GL_QUADS);
+    //    {
+    //        glNormal3f(0.0, 0.0, 1.0);
+    //        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+    //        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+    //
+    //        glNormal3f(-1.0, 0.0, 0.0);
+    //        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+    //        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+    //        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -20);
+    //        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -20);
+    //
+    //        glNormal3f(0.0, 1.0, 0.0);
+    //        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -20);
+    //        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -20);
+    //
+    //        glNormal3f(1.0, 0.0, 0.0);
+    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -20);
+    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -20);
+    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+    //
+    //        glNormal3f(0.0, -1.0, 0.0);
+    //        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+    //        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -20);
+    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -20);
+    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+    //
+    //
+    //        glNormal3f(0.0, 0.0, -1.0);
+    //        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -20);
+    //        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -20);
+    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -20);
+    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -20);
+    //
+    //    }
+    //    glEnd();
+    //    glEnable(GL_DEPTH_TEST);
+    //    glDisable(GL_BLEND);
     glPopMatrix();
 }
 
 void Livello::stampaSfondo() {
     glClearColor(37.0 / 255.0, 104.0 / 255.0, 246.0 / 255.0, 1.0f);
 
-    //    static GLfloat cieloAzzurro [] = {37.0 / 255.0, 104.0 / 255.0, 246.0 / 255.0, 1.0f};
+
+    //    static GLfloat cieloAzzurro [] = {1.0f, 1.0f, 1.0f, 1.0f};
     //    glPushMatrix();
     //    glDisable(GL_LIGHTING);
-    //    //glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, cieloAzzurro);
+    //    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, cieloAzzurro);
     //    //glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, colorblue);
-    //    glTranslatef(0.0, 0.0, -1000.0);
+    //    glTranslatef(0.0, 0.0, -100.0);
     //    glColor4fv(cieloAzzurro);
-    //    //glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_PEZZO]);
+    //    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA1]);
     //    glBegin(GL_QUADS);
     //    {
     //        glNormal3f(0.0, 0.0, 1.0);
-    //        glVertex3f(-10000.0, -10000.0, 0.0);
-    //        glVertex3f(-1000.0, 10000.0, 0.0);
-    //        glVertex3f(10000.0, 10000.0, 0.0);
-    //        glVertex3f(10000.0, -10000.0, 0.0);
+    //        glTexCoord2f(1.0f, 0.0f), glVertex3f(-100.0, -100.0, 0.0);
+    //        glTexCoord2f(0.0f, 0.0f), glVertex3f(-100.0, 100.0, 0.0);
+    //        glTexCoord2f(0.0f, 1.0f), glVertex3f(100.0, 100.0, 0.0);
+    //        glTexCoord2f(1.0f, 1.0f), glVertex3f(100.0, -100.0, 0.0);
     //
     //    }
     //    glEnd();
     //    glEnable(GL_LIGHTING);
     //    glPopMatrix();
+    //    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Livello::resettaSelezione() {

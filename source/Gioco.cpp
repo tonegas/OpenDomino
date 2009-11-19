@@ -70,15 +70,16 @@ Gioco::Gioco() : domino_editor(this) {
     /* Enable smooth shading */
     glShadeModel(GL_SMOOTH);
 
-    //    /* Set the background black */
-    //    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    //
-    //    /* Depth buffer setup */
-    //    glClearDepth(1.0f);
+//        /* Set the background black */
+//        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+//
+//        /* Depth buffer setup */
+//        glClearDepth(1.0f);
 
 
-    glEnable(GL_BLEND);
+    //glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glBlendFunc(GL_SRC_ALPHA,GL_ONE);
     //glBlendFunc(GL_SRC_ALPHA_SATURATE, GL_ONE);
 
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -90,6 +91,7 @@ Gioco::Gioco() : domino_editor(this) {
     glEnable(GL_DEPTH_TEST); //questa andrà attivata
     /* The Type Of Depth Test To Do */
     glDepthFunc(GL_LEQUAL);
+    //glDepthFunc(GL_LESS);
 
 
     //    glEnable(GL_LIGHT0);
@@ -108,14 +110,15 @@ Gioco::Gioco() : domino_editor(this) {
     glFogfv(GL_FOG_COLOR, fogColor); /* Set Fog Color */
     glFogf(GL_FOG_DENSITY, 0.01f); /* How Dense Will The Fog Be */
     glHint(GL_FOG_HINT, GL_NICEST); /* Fog Hint Value */
-    glFogf(GL_FOG_START, 500.0f); /* Fog Start Depth */
-    glFogf(GL_FOG_END, 1000.0f); /* Fog End Depth */
+    glFogf(GL_FOG_START, 5000.0f); /* Fog Start Depth */
+    glFogf(GL_FOG_END, 11000.0f); /* Fog End Depth */
     glEnable(GL_FOG);
 
     //se lo attivo sparisce anche le faccie laterali
     //glEnable(GL_CULL_FACE); //disattuva le faccie posteriori
 
     Texture::loadTextures("crate.bmp", TEX_PEZZO);
+    //Texture::loadTextures("nuvola.bmp", TEX_NUVOLA1);
 
     if (stato == EDITOR_COSTRUISCI) {
         domino = &domino_editor;

@@ -150,6 +150,7 @@ bool TelecameraProspettica::getMousePosGrigliaXYIniziale() {
     {
         gluUnProject(mouse_x_fin, (GLfloat) (matrice_view[3] - mouse_y_fin), (GLdouble) buffer[2] / (GLdouble) (GLuint) (-1), matrice_model_griglia, matrice_proj, matrice_view, &pos_x_griglia, &pos_y_griglia, &pos_z_griglia);
     }
+    return true;
 }
 
 bool TelecameraProspettica::mouseSelezione(Livello *liv, Griglia* griglia_livello) {
@@ -231,15 +232,15 @@ void TelecameraProspettica::registraPosizione() {
 void TelecameraProspettica::registraZoomAvanti() {
     if (posizione_telecamera.z < max_z) {
         if (posizione_telecamera.z * delta_z < max_z) {
-            posizione_telecamera_iniziale.z = posizione_telecamera.z * delta_z;
             //            posizione_telecamera_iniziale.x = posizione_telecamera.x + (1 - delta_z)*(pos_x - posizione_telecamera.x);
             //            posizione_telecamera_iniziale.y = posizione_telecamera.y + (1 - delta_z)*(pos_y - posizione_telecamera.y);
+            posizione_telecamera_iniziale.z = posizione_telecamera.z * delta_z;
             delta_z *= PROSPETTICA_INCREMENTO_DELTA_Z;
         } else {
             delta_z = PROSPETTICA_DELTA_Z;
-            posizione_telecamera_iniziale.z = max_z;
             //            posizione_telecamera_iniziale.x = posizione_telecamera.x + (1 - (GLfloat) max_z / posizione_telecamera.z)*(pos_x - posizione_telecamera.x);
             //            posizione_telecamera_iniziale.y = posizione_telecamera.y + (1 - (GLfloat) max_z / posizione_telecamera.z)*(pos_y - posizione_telecamera.y);
+            posizione_telecamera_iniziale.z = max_z;
         }
         mouvi_z = true;
     }
@@ -248,15 +249,15 @@ void TelecameraProspettica::registraZoomAvanti() {
 void TelecameraProspettica::registraZoomIndietro() {
     if (posizione_telecamera.z > min_z) {
         if (posizione_telecamera.z / delta_z > min_z) {
-            posizione_telecamera_iniziale.z = posizione_telecamera.z / delta_z;
             //            posizione_telecamera_iniziale.x = posizione_telecamera.x + ((delta_z - 1) / delta_z)*(pos_x - posizione_telecamera.x);
             //            posizione_telecamera_iniziale.y = posizione_telecamera.y + ((delta_z - 1) / delta_z)*(pos_y - posizione_telecamera.y);
+            posizione_telecamera_iniziale.z = posizione_telecamera.z / delta_z;
             delta_z *= PROSPETTICA_INCREMENTO_DELTA_Z;
         } else {
             delta_z = PROSPETTICA_DELTA_Z;
-            posizione_telecamera_iniziale.z = min_z;
             //            posizione_telecamera_iniziale.x = posizione_telecamera.x + (((posizione_telecamera.z / (GLfloat) min_z) - 1) / (posizione_telecamera.z / (GLfloat) min_z))*(pos_x - posizione_telecamera.x);
             //            posizione_telecamera_iniziale.y = posizione_telecamera.y + (((posizione_telecamera.z / (GLfloat) min_z) - 1) / (posizione_telecamera.z / (GLfloat) min_z))*(pos_y - posizione_telecamera.y);
+            posizione_telecamera_iniziale.z = min_z;
         }
         mouvi_z = true;
     }
@@ -305,18 +306,19 @@ void TelecameraProspettica::animaZoom() {
 }
 
 void TelecameraProspettica::controlloPosizione() {
+    cout << 'x' << posizione_telecamera.x << 'y' << posizione_telecamera.y << '\n' << flush;
     if (posizione_telecamera.x > 0) {
         posizione_telecamera.x = 0;
     } else {
-        if (posizione_telecamera.x < -(GLdouble) (dim_grilia_X * ALTEZZA_PEZZO) * posizione_telecamera.z) {
-            posizione_telecamera.x = -(GLdouble) (dim_grilia_X * ALTEZZA_PEZZO) * posizione_telecamera.z;
+        if (posizione_telecamera.x < -(GLdouble) (dim_grilia_X * ALTEZZA_PEZZO)) {
+            posizione_telecamera.x = -(GLdouble) (dim_grilia_X * ALTEZZA_PEZZO);
         }
     }
     if (posizione_telecamera.y > 0) {
         posizione_telecamera.y = 0;
     } else {
-        if (posizione_telecamera.y < -(GLdouble) (dim_grilia_Y * ALTEZZA_PEZZO) * posizione_telecamera.z) {
-            posizione_telecamera.y = -(GLdouble) (dim_grilia_Y * ALTEZZA_PEZZO) * posizione_telecamera.z;
+        if (posizione_telecamera.y < -(GLdouble) (dim_grilia_Y * ALTEZZA_PEZZO)) {
+            posizione_telecamera.y = -(GLdouble) (dim_grilia_Y * ALTEZZA_PEZZO);
         }
     }
 }

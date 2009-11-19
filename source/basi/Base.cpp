@@ -156,6 +156,8 @@ void Base::stampa() {
 
     glPushMatrix();
     glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, colorgreen);
+    glColor4fv(colorgreen);
+
     glTranslatef(sposto_x, sposto_y + ALTEZZA_PEZZO - ALTEZZA_BASE, 0.0);
 
     glBegin(GL_QUADS);
@@ -171,7 +173,7 @@ void Base::stampa() {
         glVertex3f(SPESSORE_BASE, 0.0, 0.0);
         glVertex3f(SPESSORE_BASE, 0.0, LARGHEZZA_BASE);
         glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, LARGHEZZA_BASE);
- 
+
         glNormal3f(0.0, 0.0, 1.0);
         glVertex3f(SPESSORE_BASE, 0.0, LARGHEZZA_BASE);
         glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, LARGHEZZA_BASE);
