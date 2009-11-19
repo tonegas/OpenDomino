@@ -231,10 +231,10 @@ void TelecameraProspettica::registraPosizione() {
 
 void TelecameraProspettica::registraZoomAvanti() {
     if (posizione_telecamera.z < max_z) {
-        if (posizione_telecamera.z * delta_z < max_z) {
+        if (posizione_telecamera.z + delta_z < max_z) {
             //            posizione_telecamera_iniziale.x = posizione_telecamera.x + (1 - delta_z)*(pos_x - posizione_telecamera.x);
             //            posizione_telecamera_iniziale.y = posizione_telecamera.y + (1 - delta_z)*(pos_y - posizione_telecamera.y);
-            posizione_telecamera_iniziale.z = posizione_telecamera.z * delta_z;
+            posizione_telecamera_iniziale.z = posizione_telecamera.z + delta_z;
             delta_z *= PROSPETTICA_INCREMENTO_DELTA_Z;
         } else {
             delta_z = PROSPETTICA_DELTA_Z;
@@ -248,10 +248,10 @@ void TelecameraProspettica::registraZoomAvanti() {
 
 void TelecameraProspettica::registraZoomIndietro() {
     if (posizione_telecamera.z > min_z) {
-        if (posizione_telecamera.z / delta_z > min_z) {
+        if (posizione_telecamera.z - delta_z > min_z) {
             //            posizione_telecamera_iniziale.x = posizione_telecamera.x + ((delta_z - 1) / delta_z)*(pos_x - posizione_telecamera.x);
             //            posizione_telecamera_iniziale.y = posizione_telecamera.y + ((delta_z - 1) / delta_z)*(pos_y - posizione_telecamera.y);
-            posizione_telecamera_iniziale.z = posizione_telecamera.z / delta_z;
+            posizione_telecamera_iniziale.z = posizione_telecamera.z - delta_z;
             delta_z *= PROSPETTICA_INCREMENTO_DELTA_Z;
         } else {
             delta_z = PROSPETTICA_DELTA_Z;
@@ -270,8 +270,8 @@ void TelecameraProspettica::cambiaXY() {
 }
 
 void TelecameraProspettica::cambiaAngolazione() {
-    GLfloat nuovo_angolo_x = posizione_telecamera_iniziale.ang_x + (pos_x_iniziale - pos_x);
-    GLfloat nuovo_angolo_y = posizione_telecamera_iniziale.ang_y + (pos_y_iniziale - pos_y);
+    GLfloat nuovo_angolo_x = posizione_telecamera_iniziale.ang_x + (pos_x_iniziale - pos_x)/4;
+    GLfloat nuovo_angolo_y = posizione_telecamera_iniziale.ang_y + (pos_y_iniziale - pos_y)/4;
     if (fabs(nuovo_angolo_x) < PROSPETTICA_MAX_ANGOLO_TELECAMERA) {
         posizione_telecamera.ang_x = nuovo_angolo_x;
     } else {
@@ -293,13 +293,13 @@ void TelecameraProspettica::cambiaAngolazione() {
 void TelecameraProspettica::animaZoom() {
     if (mouvi_z) {
         if (fabs(posizione_telecamera.z - posizione_telecamera_iniziale.z) >= 0.001) {
-            posizione_telecamera.x += (posizione_telecamera_iniziale.x - posizione_telecamera.x) / 10;
-            posizione_telecamera.y += (posizione_telecamera_iniziale.y - posizione_telecamera.y) / 10;
+//            posizione_telecamera.x += (posizione_telecamera_iniziale.x - posizione_telecamera.x) / 10;
+//            posizione_telecamera.y += (posizione_telecamera_iniziale.y - posizione_telecamera.y) / 10;
             posizione_telecamera.z += (posizione_telecamera_iniziale.z - posizione_telecamera.z) / 10;
         } else {
             mouvi_z = false;
-            posizione_telecamera.x = posizione_telecamera_iniziale.x;
-            posizione_telecamera.y = posizione_telecamera_iniziale.y;
+//            posizione_telecamera.x = posizione_telecamera_iniziale.x;
+//            posizione_telecamera.y = posizione_telecamera_iniziale.y;
             posizione_telecamera.z = posizione_telecamera_iniziale.z;
         }
     }

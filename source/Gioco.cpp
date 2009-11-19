@@ -77,7 +77,7 @@ Gioco::Gioco() : domino_editor(this) {
 //        glClearDepth(1.0f);
 
 
-    //glEnable(GL_BLEND);
+    glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //glBlendFunc(GL_SRC_ALPHA,GL_ONE);
     //glBlendFunc(GL_SRC_ALPHA_SATURATE, GL_ONE);
@@ -90,17 +90,18 @@ Gioco::Gioco() : domino_editor(this) {
 
     glEnable(GL_DEPTH_TEST); //questa andrà attivata
     /* The Type Of Depth Test To Do */
-    glDepthFunc(GL_LEQUAL);
-    //glDepthFunc(GL_LESS);
+    //glDepthFunc(GL_LEQUAL);
+    glDepthFunc(GL_LESS);
 
 
-    //    glEnable(GL_LIGHT0);
+    //glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);
     glEnable(GL_LIGHTING);
     glEnable(GL_NORMALIZE);
 
     glEnable(GL_MULTISAMPLE);
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+    glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 1);
 
     GLuint fogMode[] = {GL_EXP, GL_EXP2, GL_LINEAR};
     GLfloat fogColor[4] = {37.0 / 255.0, 104.0 / 255.0, 246.0 / 255.0, 1.0f}; //{ 0.5f, 0.5f, 0.5f, 1.0f };
@@ -118,7 +119,7 @@ Gioco::Gioco() : domino_editor(this) {
     //glEnable(GL_CULL_FACE); //disattuva le faccie posteriori
 
     Texture::loadTextures("crate.bmp", TEX_PEZZO);
-    //Texture::loadTextures("nuvola.bmp", TEX_NUVOLA1);
+    Texture::loadTextures("nuvola.bmp", TEX_NUVOLA1);
 
     if (stato == EDITOR_COSTRUISCI) {
         domino = &domino_editor;

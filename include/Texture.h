@@ -20,6 +20,7 @@ using std::string;
 
 class Texture {
 protected:
+    static bool inizializzata;
     static unsigned numero_textures;
     static SDL_Surface* texture[NUMERO_TEXTURES];
     static GLuint indice_texture[NUMERO_TEXTURES];

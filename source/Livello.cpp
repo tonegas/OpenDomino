@@ -19,7 +19,7 @@ tele_prosp(num_x_colonne_aux, num_y_righe_aux) {
     bottone_destro = false;
     bottone_sinistro = false;
     bottone_centrale = false;
-    tipo_proiezione = ASSIONOMETRICA;
+    tipo_proiezione = PROSPETTICA;
 
     caratteristiche_selezione = NIENTE;
     entrambi = false;
@@ -215,21 +215,27 @@ void Livello::cicloGioco(SDL_Event *evento) {
 }
 
 void Livello::stampaSuperficeBase() {
-    static GLfloat colorblue [] = {0.0f, 0.0f, 1.0f, 0.9f};
-    static GLfloat lightpos_ambient[] = {60, 120, 150, 0.0};
-    static GLfloat colorwhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
-    static GLfloat colorwhite2 [] = {0.1f, 0.1f, 0.1f, 0.5f};
+    static GLfloat colorblue [] = {0.0f, 0.0f, 1.0f, 0.5f};
+    static GLfloat colorblue2 [] = {0.3f, 0.3f, 0.5f, 0.8f};
+    static GLfloat luce_posizione[] = {2.0f, 5.0f, 1.0f, 0.0};
+    static GLfloat luce_diffusa [] = {1.0f, 1.0f, 1.0f, 1.0f};
+    static GLfloat luce_ambiente [] = {0.3f, 0.3f, 0.3f, 1.0f};
 
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, colorwhite);
-    glLightfv(GL_LIGHT1, GL_AMBIENT, colorwhite2);
-    glLightfv(GL_LIGHT1, GL_POSITION, lightpos_ambient);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, luce_diffusa);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, luce_ambiente);
+    glLightfv(GL_LIGHT1, GL_POSITION, luce_posizione);
     glPushMatrix();
 
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, colorblue);
-    glColor4fv(colorblue);
+    //glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, colorblue);
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, colorblue);
+    glMaterialfv(GL_BACK, GL_AMBIENT_AND_DIFFUSE, colorblue2);
+    //glMaterialfv(GL_BACK, GL_AMBIENT_AND_DIFFUSE, colorblue2);
+    //glColor4fv(colorblue);
     //glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, colorblue);
     glTranslatef(0.0, 0.0, POSIZIONE_SUPERFICE);
 
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
     glBegin(GL_QUADS);
     {
         glNormal3f(0.0, 0.0, 1.0);
@@ -237,86 +243,75 @@ void Livello::stampaSuperficeBase() {
         glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
         glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
         glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+
+        glNormal3f(-1.0, 0.0, 0.0);
+        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -5);
+        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -5);
+        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+
+        glNormal3f(0.0, -1.0, 0.0);
+        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -5);
+        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -5);
+
+        glNormal3f(0.0, 1.0, 0.0);
+        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -5);
+        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -5);
+        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+
+        glNormal3f(1.0, 0.0, 0.0);
+        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -5);
+        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -5);
+
+//        glNormal3f(0.0, 0.0, -1.0);
+//        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -25);
+//        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -25);
+//        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -25);
+//        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -25);
+
     }
     glEnd();
-
-
-    //glColor3f(1.0f, 1.0f, 0.0f);
-    //glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_PEZZO]);
-
-    //    glDisable(GL_DEPTH_TEST);
-    //    glEnable(GL_BLEND);
-    //    glBegin(GL_QUADS);
-    //    {
-    //        glNormal3f(0.0, 0.0, 1.0);
-    //        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
-    //        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
-    //
-    //        glNormal3f(-1.0, 0.0, 0.0);
-    //        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-    //        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
-    //        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -20);
-    //        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -20);
-    //
-    //        glNormal3f(0.0, 1.0, 0.0);
-    //        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
-    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
-    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -20);
-    //        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -20);
-    //
-    //        glNormal3f(1.0, 0.0, 0.0);
-    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -20);
-    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -20);
-    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
-    //
-    //        glNormal3f(0.0, -1.0, 0.0);
-    //        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-    //        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -20);
-    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -20);
-    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-    //
-    //
-    //        glNormal3f(0.0, 0.0, -1.0);
-    //        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -20);
-    //        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -20);
-    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -20);
-    //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -20);
-    //
-    //    }
-    //    glEnd();
-    //    glEnable(GL_DEPTH_TEST);
-    //    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_BLEND);
     glPopMatrix();
 }
 
 void Livello::stampaSfondo() {
     glClearColor(37.0 / 255.0, 104.0 / 255.0, 246.0 / 255.0, 1.0f);
 
+    //    static GLfloat luce_diffusa [] = {1.0f, 1.0f, 1.0f, 0.5f};
+    //    static GLfloat luce_ambiente [] = {0.3f, 0.3f, 0.3f, 0.5f};
+    //    static GLfloat luce_posizione[] = {1.0, 50.0, -1.0, 0.0};
 
-    //    static GLfloat cieloAzzurro [] = {1.0f, 1.0f, 1.0f, 1.0f};
-    //    glPushMatrix();
-    //    glDisable(GL_LIGHTING);
-    //    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, cieloAzzurro);
-    //    //glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, colorblue);
-    //    glTranslatef(0.0, 0.0, -100.0);
-    //    glColor4fv(cieloAzzurro);
-    //    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA1]);
-    //    glBegin(GL_QUADS);
-    //    {
-    //        glNormal3f(0.0, 0.0, 1.0);
-    //        glTexCoord2f(1.0f, 0.0f), glVertex3f(-100.0, -100.0, 0.0);
-    //        glTexCoord2f(0.0f, 0.0f), glVertex3f(-100.0, 100.0, 0.0);
-    //        glTexCoord2f(0.0f, 1.0f), glVertex3f(100.0, 100.0, 0.0);
-    //        glTexCoord2f(1.0f, 1.0f), glVertex3f(100.0, -100.0, 0.0);
-    //
-    //    }
-    //    glEnd();
-    //    glEnable(GL_LIGHTING);
-    //    glPopMatrix();
-    //    glBindTexture(GL_TEXTURE_2D, 0);
+    static GLfloat cieloAzzurro [] = {1.0f, 1.0f, 1.0f, 1.0f};
+    glPushMatrix();
+    glDisable(GL_LIGHTING);
+    //        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, cieloAzzurro);
+    //glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, colorblue);
+    glTranslatef(0.0, 0.0, -100.0);
+    //    glLightfv(GL_LIGHT0, GL_DIFFUSE, luce_diffusa);
+    //    glLightfv(GL_LIGHT0, GL_AMBIENT, luce_ambiente);
+    //    glLightfv(GL_LIGHT0, GL_POSITION, luce_posizione);
+    glColor4fv(cieloAzzurro);
+    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA1]);
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(0.0, 0.0, 1.0);
+        glTexCoord2f(1.0f, 0.0f), glVertex3f(-100.0, -100.0, 0.0);
+        glTexCoord2f(0.0f, 0.0f), glVertex3f(-100.0, 100.0, 0.0);
+        glTexCoord2f(0.0f, 1.0f), glVertex3f(100.0, 100.0, 0.0);
+        glTexCoord2f(1.0f, 1.0f), glVertex3f(100.0, -100.0, 0.0);
+
+    }
+    glEnd();
+    glEnable(GL_LIGHTING);
+    glPopMatrix();
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Livello::resettaSelezione() {

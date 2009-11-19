@@ -27,7 +27,7 @@ const GLfloat cavalier[] = {
     0, 0, 0, 1
 };
 
-class Livello {
+class Livello : public Texture {
 protected:
     //puntatore al gioco per interagire sulle funzionidi gioco
     Gioco *gioco; //ok

@@ -170,9 +170,9 @@ void Base::stampa() {
 
         glNormal3f(1.0, 0.0, 0.0);
         glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, 0.0);
-        glVertex3f(SPESSORE_BASE, 0.0, 0.0);
-        glVertex3f(SPESSORE_BASE, 0.0, LARGHEZZA_BASE);
         glVertex3f(SPESSORE_BASE, ALTEZZA_BASE, LARGHEZZA_BASE);
+        glVertex3f(SPESSORE_BASE, 0.0, LARGHEZZA_BASE);
+        glVertex3f(SPESSORE_BASE, 0.0, 0.0);
 
         glNormal3f(0.0, 0.0, 1.0);
         glVertex3f(SPESSORE_BASE, 0.0, LARGHEZZA_BASE);
@@ -182,9 +182,9 @@ void Base::stampa() {
 
         glNormal3f(-1.0, 0.0, 0.0);
         glVertex3f(0.0, ALTEZZA_BASE, LARGHEZZA_BASE);
-        glVertex3f(0.0, 0.0, LARGHEZZA_BASE);
-        glVertex3f(0.0, 0.0, 0.0);
         glVertex3f(0.0, ALTEZZA_BASE, 0.0);
+        glVertex3f(0.0, 0.0, 0.0);
+        glVertex3f(0.0, 0.0, LARGHEZZA_BASE);
 
         glNormal3f(0.0, 1.0, 0.0);
         glVertex3f(0.0, ALTEZZA_BASE, LARGHEZZA_BASE);

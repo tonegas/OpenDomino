@@ -11,6 +11,7 @@
 unsigned Texture::numero_textures = NUMERO_TEXTURES;
 SDL_Surface* Texture::texture[NUMERO_TEXTURES];
 GLuint Texture::indice_texture[NUMERO_TEXTURES];
+bool Texture::inizializzata = false;
 
 Texture::Texture() {
 }
@@ -25,7 +26,10 @@ void Texture::loadTextures(string nome_immagine, Tex numero_tex_caricate) {
         //2: indice nel vettore di textures
 
         cout << "numero textures:" << Texture::numero_textures << '\n' << flush;
-        glGenTextures(Texture::numero_textures, &Texture::indice_texture[0]);
+        if (inizializzata == false) {
+            glGenTextures(Texture::numero_textures, &Texture::indice_texture[0]);
+            inizializzata = true;
+        }
         /* Typical Texture Generation Using Data From The Bitmap */
         //1: sempre così
         //2: spazio della texture
@@ -53,5 +57,5 @@ void Texture::loadTextures(string nome_immagine, Tex numero_tex_caricate) {
         printf("ERRORE di caricamento immagine SDL: %s.\n", SDL_GetError());
         exit(-1);
     }
-    glBindTexture(GL_TEXTURE_2D,0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
