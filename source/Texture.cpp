@@ -17,6 +17,7 @@ Texture::Texture() {
 }
 
 Texture::~Texture() {
+    glDeleteTextures( NUMERO_TEXTURES, &indice_texture[0] );
 }
 
 void Texture::loadTextures(string nome_immagine, Tex numero_tex_caricate) {
@@ -46,12 +47,13 @@ void Texture::loadTextures(string nome_immagine, Tex numero_tex_caricate) {
         //7:GL_ALPHA,GL_LUMINANCE,GL_LUMINANCE_ALPHA,GL_RGB,GL_RGBA
         /* Generate The Texture */
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Texture::texture[numero_tex_caricate]->w,
-                Texture::texture[numero_tex_caricate]->h, 0, GL_RGB,
+                Texture::texture[numero_tex_caricate]->h, 0, GL_BGR,
                 GL_UNSIGNED_BYTE, Texture::texture[numero_tex_caricate]->pixels);
 
         /* Linear Filtering */
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        SDL_FreeSurface(Texture::texture[numero_tex_caricate]);
         fprintf(stderr, "Errore: %s\n", gluErrorString(glGetError()));
     } else {
         printf("ERRORE di caricamento immagine SDL: %s.\n", SDL_GetError());

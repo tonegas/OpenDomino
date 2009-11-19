@@ -119,7 +119,10 @@ Gioco::Gioco() : domino_editor(this) {
     //glEnable(GL_CULL_FACE); //disattuva le faccie posteriori
 
     Texture::loadTextures("crate.bmp", TEX_PEZZO);
-    Texture::loadTextures("nuvola.bmp", TEX_NUVOLA1);
+    Texture::loadTextures("nuvola1.bmp", TEX_NUVOLA1);
+    Texture::loadTextures("nuvola2.bmp", TEX_NUVOLA2);
+        Texture::loadTextures("nuvola1_mask.bmp", TEX_NUVOLA1_MASK);
+    Texture::loadTextures("nuvola2_mask.bmp", TEX_NUVOLA2_MASK);
 
     if (stato == EDITOR_COSTRUISCI) {
         domino = &domino_editor;

@@ -268,11 +268,11 @@ void Livello::stampaSuperficeBase() {
         glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -5);
         glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -5);
 
-//        glNormal3f(0.0, 0.0, -1.0);
-//        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -25);
-//        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -25);
-//        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -25);
-//        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -25);
+        //        glNormal3f(0.0, 0.0, -1.0);
+        //        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -25);
+        //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -25);
+        //        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -25);
+        //        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -25);
 
     }
     glEnd();
@@ -290,14 +290,30 @@ void Livello::stampaSfondo() {
 
     static GLfloat cieloAzzurro [] = {1.0f, 1.0f, 1.0f, 1.0f};
     glPushMatrix();
+    glEnable(GL_BLEND);
     glDisable(GL_LIGHTING);
-    //        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, cieloAzzurro);
+    glDisable(GL_DEPTH_TEST);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, cieloAzzurro);
     //glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, colorblue);
-    glTranslatef(0.0, 0.0, -100.0);
+    //glTranslatef(0.0, 0.0, -5500.0);
     //    glLightfv(GL_LIGHT0, GL_DIFFUSE, luce_diffusa);
     //    glLightfv(GL_LIGHT0, GL_AMBIENT, luce_ambiente);
     //    glLightfv(GL_LIGHT0, GL_POSITION, luce_posizione);
     glColor4fv(cieloAzzurro);
+    glBlendFunc(GL_DST_COLOR, GL_ZERO);
+    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA1_MASK]);
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(0.0, 0.0, 1.0);
+        glTexCoord2f(1.0f, 0.0f), glVertex3f(-100.0, -100.0, 0.0);
+        glTexCoord2f(0.0f, 0.0f), glVertex3f(-100.0, 100.0, 0.0);
+        glTexCoord2f(0.0f, 1.0f), glVertex3f(100.0, 100.0, 0.0);
+        glTexCoord2f(1.0f, 1.0f), glVertex3f(100.0, -100.0, 0.0);
+
+    }
+    glEnd();
+    glBlendFunc( GL_ONE, GL_ONE );
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA1]);
     glBegin(GL_QUADS);
     {
@@ -309,9 +325,39 @@ void Livello::stampaSfondo() {
 
     }
     glEnd();
+    glTranslatef(50.0, 0.0, 0.0);
+    glBlendFunc(GL_DST_COLOR, GL_ZERO);
+    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA2_MASK]);
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(0.0, 0.0, 1.0);
+        glTexCoord2f(1.0f, 0.0f), glVertex3f(-100.0, -100.0, 0.0);
+        glTexCoord2f(0.0f, 0.0f), glVertex3f(-100.0, 100.0, 0.0);
+        glTexCoord2f(0.0f, 1.0f), glVertex3f(100.0, 100.0, 0.0);
+        glTexCoord2f(1.0f, 1.0f), glVertex3f(100.0, -100.0, 0.0);
+
+    }
+    glEnd();
+    glBlendFunc( GL_ONE, GL_ONE );
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA2]);
+    glBegin(GL_QUADS);
+    {
+        glNormal3f(0.0, 0.0, 1.0);
+        glTexCoord2f(1.0f, 0.0f), glVertex3f(-100.0, -100.0, 0.0);
+        glTexCoord2f(0.0f, 0.0f), glVertex3f(-100.0, 100.0, 0.0);
+        glTexCoord2f(0.0f, 1.0f), glVertex3f(100.0, 100.0, 0.0);
+        glTexCoord2f(1.0f, 1.0f), glVertex3f(100.0, -100.0, 0.0);
+
+    }
+    glEnd();
     glEnable(GL_LIGHTING);
-    glPopMatrix();
+    glEnable(GL_DEPTH_TEST);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_BLEND);
+
+    glPopMatrix();
 }
 
 void Livello::resettaSelezione() {
