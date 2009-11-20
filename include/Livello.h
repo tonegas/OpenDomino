@@ -8,6 +8,9 @@
 #ifndef _LIVELLO_H
 #define	_LIVELLO_H
 
+#define NUMERO_NUVOLE 20
+#define TIPI_DI_NUVOLE 2
+
 enum Proiezione {
     ASSIONOMETRICA, PROSPETTICA
 };
@@ -27,7 +30,7 @@ const GLfloat cavalier[] = {
     0, 0, 0, 1
 };
 
-class Livello : public Texture {
+class Livello : public Textures {
 protected:
     //puntatore al gioco per interagire sulle funzionidi gioco
     Gioco *gioco; //ok

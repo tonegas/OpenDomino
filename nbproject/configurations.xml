@@ -4,41 +4,53 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/basi/Base.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/Domino.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/Editor.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/Giocatore.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/Gioco.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/Griglia.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/Livello.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/Partita.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/pezzi/Pezzo.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/Posizione.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/Telecamera.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/TelecameraAssionometrica.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/TelecameraProspettica.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/include/Texture.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="include" displayName="include" projectFiles="true">
+      <logicalFolder name="basi" displayName="basi" projectFiles="true">
+        <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/basi/Base.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="pezzi" displayName="pezzi" projectFiles="true">
+        <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/pezzi/Pezzo.h</itemPath>
+      </logicalFolder>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Domino.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Editor.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Giocatore.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Gioco.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Griglia.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Livello.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Partita.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Posizione.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Telecamera.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/TelecameraAssionometrica.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/TelecameraProspettica.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Textures.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
                    projectFiles="true">
     </logicalFolder>
+    <logicalFolder name="source" displayName="source" projectFiles="true">
+      <logicalFolder name="basi" displayName="basi" projectFiles="true">
+        <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/basi/Base.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="pezzi" displayName="pezzi" projectFiles="true">
+        <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/pezzi/Pezzo.cpp</itemPath>
+      </logicalFolder>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Editor.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Giocatore.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Gioco.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Griglia.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Livello.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Partita.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Posizione.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Telecamera.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/TelecameraAssionometrica.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/TelecameraProspettica.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Textures.cpp</itemPath>
+    </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/basi/Base.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/Editor.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/Giocatore.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/Gioco.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/Griglia.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/Livello.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/Partita.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/pezzi/Pezzo.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/Posizione.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/Telecamera.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/TelecameraAssionometrica.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/TelecameraProspettica.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino-Net/OpenDomino/source/Texture.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
@@ -47,6 +59,10 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>/home/tonegas/workspace/Domino/OpenDomino/source</Elem>
+    <Elem>/home/tonegas/workspace/Domino/OpenDomino/include</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Debug" type="1">
@@ -57,14 +73,12 @@
       </toolsSet>
       <compileType>
         <ccTool>
-          <developmentMode>0</developmentMode>
           <commandLine>`pkg-config --cflags sdl`</commandLine>
-          <warningLevel>2</warningLevel>
         </ccTool>
         <linkerTool>
           <linkerLibItems>
           </linkerLibItems>
-          <commandLine>`pkg-config --libs sdl` -lGL -lGLU -lxerces-c</commandLine>
+          <commandLine>`pkg-config --libs sdl` -lGL -lGLU</commandLine>
         </linkerTool>
       </compileType>
     </conf>
@@ -79,9 +93,7 @@
           <developmentMode>5</developmentMode>
         </cTool>
         <ccTool>
-          <developmentMode>0</developmentMode>
-          <commandLine>`pkg-config --cflags sdl`</commandLine>
-          <warningLevel>2</warningLevel>
+          <developmentMode>5</developmentMode>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
@@ -89,7 +101,6 @@
         <linkerTool>
           <linkerLibItems>
           </linkerLibItems>
-          <commandLine>`pkg-config --libs sdl`</commandLine>
         </linkerTool>
       </compileType>
     </conf>

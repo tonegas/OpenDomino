@@ -306,7 +306,7 @@ void TelecameraProspettica::animaZoom() {
 }
 
 void TelecameraProspettica::controlloPosizione() {
-    cout << 'x' << posizione_telecamera.x << 'y' << posizione_telecamera.y << '\n' << flush;
+    //cout << 'x' << posizione_telecamera.x << 'y' << posizione_telecamera.y << '\n' << flush;
     if (posizione_telecamera.x > 0) {
         posizione_telecamera.x = 0;
     } else {

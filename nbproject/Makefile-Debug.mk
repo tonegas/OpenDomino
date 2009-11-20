@@ -31,20 +31,20 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Texture.o \
-	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Telecamera.o \
-	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Partita.o \
-	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/pezzi/Pezzo.o \
-	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Giocatore.o \
+	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Posizione.o \
+	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Editor.o \
 	${OBJECTDIR}/main.o \
-	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/TelecameraProspettica.o \
-	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Posizione.o \
-	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Livello.o \
-	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Editor.o \
-	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/TelecameraAssionometrica.o \
-	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Gioco.o \
-	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/basi/Base.o \
-	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Griglia.o
+	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/basi/Base.o \
+	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Griglia.o \
+	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Textures.o \
+	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Livello.o \
+	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Telecamera.o \
+	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/TelecameraProspettica.o \
+	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Gioco.o \
+	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Partita.o \
+	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Giocatore.o \
+	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/TelecameraAssionometrica.o \
+	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/pezzi/Pezzo.o
 
 # C Compiler Flags
 CFLAGS=
@@ -68,77 +68,77 @@ LDLIBSOPTIONS=
 
 dist/Debug/GNU-Linux-x86/opendomino: ${OBJECTFILES}
 	${MKDIR} -p dist/Debug/GNU-Linux-x86
-	${LINK.cc} `pkg-config --libs sdl` -lGL -lGLU -lxerces-c -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/opendomino  ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} `pkg-config --libs sdl` -lGL -lGLU -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/opendomino  ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
-${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Texture.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/Texture.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source
+${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Posizione.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino/OpenDomino/source/Posizione.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Texture.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/Texture.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Posizione.o /home/tonegas/workspace/Domino/OpenDomino/source/Posizione.cpp
 
-${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Telecamera.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/Telecamera.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source
+${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Editor.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino/OpenDomino/source/Editor.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Telecamera.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/Telecamera.cpp
-
-${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Partita.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/Partita.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source
-	${RM} $@.d
-	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Partita.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/Partita.cpp
-
-${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/pezzi/Pezzo.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/pezzi/Pezzo.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/pezzi
-	${RM} $@.d
-	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/pezzi/Pezzo.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/pezzi/Pezzo.cpp
-
-${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Giocatore.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/Giocatore.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source
-	${RM} $@.d
-	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Giocatore.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/Giocatore.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Editor.o /home/tonegas/workspace/Domino/OpenDomino/source/Editor.cpp
 
 ${OBJECTDIR}/main.o: nbproject/Makefile-${CND_CONF}.mk main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
 
-${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/TelecameraProspettica.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/TelecameraProspettica.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source
+${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/basi/Base.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino/OpenDomino/source/basi/Base.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/basi
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/TelecameraProspettica.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/TelecameraProspettica.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/basi/Base.o /home/tonegas/workspace/Domino/OpenDomino/source/basi/Base.cpp
 
-${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Posizione.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/Posizione.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source
+${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Griglia.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino/OpenDomino/source/Griglia.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Posizione.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/Posizione.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Griglia.o /home/tonegas/workspace/Domino/OpenDomino/source/Griglia.cpp
 
-${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Livello.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/Livello.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source
+${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Textures.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino/OpenDomino/source/Textures.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Livello.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/Livello.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Textures.o /home/tonegas/workspace/Domino/OpenDomino/source/Textures.cpp
 
-${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Editor.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/Editor.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source
+${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Livello.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino/OpenDomino/source/Livello.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Editor.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/Editor.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Livello.o /home/tonegas/workspace/Domino/OpenDomino/source/Livello.cpp
 
-${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/TelecameraAssionometrica.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/TelecameraAssionometrica.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source
+${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Telecamera.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino/OpenDomino/source/Telecamera.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/TelecameraAssionometrica.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/TelecameraAssionometrica.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Telecamera.o /home/tonegas/workspace/Domino/OpenDomino/source/Telecamera.cpp
 
-${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Gioco.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/Gioco.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source
+${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/TelecameraProspettica.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino/OpenDomino/source/TelecameraProspettica.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Gioco.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/Gioco.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/TelecameraProspettica.o /home/tonegas/workspace/Domino/OpenDomino/source/TelecameraProspettica.cpp
 
-${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/basi/Base.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/basi/Base.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/basi
+${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Gioco.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino/OpenDomino/source/Gioco.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/basi/Base.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/basi/Base.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Gioco.o /home/tonegas/workspace/Domino/OpenDomino/source/Gioco.cpp
 
-${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Griglia.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino-Net/OpenDomino/source/Griglia.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source
+${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Partita.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino/OpenDomino/source/Partita.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino-Net/OpenDomino/source/Griglia.o /home/tonegas/workspace/Domino-Net/OpenDomino/source/Griglia.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Partita.o /home/tonegas/workspace/Domino/OpenDomino/source/Partita.cpp
+
+${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Giocatore.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino/OpenDomino/source/Giocatore.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source
+	${RM} $@.d
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Giocatore.o /home/tonegas/workspace/Domino/OpenDomino/source/Giocatore.cpp
+
+${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/TelecameraAssionometrica.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino/OpenDomino/source/TelecameraAssionometrica.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source
+	${RM} $@.d
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/TelecameraAssionometrica.o /home/tonegas/workspace/Domino/OpenDomino/source/TelecameraAssionometrica.cpp
+
+${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/pezzi/Pezzo.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino/OpenDomino/source/pezzi/Pezzo.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/pezzi
+	${RM} $@.d
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/pezzi/Pezzo.o /home/tonegas/workspace/Domino/OpenDomino/source/pezzi/Pezzo.cpp
 
 # Subprojects
 .build-subprojects:

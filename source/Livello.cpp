@@ -190,7 +190,7 @@ void Livello::cicloGioco(SDL_Event *evento) {
 
     glPushMatrix();
 
-    stampaSfondo();
+     stampaSfondo();
 
     telecamera_attuale->visualeOpenGL();
 
@@ -281,80 +281,122 @@ void Livello::stampaSuperficeBase() {
     glPopMatrix();
 }
 
+struct Nuvola {
+    unsigned int w, h;
+    GLfloat x, y, vel, zoom;
+    GLuint indice;
+};
+
 void Livello::stampaSfondo() {
-    glClearColor(37.0 / 255.0, 104.0 / 255.0, 246.0 / 255.0, 1.0f);
+    static bool prima = true;
+    static Nuvola nuvole[NUMERO_NUVOLE];
+    static GLfloat cieloAzzurro [] = {1.0f, 1.0f, 1.0f, 1.0f};
+    if (prima) {
+        glClearColor(37.0 / 255.0, 104.0 / 255.0, 246.0 / 255.0, 1.0f);
+        for (int i = 0; i < NUMERO_NUVOLE; i++) {
+            nuvole[i].zoom = (rand() % 10) / 4.0;
+            nuvole[i].x = (rand() % 2000) / 2.0 - 1000.0;
+            nuvole[i].y = (rand() % 400) / 2.0 - 500.0;
+            nuvole[i].vel = (rand() % 1000) / 1000.0;
+            switch (i % TIPI_DI_NUVOLE) {
+                case 0:
+                    nuvole[i].indice = indice_texture[TEX_NUVOLA1];
+                    nuvole[i].h = struttura_texture[TEX_NUVOLA1].h;
+                    nuvole[i].w = struttura_texture[TEX_NUVOLA1].w;
+                    break;
+                case 1:
+                    nuvole[i].indice = indice_texture[TEX_NUVOLA2];
+                    nuvole[i].h = struttura_texture[TEX_NUVOLA2].h;
+                    nuvole[i].w = struttura_texture[TEX_NUVOLA2].w;
+                    break;
+                default:
+                    break;
+            }
+        }
+        prima = false;
+    }
 
-    //    static GLfloat luce_diffusa [] = {1.0f, 1.0f, 1.0f, 0.5f};
-    //    static GLfloat luce_ambiente [] = {0.3f, 0.3f, 0.3f, 0.5f};
-    //    static GLfloat luce_posizione[] = {1.0, 50.0, -1.0, 0.0};
-
-    static GLfloat cieloAzzurro [] = {1.0f, 1.0f, 1.0f, 0.6f};
-    glBlendColor(1.0f,0.0f,1.0f,0.0f);
     glPushMatrix();
     glEnable(GL_BLEND);
     glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, cieloAzzurro);
-    //glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, colorblue);
-    //glTranslatef(0.0, 0.0, -5500.0);
-    //    glLightfv(GL_LIGHT0, GL_DIFFUSE, luce_diffusa);
-    //    glLightfv(GL_LIGHT0, GL_AMBIENT, luce_ambiente);
-    //    glLightfv(GL_LIGHT0, GL_POSITION, luce_posizione);
     glColor4fv(cieloAzzurro);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     //glBlendFunc(GL_DST_COLOR, GL_CONSTANT_COLOR);
-    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA2]);
-    glBegin(GL_QUADS);
-    {
-        glNormal3f(0.0, 0.0, 1.0);
-        glTexCoord2f(1.0f, 0.0f), glVertex3f(-100.0, -100.0, 0.0);
-        glTexCoord2f(0.0f, 0.0f), glVertex3f(-100.0, 100.0, 0.0);
-        glTexCoord2f(0.0f, 1.0f), glVertex3f(100.0, 100.0, 0.0);
-        glTexCoord2f(1.0f, 1.0f), glVertex3f(100.0, -100.0, 0.0);
+    for (int i = 0; i < NUMERO_NUVOLE; i++) {
+        glPushMatrix();
+        glTranslatef(nuvole[i].x, nuvole[i].y, 0.0);
+        glScaled(nuvole[i].zoom, nuvole[i].zoom, nuvole[i].zoom);
+        glBindTexture(GL_TEXTURE_2D, nuvole[i].indice);
+        glBegin(GL_QUADS);
+        {
+            glNormal3f(0.0, 0.0, 1.0);
+            glTexCoord2f(0.0f, 1.0f), glVertex3f(0.0, 0.0, 0.0);
+            glTexCoord2f(0.0f, 0.0f), glVertex3f(0.0, nuvole[i].h, 0.0);
+            glTexCoord2f(1.0f, 0.0f), glVertex3f(nuvole[i].w, nuvole[i].h, 0.0);
+            glTexCoord2f(1.0f, 1.0f), glVertex3f(nuvole[i].w, 0.0, 0.0);
 
+        }
+        glEnd();
+        glPopMatrix();
+        nuvole[i].x = (nuvole[i].x + nuvole[i].vel) < 1000 ? (nuvole[i].x + nuvole[i].vel) : -4000;
     }
-    glEnd();
-//    glBlendFunc( GL_ONE, GL_ONE );
-//    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA2]);
-//    glBegin(GL_QUADS);
-//    {
-//        glNormal3f(0.0, 0.0, 1.0);
-//        glTexCoord2f(1.0f, 0.0f), glVertex3f(-100.0, -100.0, 0.0);
-//        glTexCoord2f(0.0f, 0.0f), glVertex3f(-100.0, 100.0, 0.0);
-//        glTexCoord2f(0.0f, 1.0f), glVertex3f(100.0, 100.0, 0.0);
-//        glTexCoord2f(1.0f, 1.0f), glVertex3f(100.0, -100.0, 0.0);
-//
-//    }
-//    glEnd();
-//    glTranslatef(50.0, 0.0, 0.0);
-//    glBlendFunc(GL_DST_COLOR, GL_ZERO);
-//    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA2_MASK]);
-//    glBegin(GL_QUADS);
-//    {
-//        glNormal3f(0.0, 0.0, 1.0);
-//        glTexCoord2f(1.0f, 0.0f), glVertex3f(-100.0, -100.0, 0.0);
-//        glTexCoord2f(0.0f, 0.0f), glVertex3f(-100.0, 100.0, 0.0);
-//        glTexCoord2f(0.0f, 1.0f), glVertex3f(100.0, 100.0, 0.0);
-//        glTexCoord2f(1.0f, 1.0f), glVertex3f(100.0, -100.0, 0.0);
-//
-//    }
-//    glEnd();
-//    glBlendFunc( GL_ONE, GL_ONE );
-//    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA2]);
-//    glBegin(GL_QUADS);
-//    {
-//        glNormal3f(0.0, 0.0, 1.0);
-//        glTexCoord2f(1.0f, 0.0f), glVertex3f(-100.0, -100.0, 0.0);
-//        glTexCoord2f(0.0f, 0.0f), glVertex3f(-100.0, 100.0, 0.0);
-//        glTexCoord2f(0.0f, 1.0f), glVertex3f(100.0, 100.0, 0.0);
-//        glTexCoord2f(1.0f, 1.0f), glVertex3f(100.0, -100.0, 0.0);
-//
-//    }
-//    glEnd();
+
+    //    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA1]);
+    //    glBegin(GL_QUADS);
+    //    {
+    //        glNormal3f(0.0, 0.0, 1.0);
+    //        glTexCoord2f(0.0f, 0.0f), glVertex3f(-1.0, -1.0, 0.0);
+    //        glTexCoord2f(0.0f, 1.0f), glVertex3f(-1.0, 1.0, 0.0);
+    //        glTexCoord2f(1.0f, 1.0f), glVertex3f(1.0, 1.0, 0.0);
+    //        glTexCoord2f(1.0f, 0.0f), glVertex3f(1.0, -1.0, 0.0);
+    //
+    //    }
+    //    glEnd();
+    //    glBlendFunc( GL_ONE, GL_ONE );
+    //    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA2]);
+    //    glBegin(GL_QUADS);
+    //    {
+    //        glNormal3f(0.0, 0.0, 1.0);
+    //        glTexCoord2f(1.0f, 0.0f), glVertex3f(-100.0, -100.0, 0.0);
+    //        glTexCoord2f(0.0f, 0.0f), glVertex3f(-100.0, 100.0, 0.0);
+    //        glTexCoord2f(0.0f, 1.0f), glVertex3f(100.0, 100.0, 0.0);
+    //        glTexCoord2f(1.0f, 1.0f), glVertex3f(100.0, -100.0, 0.0);
+    //
+    //    }
+    //    glEnd();
+    //    glTranslatef(50.0, 0.0, 0.0);
+    //    glBlendFunc(GL_DST_COLOR, GL_ZERO);
+    //    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA2_MASK]);
+    //    glBegin(GL_QUADS);
+    //    {
+    //        glNormal3f(0.0, 0.0, 1.0);
+    //        glTexCoord2f(1.0f, 0.0f), glVertex3f(-100.0, -100.0, 0.0);
+    //        glTexCoord2f(0.0f, 0.0f), glVertex3f(-100.0, 100.0, 0.0);
+    //        glTexCoord2f(0.0f, 1.0f), glVertex3f(100.0, 100.0, 0.0);
+    //        glTexCoord2f(1.0f, 1.0f), glVertex3f(100.0, -100.0, 0.0);
+    //
+    //    }
+    //    glEnd();
+    //    glBlendFunc( GL_ONE, GL_ONE );
+    //    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //    glBindTexture(GL_TEXTURE_2D, indice_texture[TEX_NUVOLA2]);
+    //    glBegin(GL_QUADS);
+    //    {
+    //        glNormal3f(0.0, 0.0, 1.0);
+    //        glTexCoord2f(1.0f, 0.0f), glVertex3f(-100.0, -100.0, 0.0);
+    //        glTexCoord2f(0.0f, 0.0f), glVertex3f(-100.0, 100.0, 0.0);
+    //        glTexCoord2f(0.0f, 1.0f), glVertex3f(100.0, 100.0, 0.0);
+    //        glTexCoord2f(1.0f, 1.0f), glVertex3f(100.0, -100.0, 0.0);
+    //
+    //    }
+    //    glEnd();
     glEnable(GL_LIGHTING);
     glEnable(GL_DEPTH_TEST);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_BLEND);
 

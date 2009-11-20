@@ -17,6 +17,7 @@
 #include <fstream>
 #include <iostream>
 #include <math.h>
+//#include <qt4/QtXml/QtXml>
 
 //#include <xercesc/dom/DOM.hpp>
 //#include <xercesc/parsers/XercesDOMParser.hpp>
@@ -35,8 +36,7 @@
 
 using namespace std;
 
-
-#include "Texture.h"
+#include "Textures.h"
 #include "Posizione.h"
 #include "basi/Base.h"
 #include "pezzi/Pezzo.h"

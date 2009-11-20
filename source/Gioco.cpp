@@ -118,11 +118,10 @@ Gioco::Gioco() : domino_editor(this) {
     //se lo attivo sparisce anche le faccie laterali
     //glEnable(GL_CULL_FACE); //disattuva le faccie posteriori
 
-    //Texture::loadTextures("crate.bmp", TEX_PEZZO);
-    //Texture::loadTextures("nuvola1.bmp", TEX_NUVOLA1);
-    Texture::loadTextures("nuvola2.bmp", TEX_NUVOLA2);
-    //Texture::loadTextures("nuvola1_mask.bmp", TEX_NUVOLA1_MASK);
-    //Texture::loadTextures("nuvola2_mask.bmp", TEX_NUVOLA2_MASK);
+    int key_color[3] = {37, 104, 246};
+    Textures::loadTextures("crate.bmp", TEX_PEZZO);
+    Textures::loadTextures("nuvola1.bmp", TEX_NUVOLA1 , key_color ,true);
+    Textures::loadTextures("nuvola2.bmp", TEX_NUVOLA2, key_color,true);
 
     if (stato == EDITOR_COSTRUISCI) {
         domino = &domino_editor;

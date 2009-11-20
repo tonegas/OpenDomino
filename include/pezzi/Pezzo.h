@@ -23,7 +23,7 @@ class Griglia;
 #include "../Domino.h"
 
 
-class Pezzo : public Elemento, public Texture{
+class Pezzo : public Elemento, public Textures{
     StatoPezzo stato;
 
     bool angolo_destro;
