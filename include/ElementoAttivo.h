@@ -5,8 +5,8 @@
  * Created on 31 ottobre 2009, 20.13
  */
 
-#ifndef _POSIZONE_H
-#define	_POSIZONE_H
+#ifndef _ELEMENTOATTIVO_H
+#define	_ELEMENTOATTIVO_H
 
 enum TipoElemento {
     NESSUNO, ELEM_PEZZO, ELEM_BASE
@@ -15,42 +15,6 @@ enum TipoElemento {
 class Griglia;
 
 #include "Domino.h"
-
-
-class Elemento {
-protected:
-    unsigned x, y;
-public:
-    Elemento(unsigned x_aux, unsigned y_aux) {
-        x = x_aux;
-        y = y_aux;
-    };
-
-    Elemento(const Elemento& orig) {
-        x = orig.x;
-        y = orig.y;
-    };
-
-    void spostaElemento(unsigned x_new,unsigned y_new){
-        x=x_new;
-        y=y_new;
-    }
-
-    virtual Elemento* costruttore(){
-        return NULL;
-    }
-
-    virtual void aggiornaStato(Griglia &griglia){}
-
-    virtual void setStato(void *stato){}
-
-    static void stampa(bool wire, unsigned x, unsigned y, GLfloat attivo) {
-    }
-
-    virtual void stampa() {
-    }
-    //virtual ~Elemento();
-};
 
 class ElementoAttivo {
     friend class Griglia;

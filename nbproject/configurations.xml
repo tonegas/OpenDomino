@@ -14,12 +14,14 @@
       </logicalFolder>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Domino.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Editor.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Elemento.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/ElementoAttivo.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Giocatore.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Gioco.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Griglia.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Livello.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Menu.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Partita.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Posizione.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Telecamera.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/TelecameraAssionometrica.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/TelecameraProspettica.h</itemPath>
@@ -34,15 +36,17 @@
         <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/basi/Base.cpp</itemPath>
       </logicalFolder>
       <logicalFolder name="pezzi" displayName="pezzi" projectFiles="true">
-        <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/pezzi/Pezzo.cpp</itemPath>
       </logicalFolder>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Editor.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Elemento.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/ElementoAttivo.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Giocatore.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Gioco.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Griglia.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Livello.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Menu.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Partita.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Posizione.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/pezzi/Pezzo.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Telecamera.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/TelecameraAssionometrica.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/TelecameraProspettica.cpp</itemPath>
@@ -65,12 +69,22 @@
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
-    <conf name="Debug" type="1">
+    <conf name="Debug" type="4">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
         <compilerSet>GNU|GNU</compilerSet>
         <platform>2</platform>
       </toolsSet>
+      <qt>
+        <modules>core xml</modules>
+        <defs>
+          <Elem>LIBS+=`pkg-config --libs ftgl --libs sdl` -lGL -lGLU</Elem>
+          <Elem>CXXFLAGS+=`pkg-config --cflags sdl`</Elem>
+          <Elem>INCPATH+=/usr/include/SDL</Elem>
+          <Elem>DEFINES+=_GNU_SOURCE=1</Elem>
+          <Elem>INCPATH+=/usr/local/include /usr/local/include/FTGL /usr/include/freetype2</Elem>
+        </defs>
+      </qt>
       <compileType>
         <ccTool>
           <commandLine>`pkg-config --cflags sdl`</commandLine>
