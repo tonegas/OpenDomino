@@ -78,6 +78,8 @@ void Livello::gestisciInput(SDL_Event *evento) {
         case SDL_KEYDOWN:
             switch (evento->key.keysym.sym) {
                 case SDLK_ESCAPE:
+                    //gioco->setStato(MENU);
+                    //------------------
                     gioco->gameExit();
                     break;
                 case SDLK_PAGEUP:
@@ -190,7 +192,7 @@ void Livello::cicloGioco(SDL_Event *evento) {
 
     glPushMatrix();
 
-     stampaSfondo();
+    stampaSfondo();
 
     telecamera_attuale->visualeOpenGL();
 

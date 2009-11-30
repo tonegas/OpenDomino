@@ -88,6 +88,9 @@ public:
 
     int inizializza();
 
+    //questa funzione la chiamero da dentro il menu per stampare dietro il livello mentro ci sono dentro
+    //void cicloGiocoDentroMenu(SDL_event *evento);
+
     void cicloGioco(SDL_Event *evento);
 
     void resettaSelezione();

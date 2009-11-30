@@ -52,15 +52,19 @@ class Gioco {
     //variabile per la modifica della velocità di gioco
     int frame_ms;
 
-    //giocatore
-    Giocatore *giocatore;
+    //qui vi sara un oggetto gestore giocatori
+    //GestoreGiocatori lista_giocatori;
 
+    //Questo farà parte del GestoreGiocatori
+    Giocatore *giocatore;
+    //Questa roba va a finire dentro giocatore
+    //------------------------
     //Oggetto editor per la gestione della grafica della partita
     Editor domino_editor;
     bool test_partita_allocata;
-
     //Puntatore a domino in eseguzione
     Livello *domino;
+    //------------------------
 
     //indica se il gioco deve smettere di ciclare
     bool alive;

@@ -52,6 +52,7 @@ Gioco::Gioco() : domino_editor(this) {
 
     /* Sets up OpenGL double buffering */
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    //esiste una funzione opengl glFinish(); che forse è meglio
     SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
