@@ -31,6 +31,7 @@ using namespace std;
 #include "basi/Base.h"
 #include "pezzi/Pezzo.h"
 #include "Griglia.h"
+#include "PosTelecamere.h"
 #include "Telecamera.h"
 #include "TelecameraAssionometrica.h"
 #include "TelecameraProspettica.h"

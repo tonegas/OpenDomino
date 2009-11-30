@@ -22,6 +22,7 @@
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Livello.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Menu.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Partita.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/PosTelecamere.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Telecamera.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/TelecameraAssionometrica.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/TelecameraProspettica.h</itemPath>
@@ -47,6 +48,7 @@
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Menu.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Partita.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/pezzi/Pezzo.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/PosTelecamere.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Telecamera.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/TelecameraAssionometrica.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/TelecameraProspettica.cpp</itemPath>

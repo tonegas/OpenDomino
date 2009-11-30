@@ -62,6 +62,19 @@ int Livello::inizializza() {
     return 1;
 }
 
+void Livello::attivaSelezioni() {
+    }
+
+void Livello::mouseButtonDown(SDL_Event *evento){
+
+    }
+
+void Livello::mouseMotion(SDL_Event *evento) {
+    }
+
+void Livello::mouseButtonUp(SDL_Event *evento) {
+    }
+
 void Livello::keyDownF5() {
     if (gioco->getStato() == EDITOR_TEST) {
         gioco->setStato(EDITOR_COSTRUISCI);

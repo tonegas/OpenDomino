@@ -68,17 +68,13 @@ protected:
 
     virtual void keyDownF5();
 
-    virtual void attivaSelezioni() {
-    }
+    virtual void attivaSelezioni();
 
-    virtual void mouseButtonDown(SDL_Event *evento) {
-    }
+    virtual void mouseButtonDown(SDL_Event *evento);
 
-    virtual void mouseMotion(SDL_Event *evento) {
-    }
+    virtual void mouseMotion(SDL_Event *evento);
 
-    virtual void mouseButtonUp(SDL_Event *evento) {
-    }
+    virtual void mouseButtonUp(SDL_Event *evento);
 
 public:
 
