@@ -31,20 +31,23 @@ TelecameraProspettica::TelecameraProspettica(PosTeleProsp &pos_tele_aux, unsigne
     posizione_telecamera = pos_tele_aux;
 }
 
-void TelecameraProspettica::setProiezioneTelecamera(int larghezza_fin, int altezza_fin) {
-    glViewport(0, 0, (GLint) larghezza_fin, (GLint) altezza_fin);
+void TelecameraProspettica::configuraVisuale() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(PROSPETTICA_FOVY, (GLfloat) larghezza_fin / (GLfloat) altezza_fin, PROSPETTICA_ZNEAR, PROSPETTICA_ZFAR);
-
+    gluPerspective(PROSPETTICA_FOVY, (GLfloat) matrice_view[2] / (GLfloat) matrice_view[3], PROSPETTICA_ZNEAR, PROSPETTICA_ZFAR);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(
             PROSPETTICA_X_TELECAMERA, PROSPETTICA_Y_TELECAMERA, PROSPETTICA_Z_TELECAMERA, /* eye  */
             PROSPETTICA_X_TELECAMERA, PROSPETTICA_Y_TELECAMERA, 0.0, /* center  */
-            0.0, 1.0, 0.0); /* up is in positive Y direction */
+            0.0, 1.0, 0.0);
+}
 
+void TelecameraProspettica::setProiezioneTelecamera(int larghezza_fin, int altezza_fin) {
+    glViewport(0, 0, (GLint) larghezza_fin, (GLint) altezza_fin);
     glGetIntegerv(GL_VIEWPORT, matrice_view);
+
+    configuraVisuale();
     glGetDoublev(GL_MODELVIEW_MATRIX, matrice_model);
     glGetDoublev(GL_PROJECTION_MATRIX, matrice_proj);
 
@@ -270,8 +273,8 @@ void TelecameraProspettica::cambiaXY() {
 }
 
 void TelecameraProspettica::cambiaAngolazione() {
-    GLfloat nuovo_angolo_x = posizione_telecamera_iniziale.ang_x + (pos_x_iniziale - pos_x)/4;
-    GLfloat nuovo_angolo_y = posizione_telecamera_iniziale.ang_y + (pos_y_iniziale - pos_y)/4;
+    GLfloat nuovo_angolo_x = posizione_telecamera_iniziale.ang_x + (pos_x_iniziale - pos_x) / 4;
+    GLfloat nuovo_angolo_y = posizione_telecamera_iniziale.ang_y + (pos_y_iniziale - pos_y) / 4;
     if (fabs(nuovo_angolo_x) < PROSPETTICA_MAX_ANGOLO_TELECAMERA) {
         posizione_telecamera.ang_x = nuovo_angolo_x;
     } else {
@@ -293,13 +296,13 @@ void TelecameraProspettica::cambiaAngolazione() {
 void TelecameraProspettica::animaZoom() {
     if (mouvi_z) {
         if (fabs(posizione_telecamera.z - posizione_telecamera_iniziale.z) >= 0.001) {
-//            posizione_telecamera.x += (posizione_telecamera_iniziale.x - posizione_telecamera.x) / 10;
-//            posizione_telecamera.y += (posizione_telecamera_iniziale.y - posizione_telecamera.y) / 10;
+            //            posizione_telecamera.x += (posizione_telecamera_iniziale.x - posizione_telecamera.x) / 10;
+            //            posizione_telecamera.y += (posizione_telecamera_iniziale.y - posizione_telecamera.y) / 10;
             posizione_telecamera.z += (posizione_telecamera_iniziale.z - posizione_telecamera.z) / 10;
         } else {
             mouvi_z = false;
-//            posizione_telecamera.x = posizione_telecamera_iniziale.x;
-//            posizione_telecamera.y = posizione_telecamera_iniziale.y;
+            //            posizione_telecamera.x = posizione_telecamera_iniziale.x;
+            //            posizione_telecamera.y = posizione_telecamera_iniziale.y;
             posizione_telecamera.z = posizione_telecamera_iniziale.z;
         }
     }

@@ -8,10 +8,9 @@
 
 #include "../include/Domino.h"
 
-extern bool alive;
-
-Menu::Menu(GestoreGiocatori *gestore_aux, SDL_Event* evento_aux, unsigned dim_x_fin_aux, unsigned dim_y_fin_aux) {
-    gestore = gestore_aux;
+Menu::Menu(Gioco *gioco_aux, SDL_Event* evento_aux, unsigned dim_x_fin_aux, unsigned dim_y_fin_aux) {
+    gioco = gioco_aux;
+    gestore = gioco->getGestoreGiocatori();
     evento = evento_aux;
     dim_x_fin = dim_x_fin_aux;
     dim_y_fin = dim_y_fin_aux;
@@ -137,12 +136,14 @@ void Menu::cicloGioco() {
     while (SDL_PollEvent(evento)) {
         gestisciInput();
     }
+    glDisable(GL_LIGHTING);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(0, dim_x_fin, 0, dim_y_fin);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     stampa();
+    glEnable(GL_LIGHTING);
 }
 
 bool Menu::gestisciSelezioneMouse() {
@@ -175,7 +176,7 @@ bool Menu::gestisciSelezioneMouseMenuLaterale() {
 void Menu::cambiaVociMenuPrincipale() {
     switch (stato_attivo + 10) {
         case ESCI:
-            //alive = false;
+            gioco->gameExit();
             break;
         case GESTIONE_PROFILI:
             inizializzaVariabiliMenu(GP_GESTIONE_PROFILI, voci_menu_gestione_profili);
@@ -338,6 +339,7 @@ void Menu::gestisciInput() {
                         stato_attivo = (stato_attivo - 1) >= numero_voci_menu_attivo ? (numero_voci_menu_attivo - 1) : (stato_attivo - 1);
                         if ((stato == GP_EL_ELIMINA_PROFILO || stato == GP_CP_CAMBIA_PROFILO) && numero_voci_menu_attivo > voci_visibili) {
                             aggiornaStatoAttivoVociMenuLaterale();
+                            //va tolta
                             costruisciCaselleMenuLaterale();
                         }
                         break;
@@ -357,6 +359,7 @@ void Menu::gestisciInput() {
                             cambiaVociMenu();
                         } else {
                             visibile = false;
+                            gioco->setStato(EDITOR_COSTRUISCI);
                         }
                         break;
                     default:
@@ -470,24 +473,28 @@ void Menu::stampaMenuCentrale() {
 
     font->FaceSize(dim_voce);
     for (unsigned i = 0; i < numero_voci_menu_attivo; i++) {
+//        glPushMatrix();
+//        glTranslatef(posizioni_caselle_menu_attivo[i].X(), posizioni_caselle_menu_attivo[i].Y(), 0);
+//        //la devo attivare per fare le sfumature = glEnable(GL_BLEND);
+//        glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+//        glBegin(GL_QUADS);
+//        {
+//            glVertex2d(caselle_menu_attivo[i].Lower().X(), caselle_menu_attivo[i].Lower().Y());
+//            glVertex2d(caselle_menu_attivo[i].Lower().X(), caselle_menu_attivo[i].Upper().Y());
+//            glVertex2d(caselle_menu_attivo[i].Upper().X(), caselle_menu_attivo[i].Upper().Y());
+//            glVertex2d(caselle_menu_attivo[i].Upper().X(), caselle_menu_attivo[i].Lower().Y());
+//        }
+//        glEnd();
+//        glPopMatrix();
         glColor4f(1.0f - stato_attivo_voci_menu[i], 1.0f, 1.0f - stato_attivo_voci_menu[i], 1.0f);
         glRasterPos2i(0, posizioni_caselle_menu_attivo[i].Y());
         layout.Render(voci_menu_attivo[i].toStdString().c_str());
-        glPushMatrix();
-        //        glTranslatef(posizioni_caselle_menu_attivo[i].X(), posizioni_caselle_menu_attivo[i].Y(), 0);
-        //        glBegin(GL_LINE_LOOP);
-        //        {
-        //            glVertex2d(caselle_menu_attivo[i].Lower().X(), caselle_menu_attivo[i].Lower().Y());
-        //            glVertex2d(caselle_menu_attivo[i].Lower().X(), caselle_menu_attivo[i].Upper().Y());
-        //            glVertex2d(caselle_menu_attivo[i].Upper().X(), caselle_menu_attivo[i].Upper().Y());
-        //            glVertex2d(caselle_menu_attivo[i].Upper().X(), caselle_menu_attivo[i].Lower().Y());
-        //        }
-        //        glEnd();
-        //        glPopMatrix();
     }
 }
 
 void Menu::costruisciCaselleMenuLaterale() {
+    //qui si può evitare di rifare tutti i conti ogni volta che si sposta il mouse e poi bisognerebbe considerare
+    //i nomi da stampare e quelli da non stampare cioè quelli fuori dal video!!!
     layout.SetAlignment(FTGL::ALIGN_LEFT);
     font->FaceSize(dim_voce);
     layout.SetLineLength(dim_x_fin);
@@ -498,12 +505,12 @@ void Menu::costruisciCaselleMenuLaterale() {
     caselle_menu_attivo += layout.BBox(voci_menu_attivo[0].toStdString().c_str());
     for (unsigned i = 1; i < numero_voci_menu_attivo; i++) {
         FTPoint aux(dist_da_sinistra, dist_da_basso_voce_principale - dist_da_voce_principale_voce + dist_da_voce - dist_da_voce * i + posizione_voci_visibili);
-        if(aux.Y() > dist_da_basso_voce_principale - dist_da_voce_principale_voce){
-            trasparenza_voci_visibili[i] = 1.0f-(aux.Y() - (dist_da_basso_voce_principale - dist_da_voce_principale_voce))
-                    /(dim_y_fin - dist_da_basso_voce_principale + dist_da_voce_principale_voce);
-        }else if(aux.Y() < dist_da_basso_voce_uscita + dist_da_voce){
-            trasparenza_voci_visibili[i] = 1.0f-((dist_da_basso_voce_uscita + dist_da_voce) - aux.Y())/(dist_da_basso_voce_uscita + dist_da_voce);
-        }else{
+        if (aux.Y() > dist_da_basso_voce_principale - dist_da_voce_principale_voce) {
+            trasparenza_voci_visibili[i] = 1.0f - (aux.Y() - (dist_da_basso_voce_principale - dist_da_voce_principale_voce))
+                    / (dim_y_fin - dist_da_basso_voce_principale + dist_da_voce_principale_voce);
+        } else if (aux.Y() < dist_da_basso_voce_uscita + dist_da_voce) {
+            trasparenza_voci_visibili[i] = 1.0f - ((dist_da_basso_voce_uscita + dist_da_voce) - aux.Y()) / (dist_da_basso_voce_uscita + dist_da_voce);
+        } else {
             trasparenza_voci_visibili[i] = 1.0f;
         }
         posizioni_caselle_menu_attivo += aux;
@@ -555,7 +562,7 @@ void Menu::aggiornaStatoAttivoVociMenuLaterale() {
 }
 
 void Menu::aggiornaStatoAttivoVociMenuLateraleMouse() {
-    if ((int)dim_y_fin - evento->motion.y < (int)dist_da_basso_voce_principale && (int)dim_y_fin - evento->motion.y > (int)dist_da_basso_voce_uscita + dist_da_voce) {
+    if ((int) dim_y_fin - evento->motion.y < (int) dist_da_basso_voce_principale && (int) dim_y_fin - evento->motion.y > (int) dist_da_basso_voce_uscita + dist_da_voce) {
         posizione_voci_visibili = (double) (dist_da_basso_voce_principale - (dim_y_fin - evento->motion.y))
                 / (double) (dist_da_basso_voce_principale - dist_da_basso_voce_uscita)
                 * (numero_voci_menu_attivo + 1 - voci_visibili) * dist_da_voce;

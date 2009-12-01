@@ -7,14 +7,12 @@
 
 #include "../include/Domino.h"
 
-
-Gioco::Gioco() : domino_editor(this) {
+Gioco::Gioco() : domino_editor(this), menu(this, &evento, LARGHEZZA_FIN, ALTEZZA_FIN) {
     bpp = BPP_FIN;
 
-    giocatore = new Giocatore("Gas");
     test_partita_allocata = false;
     fullscreen = false;
-    stato = EDITOR_COSTRUISCI;
+    stato = MENU;
     cambia_stato = false;
     alive = true;
     frame_ms = FRAMEMS;
@@ -71,11 +69,11 @@ Gioco::Gioco() : domino_editor(this) {
     /* Enable smooth shading */
     glShadeModel(GL_SMOOTH);
 
-//        /* Set the background black */
-//        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-//
-//        /* Depth buffer setup */
-//        glClearDepth(1.0f);
+    //        /* Set the background black */
+    //        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    //
+    //        /* Depth buffer setup */
+    //        glClearDepth(1.0f);
 
 
     glEnable(GL_BLEND);
@@ -121,13 +119,12 @@ Gioco::Gioco() : domino_editor(this) {
 
     int key_color[3] = {37, 104, 246};
     Textures::loadTextures("crate.bmp", TEX_PEZZO);
-    Textures::loadTextures("nuvola1.bmp", TEX_NUVOLA1 , key_color ,true);
-    Textures::loadTextures("nuvola2.bmp", TEX_NUVOLA2, key_color,true);
+    Textures::loadTextures("nuvola1.bmp", TEX_NUVOLA1, key_color, true);
+    Textures::loadTextures("nuvola2.bmp", TEX_NUVOLA2, key_color, true);
 
-    if (stato == EDITOR_COSTRUISCI) {
-        domino = &domino_editor;
-        domino->inizializza();
-    }
+
+    domino = &domino_editor;
+    domino->inizializza();
 }
 
 Gioco::~Gioco() {
@@ -138,13 +135,14 @@ Gioco::~Gioco() {
 void Gioco::loop() {
     Uint32 inizio, fine;
     int durata, aspetto;
-
-    SDL_Event evento;
     while (SDL_PollEvent(&evento)) {
     }
     while (alive) {
         if (cambia_stato) {
             switch (stato) {
+                case MENU:
+                    menu.setVisibile(true);
+                    break;
                 case EDITOR_TEST:
                     if (test_partita_allocata) {
                         delete domino;
@@ -167,11 +165,18 @@ void Gioco::loop() {
             cambia_stato = false;
             domino->inizializza();
         }
-
         inizio = SDL_GetTicks();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        domino->cicloGioco(&evento);
+        if (menu.getVisibile()) {
+            domino->configuraVisuale();
+            domino->cicloGiocoStampa();
+            //c'è bisogno di riaccendere le luci poi c'è bisogno di riconfigurare ogni volta la telecamera
+            //magari bisogna scrivere una funzione
+            menu.cicloGioco();
+        } else {
+            domino->cicloGioco(&evento);
+        }
         SDL_GL_SwapBuffers();
 
 
@@ -263,6 +268,10 @@ int Gioco::getScreenL() const {
 
 int Gioco::getScreenA() const {
     return videoInfo->current_h;
+}
+
+GestoreGiocatori* Gioco::getGestoreGiocatori() {
+    return &gestore;
 }
 
 

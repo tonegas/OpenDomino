@@ -8,7 +8,7 @@
 #include "../include/Domino.h"
 
 TelecameraAssionometrica::TelecameraAssionometrica(unsigned dim_grilia_X_aux, unsigned dim_grilia_Y_aux)
-: Telecamera(dim_grilia_X_aux,dim_grilia_Y_aux) {
+: Telecamera(dim_grilia_X_aux, dim_grilia_Y_aux) {
     delta_zoom = ASSIONOMETRICA_DELTA_ZOOM;
     max_zoom = ASSIONOMETRICA_ZOOM_MAX;
     min_zoom = ASSIONOMETRICA_ZOOM_MIN;
@@ -16,7 +16,7 @@ TelecameraAssionometrica::TelecameraAssionometrica(unsigned dim_grilia_X_aux, un
     mouvi_zoom = false;
 }
 
-TelecameraAssionometrica::TelecameraAssionometrica(const TelecameraAssionometrica& orig) :Telecamera(orig){
+TelecameraAssionometrica::TelecameraAssionometrica(const TelecameraAssionometrica& orig) : Telecamera(orig) {
     delta_zoom = ASSIONOMETRICA_DELTA_ZOOM;
     max_zoom = ASSIONOMETRICA_ZOOM_MAX;
     min_zoom = ASSIONOMETRICA_ZOOM_MIN;
@@ -27,28 +27,29 @@ TelecameraAssionometrica::TelecameraAssionometrica(const TelecameraAssionometric
 }
 
 TelecameraAssionometrica::TelecameraAssionometrica(PosTeleAssio &pos_tele_aux, unsigned dim_grilia_X_aux, unsigned dim_grilia_Y_aux)
-: Telecamera(dim_grilia_X_aux,dim_grilia_Y_aux){
+: Telecamera(dim_grilia_X_aux, dim_grilia_Y_aux) {
     posizione_telecamera = pos_tele_aux;
 }
 
-void TelecameraAssionometrica::setProiezioneTelecamera(int larghezza_fin, int altezza_fin) {
-    glViewport(0, 0, (GLint) larghezza_fin, (GLint) altezza_fin);
+void TelecameraAssionometrica::configuraVisuale() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0, (GLfloat) larghezza_fin,
-            0, (GLfloat) altezza_fin,
+    glOrtho(0,(GLfloat) matrice_view[2], 0, (GLfloat) matrice_view[3],
             ASSIONOMETRICA_ZNEAR, ASSIONOMETRICA_ZFAR); //misure rispetto alla posizione dell'occhio
     glMultMatrixf(cavalier);
-
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(
             ASSIONOMETRICA_X_TELECAMERA, ASSIONOMETRICA_Y_TELECAMERA, ASSIONOMETRICA_Z_TELECAMERA, /* eye  */
             ASSIONOMETRICA_X_TELECAMERA, ASSIONOMETRICA_Y_TELECAMERA, 0.0, /* center  */
             0.0, 1.0, 0.0); /* up is in positive Y direction */
+}
 
-
+void TelecameraAssionometrica::setProiezioneTelecamera(int larghezza_fin, int altezza_fin) {
+    glViewport(0, 0, (GLint) larghezza_fin, (GLint) altezza_fin);
     glGetIntegerv(GL_VIEWPORT, matrice_view);
+
+    configuraVisuale();
     glGetDoublev(GL_MODELVIEW_MATRIX, matrice_model);
     glGetDoublev(GL_PROJECTION_MATRIX, matrice_proj);
 

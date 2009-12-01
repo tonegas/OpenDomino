@@ -48,7 +48,7 @@ enum Stato_Menu {
 
 class Menu {
     SDL_Event *evento;
-    unsigned dim_x_fin , dim_y_fin;
+    unsigned dim_x_fin, dim_y_fin;
 
     int dim_nome, dist_da_destra_nome, dist_da_alto_nome;
     int dim_voce_principale, dist_da_basso_voce_principale;
@@ -60,7 +60,8 @@ class Menu {
     int posizione_voci_visibili;
 
     //variabili per interagire con il mondo
-    GestoreGiocatori* gestore;
+    Gioco* gioco;
+    GestoreGiocatori *gestore;
     QStringList nomi_giocatori;
     //Gioco* gioco;
 
@@ -89,15 +90,6 @@ class Menu {
     QStringList voci_menu_gp_copia_profilo_attuale;
     QStringList voci_menu_gp_elimina_profilo;
     QStringList voci_menu_gp_nuovo_profilo;
-public:
-    Menu(GestoreGiocatori *gestore_aux, SDL_Event *evento_aux,  unsigned dim_x_fin_aux, unsigned dim_y_fin_aux);
-    ~Menu();
-    void setStato(Stato_Menu nuovo_stato);
-    void setVisibile(bool aux_visibile);
-    Stato_Menu getStato();
-    bool getVisibile();
-    void cicloGioco();
-    void resize(unsigned dim_x,unsigned dim_y);
 
     void inizializzaVariabiliMenu(Stato_Menu nuovo_stato, QStringList nuove_voci_menu);
     void inizializzaVariabiliMenu(Stato_Menu nuovo_stato, QStringList nuove_voci_menu, unsigned numero_voci_in_piu);
@@ -127,6 +119,16 @@ public:
     void aggiornaStatoAttivoVociMenu();
     void aggiornaStatoAttivoVociMenuLaterale();
     void aggiornaStatoAttivoVociMenuLateraleMouse();
+
+    void resize(unsigned dim_x, unsigned dim_y);
+public:
+    Menu(Gioco *gioco_aux, SDL_Event *evento_aux, unsigned dim_x_fin_aux, unsigned dim_y_fin_aux);
+    ~Menu();
+    void setStato(Stato_Menu nuovo_stato);
+    void setVisibile(bool aux_visibile);
+    Stato_Menu getStato();
+    bool getVisibile();
+    void cicloGioco();
 };
 
 #endif	/* _MENU_H */

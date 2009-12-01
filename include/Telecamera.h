@@ -89,6 +89,8 @@ public:
     virtual void resettaDeltaZoom(int frame_ms) = 0;
 
     virtual void visualeOpenGL() = 0;
+
+    virtual void configuraVisuale() = 0;
 };
 
 #endif	/* _TELECAMERA_H */

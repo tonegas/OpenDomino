@@ -75,6 +75,8 @@ public:
     void visualeOpenGL();
 
     void visualeOpenGLIniziale();
+
+    void configuraVisuale();
 };
 
 

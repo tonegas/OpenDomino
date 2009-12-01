@@ -8,7 +8,7 @@
 #include "include/Domino.h"
 #include "include/Gioco.h"
 
-int main(int argc, char** argv) {
+int main() {
     Gioco domino;
     domino.loop();
     SDL_Quit();

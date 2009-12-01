@@ -64,6 +64,8 @@ public:
     void resettaDeltaZoom(int frame_ms);
 
     void visualeOpenGL();
+
+    void configuraVisuale();
 };
 
 #endif	/* _TELECAMERAASSIONOMETRICA_H */

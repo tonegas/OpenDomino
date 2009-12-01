@@ -29,6 +29,10 @@ class Giocatore {
     time_t tempo_di_gioco_apertura;
     time_t tempo_di_gioco;
     time_t data_di_creazione;
+    //Oggetto editor per la gestione della grafica della partita
+//    Editor domino_editor;
+//    bool test_partita_allocata;
+//    Livello *domino;
 public:
 
     Giocatore() {

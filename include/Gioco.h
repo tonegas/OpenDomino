@@ -43,6 +43,7 @@ class Gioco {
 
     //superfice della finestra
     SDL_Surface *screen;
+    SDL_Event evento;
 
     //stato del gioco
     Stato stato;
@@ -52,11 +53,11 @@ class Gioco {
     //variabile per la modifica della velocità di gioco
     int frame_ms;
 
-    //qui vi sara un oggetto gestore giocatori
-    //GestoreGiocatori lista_giocatori;
-
     //Questo farà parte del GestoreGiocatori
-    Giocatore *giocatore;
+    GestoreGiocatori gestore;
+    Menu menu;
+//    Giocatore *giocatore_attuale;
+//    GestoreLivelli gestore_livelli;
     //Questa roba va a finire dentro giocatore
     //------------------------
     //Oggetto editor per la gestione della grafica della partita
@@ -102,6 +103,8 @@ public:
     int getScreenL() const;
 
     int getScreenA() const;
+
+    GestoreGiocatori* getGestoreGiocatori();
 };
 
 #endif	/* _GIOCO_H */

@@ -62,18 +62,22 @@ int Livello::inizializza() {
     return 1;
 }
 
+void Livello::configuraVisuale(){
+    telecamera_attuale->configuraVisuale();
+}
+
 void Livello::attivaSelezioni() {
-    }
+}
 
-void Livello::mouseButtonDown(SDL_Event *evento){
+void Livello::mouseButtonDown(SDL_Event *evento) {
 
-    }
+}
 
 void Livello::mouseMotion(SDL_Event *evento) {
-    }
+}
 
 void Livello::mouseButtonUp(SDL_Event *evento) {
-    }
+}
 
 void Livello::keyDownF5() {
     if (gioco->getStato() == EDITOR_TEST) {
@@ -91,9 +95,7 @@ void Livello::gestisciInput(SDL_Event *evento) {
         case SDL_KEYDOWN:
             switch (evento->key.keysym.sym) {
                 case SDLK_ESCAPE:
-                    //gioco->setStato(MENU);
-                    //------------------
-                    gioco->gameExit();
+                    gioco->setStato(MENU);
                     break;
                 case SDLK_PAGEUP:
                     if (gioco->getFrames() > 1)
@@ -198,35 +200,27 @@ void Livello::cicloGioco(SDL_Event *evento) {
     while (SDL_PollEvent(evento)) {
         gestisciInput(evento);
     }
-
     telecamera_attuale->aggiorna(gioco->getFrames());
-
     attivaSelezioni();
+    cicloGiocoAggiornaEStampa();
+}
 
+void Livello::cicloGiocoAggiornaEStampa() {
     glPushMatrix();
-
     stampaSfondo();
-
     telecamera_attuale->visualeOpenGL();
-
-    //    if (griglia_livello.in_partita) {
-    //        GLUquadric *myQuad;
-    //        GLint slices, stacks;
-    //        glPushMatrix();
-    //        glMaterialfv(GL_FRONT, GL_DIFFUSE, colorwhite);
-    //        glTranslatef(pos_x_griglia, pos_y_griglia, pos_z_griglia + ALTEZZA_PEZZO / 2.0);
-    //        slices = stacks = 50;
-    //        myQuad = gluNewQuadric();
-    //        gluSphere(myQuad, 3, slices, stacks);
-    //        glPopMatrix();
-    //    }
-
     stampaSuperficeBase();
-
     griglia_livello.aggiornaStatoEStampa();
-
     glPopMatrix();
+}
 
+void Livello::cicloGiocoStampa() {
+    glPushMatrix();
+    stampaSfondo();
+    telecamera_attuale->visualeOpenGL();
+    stampaSuperficeBase();
+    griglia_livello.stampa();
+    glPopMatrix();
 }
 
 void Livello::stampaSuperficeBase() {
