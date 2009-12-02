@@ -7,8 +7,8 @@
 
 #include "../include/Domino.h"
 
-Editor::Editor(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux)
-: Livello(gioco_aux, num_x_colonne_aux, num_y_righe_aux) {
+Editor::Editor(Gioco *gioco_aux,SDL_Event*evento ,int num_x_colonne_aux, int num_y_righe_aux)
+: Livello(gioco_aux, evento, num_x_colonne_aux, num_y_righe_aux) {
     num_y_righe = num_y_righe_aux;
     num_x_colonne = num_x_colonne_aux;
     azione_continua = NESSUNA_AZIONE;
@@ -31,7 +31,7 @@ void Editor::attivaSelezioni() {
     }
 }
 
-void Editor::mouseButtonDown(SDL_Event *evento) {
+void Editor::mouseButtonDown() {
     if (evento->button.button == SDL_BUTTON_LEFT && telecamera_attuale->indice_griglia_ok) {
         telecamera_attuale->mouseSelezione(this,&griglia_livello);
         if (caratteristiche_selezione == DAVANTI_PEZZO) {
@@ -56,7 +56,7 @@ void Editor::mouseButtonDown(SDL_Event *evento) {
     }
 }
 
-void Editor::mouseMotion(SDL_Event *evento) {
+void Editor::mouseMotion() {
     if (telecamera_attuale->indice_griglia_ok) {
         telecamera_attuale->mouseSelezione(this,&griglia_livello);
         switch (azione_continua) {
@@ -102,7 +102,7 @@ void Editor::mouseMotion(SDL_Event *evento) {
     }
 }
 
-void Editor::mouseButtonUp(SDL_Event *evento) {
+void Editor::mouseButtonUp() {
     if (evento->button.button == SDL_BUTTON_LEFT) {
         azione_continua = NESSUNA_AZIONE;
     }

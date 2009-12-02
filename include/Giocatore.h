@@ -23,13 +23,15 @@
 #include <FTGL/ftgl.h>
 
 using namespace std;
+class Interfaccia;
 
-class Giocatore {
+class Giocatore: public Interfaccia {
     QString nome;
     time_t tempo_di_gioco_apertura;
     time_t tempo_di_gioco;
     time_t data_di_creazione;
     //Oggetto editor per la gestione della grafica della partita
+//    SDL_Event*evento;
 //    Editor domino_editor;
 //    bool test_partita_allocata;
 //    Livello *domino;
@@ -47,6 +49,7 @@ public:
     time_t getTempoDiGioco();
     time_t getTempoDiGiocoApertura();
     void setTempoDiGiocoApertura();
+    void cicloGioco();
 };
 
 class GestoreGiocatori {
@@ -69,6 +72,7 @@ class GestoreGiocatori {
 public:
     GestoreGiocatori();
     ~GestoreGiocatori();
+    Giocatore* getGiocatoreAttuale();
     bool nuovoGiocatore(QString nome_giocatore);
     bool copiaGiocatoreAttuale(QString nome_giocatore);
     bool cambiaGiocatore(QString nome_giocatore);

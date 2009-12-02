@@ -7,8 +7,8 @@
 
 #include "../include/Domino.h"
 
-Partita::Partita(Gioco *gioco_aux, int num_y_righe_aux, int num_x_colonne_aux)
-: Livello(gioco_aux, num_x_colonne_aux, num_y_righe_aux) {
+Partita::Partita(Gioco *gioco_aux, SDL_Event * evento,int num_y_righe_aux, int num_x_colonne_aux)
+: Livello(gioco_aux, evento ,num_x_colonne_aux, num_y_righe_aux) {
     griglia_livello.setInPartita(true);
 }
 
@@ -20,7 +20,7 @@ Partita::Partita(const Livello& orig) : Livello(orig) {
     griglia_livello.setInPartita(true);
 }
 
-void Partita::mouseButtonDown(SDL_Event *evento) {
+void Partita::mouseButtonDown() {
     if (evento->button.button == SDL_BUTTON_LEFT && telecamera_attuale->indice_griglia_ok) {
         telecamera_attuale->mouseSelezione(this,&griglia_livello);
         if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {
@@ -32,7 +32,7 @@ void Partita::mouseButtonDown(SDL_Event *evento) {
 
 }
 
-void Partita::mouseMotion(SDL_Event *evento) {
+void Partita::mouseMotion() {
     if (telecamera_attuale->indice_griglia_ok) {
         telecamera_attuale->mouseSelezione(this,&griglia_livello);
         if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {

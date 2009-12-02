@@ -10,10 +10,11 @@
 
 using namespace std;
 
-Livello::Livello(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux) :
+Livello::Livello(Gioco *gioco_aux, SDL_Event *evento_aux,int num_x_colonne_aux, int num_y_righe_aux) :
 griglia_livello(num_x_colonne_aux, num_y_righe_aux),
 tele_assio(num_x_colonne_aux, num_y_righe_aux),
 tele_prosp(num_x_colonne_aux, num_y_righe_aux) {
+    evento = evento_aux;
     gioco = gioco_aux;
 
     bottone_destro = false;
@@ -69,14 +70,14 @@ void Livello::configuraVisuale(){
 void Livello::attivaSelezioni() {
 }
 
-void Livello::mouseButtonDown(SDL_Event *evento) {
+void Livello::mouseButtonDown() {
 
 }
 
-void Livello::mouseMotion(SDL_Event *evento) {
+void Livello::mouseMotion() {
 }
 
-void Livello::mouseButtonUp(SDL_Event *evento) {
+void Livello::mouseButtonUp() {
 }
 
 void Livello::keyDownF5() {
@@ -87,7 +88,7 @@ void Livello::keyDownF5() {
     }
 }
 
-void Livello::gestisciInput(SDL_Event *evento) {
+void Livello::gestisciInput() {
     if (evento->type == SDL_QUIT) {
         gioco->gameExit();
     }
@@ -168,7 +169,7 @@ void Livello::gestisciInput(SDL_Event *evento) {
                     }
                     break;
             }
-            mouseButtonDown(evento);
+            mouseButtonDown();
             break;
         case SDL_MOUSEMOTION:
             telecamera_attuale->getMousePosGrigliaXY(evento->button.x, evento->button.y);
@@ -177,7 +178,7 @@ void Livello::gestisciInput(SDL_Event *evento) {
             } else if (bottone_centrale) {
                 telecamera_attuale->cambiaAngolazione();
             }
-            mouseMotion(evento);
+            mouseMotion();
             break;
         case SDL_MOUSEBUTTONUP:
             if (evento->button.button == SDL_BUTTON_RIGHT) {
@@ -185,7 +186,7 @@ void Livello::gestisciInput(SDL_Event *evento) {
             } else if (evento->button.button == SDL_BUTTON_MIDDLE) {
                 bottone_centrale = false;
             }
-            mouseButtonUp(evento);
+            mouseButtonUp();
             break;
         case SDL_VIDEORESIZE:
             gioco->setWindowLA(evento->resize.w, evento->resize.h);
@@ -195,10 +196,10 @@ void Livello::gestisciInput(SDL_Event *evento) {
     }
 }
 
-void Livello::cicloGioco(SDL_Event *evento) {
+void Livello::cicloGioco() {
     SDL_PumpEvents();
     while (SDL_PollEvent(evento)) {
-        gestisciInput(evento);
+        gestisciInput();
     }
     telecamera_attuale->aggiorna(gioco->getFrames());
     attivaSelezioni();

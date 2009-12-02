@@ -33,13 +33,13 @@ class Editor : public Livello {
     AzioneMouse azione_continua;
 
 protected:
-    void mouseButtonDown(SDL_Event *evento);
-    void mouseMotion(SDL_Event *evento);
-    void mouseButtonUp(SDL_Event *evento);
+    void mouseButtonDown();
+    void mouseMotion();
+    void mouseButtonUp();
     void attivaSelezioni();
 
 public:
-    Editor(Gioco *gioco_aux, int num_x_colonne_aux = GRIGLIA_EDITOR_X, int num_y_righe_aux = GRIGLIA_EDITOR_Y);
+    Editor(Gioco *gioco_aux, SDL_Event * evento,int num_x_colonne_aux = GRIGLIA_EDITOR_X, int num_y_righe_aux = GRIGLIA_EDITOR_Y);
     ~Editor();
 };
 

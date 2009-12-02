@@ -7,7 +7,7 @@
 
 #include "../include/Domino.h"
 
-Gioco::Gioco() : domino_editor(this), menu(this, &evento, LARGHEZZA_FIN, ALTEZZA_FIN) {
+Gioco::Gioco() : domino_editor(this,&evento), menu(this, &evento, LARGHEZZA_FIN, ALTEZZA_FIN) {
     bpp = BPP_FIN;
 
     test_partita_allocata = false;
@@ -175,7 +175,7 @@ void Gioco::loop() {
             //magari bisogna scrivere una funzione
             menu.cicloGioco();
         } else {
-            domino->cicloGioco(&evento);
+            domino->cicloGioco();
         }
         SDL_GL_SwapBuffers();
 

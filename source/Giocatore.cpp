@@ -342,6 +342,10 @@ QStringList GestoreGiocatori::nomiGiocatori() {
     return nomi_giocatori;
 }
 
+Giocatore* GestoreGiocatori::getGiocatoreAttuale(){
+    return giocatore_attuale;
+}
+
 Giocatore::Giocatore(QString nome_aux) {
     nome = nome_aux;
     tempo_di_gioco = 0;
@@ -385,4 +389,8 @@ time_t Giocatore::getTempoDiGiocoApertura() {
 
 void Giocatore::setTempoDiGiocoApertura() {
     tempo_di_gioco_apertura = time(NULL);
+}
+
+void Giocatore::cicloGioco(){
+
 }

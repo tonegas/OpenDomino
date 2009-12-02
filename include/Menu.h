@@ -13,6 +13,7 @@
 using namespace std;
 
 class GestoreGiocatori;
+class Interfaccia;
 
 //questa mi seve qua ma poi va tolta
 
@@ -46,7 +47,7 @@ enum Stato_Menu {
     ESCI = 16
 };
 
-class Menu {
+class Menu: public Interfaccia {
     SDL_Event *evento;
     unsigned dim_x_fin, dim_y_fin;
 

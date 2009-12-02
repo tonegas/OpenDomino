@@ -5,13 +5,13 @@
  * Created on 1 dicembre 2009, 23.52
  */
 
-#ifndef _INERFACCIA_H
-#define	_INERFACCIA_H
+#ifndef _INTERFACCIA_H
+#define	_INTERFACCIA_H
 
 #include "Domino.h"
 
-class Inerfaccia {
-    void cicloGioco(SDL_Event * evento)=0;
+class Interfaccia {
+    virtual void cicloGioco()=0;
 };
 
 #endif	/* _INERFACCIA_H */

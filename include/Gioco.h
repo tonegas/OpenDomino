@@ -25,6 +25,7 @@ enum Stato {
 class Editor;
 class Partita;
 class Livello;
+class Menu;
 
 #include "Domino.h"
 
@@ -57,6 +58,7 @@ class Gioco {
     GestoreGiocatori gestore;
     Menu menu;
 //    Giocatore *giocatore_attuale;
+ //   Interfaccia *video;
 //    GestoreLivelli gestore_livelli;
     //Questa roba va a finire dentro giocatore
     //------------------------

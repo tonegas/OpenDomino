@@ -19,6 +19,7 @@
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Giocatore.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Gioco.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Griglia.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Interfaccia.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Livello.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Menu.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Partita.h</itemPath>
@@ -44,8 +45,7 @@
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Giocatore.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Gioco.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Griglia.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Inerfaccia.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Inerfaccia.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Interfaccia.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Livello.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Menu.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Partita.cpp</itemPath>

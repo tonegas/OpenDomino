@@ -34,6 +34,7 @@ class Livello : public Textures {
 protected:
     //puntatore al gioco per interagire sulle funzionidi gioco
     Gioco *gioco; //ok
+    SDL_Event* evento;
 
     //matrici dinamiche di pezzi e basi
     Griglia griglia_livello; //ok
@@ -59,7 +60,7 @@ protected:
     unsigned x_base_selezionata, y_base_selezionata;
     //---------------------------
 
-    void gestisciInput(SDL_Event *evento);
+    void gestisciInput();
 
 protected:
     virtual void stampaSuperficeBase();
@@ -70,15 +71,15 @@ protected:
 
     virtual void attivaSelezioni();
 
-    virtual void mouseButtonDown(SDL_Event *evento);
+    virtual void mouseButtonDown();
 
-    virtual void mouseMotion(SDL_Event *evento);
+    virtual void mouseMotion();
 
-    virtual void mouseButtonUp(SDL_Event *evento);
+    virtual void mouseButtonUp();
 
 public:
 
-    Livello(Gioco *gioco_aux, int num_x_colonne_aux, int num_y_righe_aux);
+    Livello(Gioco *gioco_aux,SDL_Event *evento_aux, int num_x_colonne_aux, int num_y_righe_aux);
 
     Livello(const Livello &orig);
 
@@ -89,7 +90,7 @@ public:
     //questa funzione la chiamero da dentro il menu per stampare dietro il livello mentro ci sono dentro
     //void cicloGiocoDentroMenu(SDL_event *evento);
 
-    void cicloGioco(SDL_Event *evento);
+    void cicloGioco();
 
     void cicloGiocoAggiornaEStampa();
 

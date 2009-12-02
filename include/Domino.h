@@ -35,6 +35,7 @@ using namespace std;
 #include "Telecamera.h"
 #include "TelecameraAssionometrica.h"
 #include "TelecameraProspettica.h"
+#include "Interfaccia.h"
 #include "Livello.h"
 #include "Partita.h"
 #include "Editor.h"
