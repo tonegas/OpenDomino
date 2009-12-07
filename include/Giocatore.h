@@ -30,19 +30,17 @@ class Giocatore: public Interfaccia {
     time_t tempo_di_gioco_apertura;
     time_t tempo_di_gioco;
     time_t data_di_creazione;
-    //Oggetto editor per la gestione della grafica della partita
-//    SDL_Event*evento;
-//    Editor domino_editor;
-//    bool test_partita_allocata;
-//    Livello *domino;
+
+    QString nome_livello_attuale;
+    Editor *domino_editor;
+    Livello *domino;
 public:
 
-    Giocatore() {
-        cout << "Costruttore Giocatore\n";
-    }
+    Giocatore();
     Giocatore(QString nome_aux);
     Giocatore(QString nome_aux, time_t tempo_di_gioco_aux, time_t data_di_creazione_aux);
     Giocatore(const Giocatore& orig);
+    ~Giocatore();
     QString getNome();
     void setNome(QString nuovo_nome);
     time_t getDataDiCreazione();
@@ -50,37 +48,6 @@ public:
     time_t getTempoDiGiocoApertura();
     void setTempoDiGiocoApertura();
     void cicloGioco();
-};
-
-class GestoreGiocatori {
-    //variabili giocatore attuale
-    QFile file_giocatore_attuale;
-    QFile* file_giocatore;
-    QString nome_giocatore_attuale;
-    Giocatore *giocatore_attuale;
-    void apriFileGioAttuale();
-    void chiudiFileGioAttuale();
-    void eliminaFileGioAttuale();
-    void apriFileGio();
-    void chiudiFileGio();
-    void eliminaFileGio();
-    void creaFileGiocatoreAttuale(QString nome_giocatore = "__DOMINO__");
-    void caricaFileGiocatoreAttuale();
-    void creaFileGiocatore();
-    void caricaFileGiocatore();
-    void salvaFileGiocatore();
-public:
-    GestoreGiocatori();
-    ~GestoreGiocatori();
-    Giocatore* getGiocatoreAttuale();
-    bool nuovoGiocatore(QString nome_giocatore);
-    bool copiaGiocatoreAttuale(QString nome_giocatore);
-    bool cambiaGiocatore(QString nome_giocatore);
-    bool eliminaGiocatore(QString nome_giocatore);
-    void eliminaGiocatore();
-    void salvaGiocatore();
-    QString nomeGiocatoreAttuale();
-    QStringList nomiGiocatori();
 };
 
 

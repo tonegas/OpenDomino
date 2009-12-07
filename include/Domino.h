@@ -39,7 +39,9 @@ using namespace std;
 #include "Livello.h"
 #include "Partita.h"
 #include "Editor.h"
+#include "GestoreLivelli.h"
 #include "Giocatore.h"
+#include "GestoreGiocatori.h"
 #include "Menu.h"
 #include "Gioco.h"
 

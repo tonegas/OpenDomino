@@ -31,6 +31,7 @@ griglia_livello(orig.griglia_livello),
 tele_assio(orig.tele_assio),
 tele_prosp(orig.tele_prosp) {
     gioco = orig.gioco;
+    evento = orig.evento;
 
     bottone_destro = orig.bottone_destro;
     bottone_sinistro = orig.bottone_sinistro;

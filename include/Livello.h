@@ -19,6 +19,10 @@ enum Selezione {
     NIENTE, DAVANTI_PEZZO, DAVANTI_BASE
 };
 
+enum TipologiaLivello{
+    LIVELLO_EDITOR,LIVELLO_PARTITA
+};
+
 class Gioco;
 
 #include "Domino.h"
@@ -28,6 +32,14 @@ const GLfloat cavalier[] = {
     0, 1, 0, 0,
     -0.5, -0.5, 1, 0,
     0, 0, 0, 1
+};
+
+class StrutturaLivello{
+public:
+    QString nome_livello;
+    Griglia* griglia_livello;
+    Proiezione tipo_proiezione;
+    PosTelecamere posizione_telecamere;
 };
 
 class Livello : public Textures {

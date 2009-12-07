@@ -21,9 +21,9 @@ public:
     unsigned num_x_colonne;
 
     ElementoAttivo* creaElementoAttivo(unsigned x, unsigned y);
-
     void eliminaElementoAttivo(ElementoAttivo* tokill);
 
+//public:
 
     Griglia(unsigned num_x_colonne_aux, unsigned num_y_righe_aux);
 
@@ -43,13 +43,9 @@ public:
 
     TipoElemento getTipo(unsigned x, unsigned y);
 
+    ElementoAttivo* getTestaElementi() const;
+
     bool spostaElementoAttivo(unsigned x_sorg, unsigned y_sorg, unsigned x_dest, unsigned y_dest);
-
-    //    ElementoAttivo* getPosizione(int i, int j);
-
-    //    Pezzo& getPezzo(int i, int j);
-
-    //    Base& getBase(int i, int j);
 
     void setInPartita(bool aux_in_partita);
 

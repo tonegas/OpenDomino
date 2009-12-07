@@ -16,6 +16,8 @@
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Editor.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Elemento.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/ElementoAttivo.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/GestoreGiocatori.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/GestoreLivelli.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Giocatore.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Gioco.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Griglia.h</itemPath>
@@ -42,6 +44,8 @@
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Editor.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Elemento.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/ElementoAttivo.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/GestoreGiocatori.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/GestoreLivelli.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Giocatore.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Gioco.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Griglia.cpp</itemPath>

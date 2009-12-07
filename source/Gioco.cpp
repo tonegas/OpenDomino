@@ -174,8 +174,11 @@ void Gioco::loop() {
             //c'è bisogno di riaccendere le luci poi c'è bisogno di riconfigurare ogni volta la telecamera
             //magari bisogna scrivere una funzione
             menu.cicloGioco();
+            //frame_ms = 50;
         } else {
             domino->cicloGioco();
+            //variare il frameRate quando sono nel menu
+            //frame_ms = FRAMEMS;
         }
         SDL_GL_SwapBuffers();
 
@@ -271,7 +274,7 @@ int Gioco::getScreenA() const {
 }
 
 GestoreGiocatori* Gioco::getGestoreGiocatori() {
-    return &gestore;
+    return &gestore_giocatori;
 }
 
 

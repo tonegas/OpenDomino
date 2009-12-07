@@ -11,7 +11,10 @@
 #include "Domino.h"
 
 class Interfaccia {
-    virtual void cicloGioco()=0;
+protected:
+    SDL_Event *evento;
+public:
+    virtual void cicloGioco() = 0;
 };
 
 #endif	/* _INERFACCIA_H */

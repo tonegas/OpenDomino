@@ -48,7 +48,6 @@ enum Stato_Menu {
 };
 
 class Menu: public Interfaccia {
-    SDL_Event *evento;
     unsigned dim_x_fin, dim_y_fin;
 
     int dim_nome, dist_da_destra_nome, dist_da_alto_nome;

@@ -462,6 +462,9 @@ void Menu::costruisciCaselleMenuCentrale() {
         caselle_menu_attivo += layout.BBox(voci_menu_attivo[i].toStdString().c_str());
     }
 }
+//sarabbe meglio poi usare il genList
+bool primo = true;
+GLuint titolo, nomi;
 
 void Menu::stampaMenuCentrale() {
     font->FaceSize(dim_voce_principale);
@@ -469,23 +472,31 @@ void Menu::stampaMenuCentrale() {
     layout.SetLineLength(dim_x_fin);
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     glRasterPos2i(0, dist_da_basso_voce_principale);
-    layout.Render(voci_menu_attivo[numero_voci_menu_attivo].toStdString().c_str());
+    if (primo) {
+        titolo = glGenLists(1);
+        glNewList(titolo, GL_COMPILE);
+        layout.Render(voci_menu_attivo[numero_voci_menu_attivo].toStdString().c_str());
+        glEndList();
+        primo=false;
+    } else {
+        glCallList(titolo);
+    }
 
     font->FaceSize(dim_voce);
     for (unsigned i = 0; i < numero_voci_menu_attivo; i++) {
-//        glPushMatrix();
-//        glTranslatef(posizioni_caselle_menu_attivo[i].X(), posizioni_caselle_menu_attivo[i].Y(), 0);
-//        //la devo attivare per fare le sfumature = glEnable(GL_BLEND);
-//        glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
-//        glBegin(GL_QUADS);
-//        {
-//            glVertex2d(caselle_menu_attivo[i].Lower().X(), caselle_menu_attivo[i].Lower().Y());
-//            glVertex2d(caselle_menu_attivo[i].Lower().X(), caselle_menu_attivo[i].Upper().Y());
-//            glVertex2d(caselle_menu_attivo[i].Upper().X(), caselle_menu_attivo[i].Upper().Y());
-//            glVertex2d(caselle_menu_attivo[i].Upper().X(), caselle_menu_attivo[i].Lower().Y());
-//        }
-//        glEnd();
-//        glPopMatrix();
+        //        glPushMatrix();
+        //        glTranslatef(posizioni_caselle_menu_attivo[i].X(), posizioni_caselle_menu_attivo[i].Y(), 0);
+        //        //la devo attivare per fare le sfumature = glEnable(GL_BLEND);
+        //        glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+        //        glBegin(GL_QUADS);
+        //        {
+        //            glVertex2d(caselle_menu_attivo[i].Lower().X(), caselle_menu_attivo[i].Lower().Y());
+        //            glVertex2d(caselle_menu_attivo[i].Lower().X(), caselle_menu_attivo[i].Upper().Y());
+        //            glVertex2d(caselle_menu_attivo[i].Upper().X(), caselle_menu_attivo[i].Upper().Y());
+        //            glVertex2d(caselle_menu_attivo[i].Upper().X(), caselle_menu_attivo[i].Lower().Y());
+        //        }
+        //        glEnd();
+        //        glPopMatrix();
         glColor4f(1.0f - stato_attivo_voci_menu[i], 1.0f, 1.0f - stato_attivo_voci_menu[i], 1.0f);
         glRasterPos2i(0, posizioni_caselle_menu_attivo[i].Y());
         layout.Render(voci_menu_attivo[i].toStdString().c_str());

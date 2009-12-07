@@ -55,7 +55,8 @@ class Gioco {
     int frame_ms;
 
     //Questo farà parte del GestoreGiocatori
-    GestoreGiocatori gestore;
+    GestoreGiocatori gestore_giocatori;
+    GestoreLivelli gestore_livelli;
     Menu menu;
 //    Giocatore *giocatore_attuale;
  //   Interfaccia *video;

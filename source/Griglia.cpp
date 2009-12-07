@@ -156,6 +156,7 @@ bool Griglia::creaElemento(unsigned x, unsigned y, TipoElemento tipo) {
                 aux->elem = new Base(x, y);
                 break;
             default:
+                return false;
                 break;
         }
         aux->tipo = tipo;
@@ -260,21 +261,14 @@ void Griglia::aggiornaStatoEStampa() {
 
 }
 
+ElementoAttivo* Griglia::getTestaElementi() const{
+    return testa_elementi;
+}
+
 void Griglia::setInPartita(bool aux_in_partita) {
     in_partita = aux_in_partita;
 }
 
-//ElementoAttivo* Griglia::getPosizione(int i, int j) {
-//    return &matrice_posizioni[i][j];
-//}
-
-//Pezzo& Griglia::getPezzo(int i, int j) {
-//    return *(Pezzo*) matrice_posizioni[i][j].elem;
-//}
-
-//Base& Griglia::getBase(int i, int j) {
-//    return *(Base*) matrice_posizioni[i][j].elem;
-//}
 
 bool Griglia::setStato(unsigned x, unsigned y, StatoPezzo stato) {
     if (x < num_x_colonne && y < num_y_righe) {
