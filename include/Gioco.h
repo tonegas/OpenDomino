@@ -17,9 +17,10 @@
 
 enum Stato {
     MENU,
-    PARTITA,
-    EDITOR_COSTRUISCI,
-    EDITOR_TEST
+    GIOCATORE
+    //    PARTITA,
+    //    EDITOR_COSTRUISCI,
+    //    EDITOR_TEST
 };
 
 class Editor;
@@ -58,16 +59,16 @@ class Gioco {
     GestoreGiocatori gestore_giocatori;
     GestoreLivelli gestore_livelli;
     Menu menu;
-//    Giocatore *giocatore_attuale;
- //   Interfaccia *video;
-//    GestoreLivelli gestore_livelli;
+    Giocatore *giocatore_attuale;
+    //   Interfaccia *video;
+    //    GestoreLivelli gestore_livelli;
     //Questa roba va a finire dentro giocatore
     //------------------------
     //Oggetto editor per la gestione della grafica della partita
-    Editor domino_editor;
-    bool test_partita_allocata;
-    //Puntatore a domino in eseguzione
-    Livello *domino;
+    //    Editor domino_editor;
+    //    bool test_partita_allocata;
+    //    //Puntatore a domino in eseguzione
+    //    Livello *domino;
     //------------------------
 
     //indica se il gioco deve smettere di ciclare
@@ -90,6 +91,10 @@ public:
     void setStato(Stato stato_aux);
 
     Stato getStato() const;
+
+    void setStatoGiocatore(StatoGiocatore stato_aux);
+
+    StatoGiocatore getStatoGiocatore();
 
     void setWindowLA(int larghezza_finestra_aux, int altezza_finestra_aux);
 

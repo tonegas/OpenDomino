@@ -15,8 +15,6 @@ Menu::Menu(Gioco *gioco_aux, SDL_Event* evento_aux, unsigned dim_x_fin_aux, unsi
     dim_x_fin = dim_x_fin_aux;
     dim_y_fin = dim_y_fin_aux;
 
-    visibile = true;
-
     font = new FTGLPixmapFont("./Caratteri/Abscissa.ttf");
     layout.SetFont(font);
 
@@ -119,16 +117,8 @@ void Menu::setStato(Stato_Menu nuovo_stato) {
     stato = nuovo_stato;
 }
 
-void Menu::setVisibile(bool aux_visibile) {
-    visibile = aux_visibile;
-}
-
 Stato_Menu Menu::getStato() {
     return stato;
-}
-
-bool Menu::getVisibile() {
-    return visibile;
 }
 
 void Menu::cicloGioco() {
@@ -358,8 +348,8 @@ void Menu::gestisciInput() {
                             stato_attivo = (stato % (stato / 10 * 10)) - 1;
                             cambiaVociMenu();
                         } else {
-                            visibile = false;
-                            gioco->setStato(EDITOR_COSTRUISCI);
+                            //gioco->setStato(EDITOR_COSTRUISCI);
+                            gioco->setStato(GIOCATORE);
                         }
                         break;
                     default:

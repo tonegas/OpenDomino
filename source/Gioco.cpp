@@ -7,10 +7,10 @@
 
 #include "../include/Domino.h"
 
-Gioco::Gioco() : domino_editor(this,&evento), menu(this, &evento, LARGHEZZA_FIN, ALTEZZA_FIN) {
+Gioco::Gioco() : menu(this, &evento, LARGHEZZA_FIN, ALTEZZA_FIN) {// : domino_editor(this, &evento) {
     bpp = BPP_FIN;
 
-    test_partita_allocata = false;
+    //    test_partita_allocata = false;
     fullscreen = false;
     stato = MENU;
     cambia_stato = false;
@@ -123,13 +123,15 @@ Gioco::Gioco() : domino_editor(this,&evento), menu(this, &evento, LARGHEZZA_FIN,
     Textures::loadTextures("nuvola2.bmp", TEX_NUVOLA2, key_color, true);
 
 
-    domino = &domino_editor;
-    domino->inizializza();
+    giocatore_attuale = gestore_giocatori.getGiocatoreAttuale();
+    giocatore_attuale->inizializza(this, &evento);
+    //    domino = &domino_editor;
+    //    domino->inizializza();
 }
 
 Gioco::~Gioco() {
-    if (test_partita_allocata)
-        delete domino;
+    //    if (test_partita_allocata)
+    //        delete domino;
 }
 
 void Gioco::loop() {
@@ -139,47 +141,65 @@ void Gioco::loop() {
     }
     while (alive) {
         if (cambia_stato) {
-            switch (stato) {
-                case MENU:
-                    menu.setVisibile(true);
-                    break;
-                case EDITOR_TEST:
-                    if (test_partita_allocata) {
-                        delete domino;
-                        domino = new Partita(domino_editor);
-                    } else {
-                        test_partita_allocata = true;
-                        domino = new Partita(domino_editor);
-                    }
-                    break;
-                case EDITOR_COSTRUISCI:
-                    if (test_partita_allocata) {
-                        delete domino;
-                    }
-                    test_partita_allocata = false;
-                    domino = &domino_editor;
-                    break;
-                default:
-                    break;
+            if (stato == GIOCATORE) {
+                giocatore_attuale->riconfiguraVideo();
             }
             cambia_stato = false;
-            domino->inizializza();
         }
+        //                if (cambia_stato) {
+        //                    switch (stato) {
+        //                        case MENU:
+        //                            menu.setVisibile(true);
+        //                            break;
+        //                        case EDITOR_TEST:
+        //                            if (test_partita_allocata) {
+        //                                delete domino;
+        //                                domino = new Partita(domino_editor);
+        //                            } else {
+        //                                test_partita_allocata = true;
+        //                                domino = new Partita(domino_editor);
+        //                            }
+        //                            break;
+        //                        case EDITOR_COSTRUISCI:
+        //                            if (test_partita_allocata) {
+        //                                delete domino;
+        //                            }
+        //                            test_partita_allocata = false;
+        //                            domino = &domino_editor;
+        //                            break;
+        //                        default:
+        //                            break;
+        //                    }
+        //                    cambia_stato = false;
+        //                    domino->inizializza();
+        //                }
         inizio = SDL_GetTicks();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        if (menu.getVisibile()) {
-            domino->configuraVisuale();
-            domino->cicloGiocoStampa();
-            //c'è bisogno di riaccendere le luci poi c'è bisogno di riconfigurare ogni volta la telecamera
-            //magari bisogna scrivere una funzione
-            menu.cicloGioco();
-            //frame_ms = 50;
-        } else {
-            domino->cicloGioco();
-            //variare il frameRate quando sono nel menu
-            //frame_ms = FRAMEMS;
+        switch (stato) {
+            case MENU:
+                //                domino->configuraVisuale();
+                //                domino->cicloGiocoStampa();
+                giocatore_attuale->cicloGiocoStampa();
+                menu.cicloGioco();
+                break;
+            case GIOCATORE:
+                giocatore_attuale->cicloGioco();
+                break;
         }
+        //        if (menu.getVisibile()) {
+        //            domino->configuraVisuale();
+        //            domino->cicloGiocoStampa();
+        //            //c'è bisogno di riaccendere le luci poi c'è bisogno di riconfigurare ogni volta la telecamera
+        //            //magari bisogna scrivere una funzione
+        //            menu.cicloGioco();
+        //            //frame_ms = 50;
+        //        } else {
+        //            giocatore_attuale->cicloGioco();
+        //            //domino->cicloGioco();
+        //            //variare il frameRate quando sono nel menu
+        //            //frame_ms = FRAMEMS;
+        //        }
         SDL_GL_SwapBuffers();
 
 
@@ -215,6 +235,14 @@ void Gioco::setStato(Stato stato_aux) {
 
 Stato Gioco::getStato() const {
     return stato;
+}
+
+void Gioco::setStatoGiocatore(StatoGiocatore stato_aux) {
+    giocatore_attuale->setStato(stato_aux);
+}
+
+StatoGiocatore Gioco::getStatoGiocatore() {
+    return giocatore_attuale->getStato();
 }
 
 void Gioco::gameExit() {

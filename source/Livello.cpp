@@ -82,10 +82,10 @@ void Livello::mouseButtonUp() {
 }
 
 void Livello::keyDownF5() {
-    if (gioco->getStato() == EDITOR_TEST) {
-        gioco->setStato(EDITOR_COSTRUISCI);
+    if (gioco->getStatoGiocatore() == EDITOR_TEST) {
+        gioco->setStatoGiocatore(EDITOR_COSTRUISCI);
     } else {
-        gioco->setStato(EDITOR_TEST);
+        gioco->setStatoGiocatore(EDITOR_TEST);
     }
 }
 

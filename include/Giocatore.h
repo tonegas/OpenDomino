@@ -25,14 +25,23 @@
 using namespace std;
 class Interfaccia;
 
-class Giocatore: public Interfaccia {
+enum StatoGiocatore {
+    PARTITA,
+    EDITOR_COSTRUISCI,
+    EDITOR_TEST
+};
+
+class Giocatore : public Interfaccia {
     QString nome;
     time_t tempo_di_gioco_apertura;
     time_t tempo_di_gioco;
     time_t data_di_creazione;
 
+    bool cambia_stato;
+    StatoGiocatore stato;
     QString nome_livello_attuale;
     Editor *domino_editor;
+    bool partita_allocata;
     Livello *domino;
 public:
 
@@ -47,7 +56,12 @@ public:
     time_t getTempoDiGioco();
     time_t getTempoDiGiocoApertura();
     void setTempoDiGiocoApertura();
+    void inizializza(Gioco *gioco_aux, SDL_Event *evento_aux);
+    StatoGiocatore getStato();
+    void setStato(StatoGiocatore stato_aux);
+    void riconfiguraVideo();
     void cicloGioco();
+    void cicloGiocoStampa();
 };
 
 

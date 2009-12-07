@@ -72,7 +72,6 @@ class Menu: public Interfaccia {
     FTSimpleLayout layout;
 
     //variabili di stato
-    bool visibile;
     Stato_Menu stato;
     //unsigned numero_max_voci_visibili;
 
@@ -125,9 +124,7 @@ public:
     Menu(Gioco *gioco_aux, SDL_Event *evento_aux, unsigned dim_x_fin_aux, unsigned dim_y_fin_aux);
     ~Menu();
     void setStato(Stato_Menu nuovo_stato);
-    void setVisibile(bool aux_visibile);
     Stato_Menu getStato();
-    bool getVisibile();
     void cicloGioco();
 };
 
