@@ -42,7 +42,7 @@ Giocatore::~Giocatore() {
         delete domino;
     }
     if (domino_editor != NULL) {
-        cout<<domino_editor;
+        delete domino_editor;
     }
 }
 

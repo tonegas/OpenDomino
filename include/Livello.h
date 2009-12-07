@@ -40,6 +40,7 @@ public:
     Griglia* griglia_livello;
     Proiezione tipo_proiezione;
     PosTelecamere posizione_telecamere;
+    StrutturaLivello();
 };
 
 class Livello : public Textures {

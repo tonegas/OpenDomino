@@ -30,6 +30,7 @@ public:
     bool copiaLivello(QString old_nome_livello,QString new_nome_livello);
     void salvaLivello();
     StrutturaLivello* getStrutturaLivello();
+    void setStrutturaLivello(StrutturaLivello* livello_aux);
     QStringList nomiLivelli();
 };
 

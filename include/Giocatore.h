@@ -31,7 +31,7 @@ class Giocatore: public Interfaccia {
     time_t tempo_di_gioco;
     time_t data_di_creazione;
 
-    QString nome_livello_attuale;
+    QString nome_livello;
     Editor *domino_editor;
     Livello *domino;
 public:

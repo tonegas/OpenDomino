@@ -10,6 +10,12 @@
 
 using namespace std;
 
+StrutturaLivello::StrutturaLivello(){
+    griglia_livello = NULL;
+    tipo_proiezione = ASSIONOMETRICA;
+    nome_livello = "EditorDomino";
+}
+
 Livello::Livello(Gioco *gioco_aux, SDL_Event *evento_aux,int num_x_colonne_aux, int num_y_righe_aux) :
 griglia_livello(num_x_colonne_aux, num_y_righe_aux),
 tele_assio(num_x_colonne_aux, num_y_righe_aux),
