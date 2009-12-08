@@ -29,12 +29,17 @@ TelecameraAssionometrica::TelecameraAssionometrica(const TelecameraAssionometric
 TelecameraAssionometrica::TelecameraAssionometrica(PosTeleAssio &pos_tele_aux, unsigned dim_grilia_X_aux, unsigned dim_grilia_Y_aux)
 : Telecamera(dim_grilia_X_aux, dim_grilia_Y_aux) {
     posizione_telecamera = pos_tele_aux;
+    delta_zoom = ASSIONOMETRICA_DELTA_ZOOM;
+    max_zoom = ASSIONOMETRICA_ZOOM_MAX;
+    min_zoom = ASSIONOMETRICA_ZOOM_MIN;
+    tempo_reset_delta_zoom = 0;
+    mouvi_zoom = false;
 }
 
 void TelecameraAssionometrica::configuraVisuale() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0,(GLfloat) matrice_view[2], 0, (GLfloat) matrice_view[3],
+    glOrtho(0, (GLfloat) matrice_view[2], 0, (GLfloat) matrice_view[3],
             ASSIONOMETRICA_ZNEAR, ASSIONOMETRICA_ZFAR); //misure rispetto alla posizione dell'occhio
     glMultMatrixf(cavalier);
     glMatrixMode(GL_MODELVIEW);
@@ -239,6 +244,6 @@ void TelecameraAssionometrica::visualeOpenGL() {
     glScalef(posizione_telecamera.zoom, posizione_telecamera.zoom, posizione_telecamera.zoom);
 }
 
-PosTeleAssio* TelecameraAssionometrica::getPosTeleAssio(){
+PosTeleAssio* TelecameraAssionometrica::getPosTeleAssio() {
     return &posizione_telecamera;
 }

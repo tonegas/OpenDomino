@@ -19,9 +19,9 @@ enum Selezione {
     NIENTE, DAVANTI_PEZZO, DAVANTI_BASE
 };
 
-enum TipologiaLivello{
-    LIVELLO_EDITOR,LIVELLO_PARTITA
-};
+//enum TipologiaLivello{
+//    LIVELLO_EDITOR,LIVELLO_PARTITA
+//};
 
 class Gioco;
 
@@ -46,7 +46,7 @@ class Livello : public Textures, public Interfaccia {
 protected:
 
     //matrici dinamiche di pezzi e basi
-    Griglia griglia_livello; //ok
+    Griglia *griglia_livello; //ok
 
     //per ora sono solo due bottoni ma penso che diventerà una struttura per gestire l'input in maniera
     //differente a seconda che il livello si editor partita o altro
@@ -57,8 +57,8 @@ protected:
 
     //puntatore alla telecamera corrente e le due telecamere che si possono utilizzare
     Telecamera *telecamera_attuale;
-    TelecameraAssionometrica tele_assio;
-    TelecameraProspettica tele_prosp;
+    TelecameraAssionometrica *tele_assio;
+    TelecameraProspettica *tele_prosp;
 
     //questi li possono usare livello ma anche le classi derivate
     //variabili per la selezione dei pezzi
@@ -87,16 +87,21 @@ protected:
     virtual void mouseButtonUp();
 
 public:
+    Livello(StrutturaLivello *livello);
 
     Livello(int num_x_colonne_aux, int num_y_righe_aux);
 
     Livello(const Livello &orig);
 
+    ~Livello();
+
     int inizializza();
 
     void configuraVisuale();
 
-    void configuraStrutturaLivello(StrutturaLivello *livello);
+    void getStrutturaLivello(StrutturaLivello *livello);
+
+    void setStrutturaLivello(StrutturaLivello *livello);
 
     //questa funzione la chiamero da dentro il menu per stampare dietro il livello mentro ci sono dentro
     //void cicloGiocoDentroMenu(SDL_event *evento);

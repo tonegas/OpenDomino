@@ -10,10 +10,23 @@
 
 using namespace std;
 
-Livello::Livello(int num_x_colonne_aux, int num_y_righe_aux) :
-griglia_livello(num_x_colonne_aux, num_y_righe_aux),
-tele_assio(num_x_colonne_aux, num_y_righe_aux),
-tele_prosp(num_x_colonne_aux, num_y_righe_aux) {
+Livello::Livello(StrutturaLivello *livello) {
+    griglia_livello = livello->griglia_livello;
+    tele_assio = new TelecameraAssionometrica(livello->posizione_telecamere.telecamera_assionometrica, griglia_livello->getDimGrigliaX(), griglia_livello->getDimGrigliaY());
+    tele_prosp = new TelecameraProspettica(livello->posizione_telecamere.telecamera_prospettica, griglia_livello->getDimGrigliaX(), griglia_livello->getDimGrigliaY());
+    tipo_proiezione = livello->tipo_proiezione;
+    bottone_destro = false;
+    bottone_sinistro = false;
+    bottone_centrale = false;
+    caratteristiche_selezione = NIENTE;
+    entrambi = false;
+}
+
+Livello::Livello(int num_x_colonne_aux, int num_y_righe_aux) {
+
+    griglia_livello = new Griglia(num_x_colonne_aux, num_y_righe_aux);
+    tele_assio = new TelecameraAssionometrica(num_x_colonne_aux, num_y_righe_aux);
+    tele_prosp = new TelecameraProspettica(num_x_colonne_aux, num_y_righe_aux);
 
     bottone_destro = false;
     bottone_sinistro = false;
@@ -24,10 +37,11 @@ tele_prosp(num_x_colonne_aux, num_y_righe_aux) {
     entrambi = false;
 }
 
-Livello::Livello(const Livello& orig) :
-griglia_livello(orig.griglia_livello),
-tele_assio(orig.tele_assio),
-tele_prosp(orig.tele_prosp) {
+Livello::Livello(const Livello& orig) {
+
+    griglia_livello = new Griglia(*orig.griglia_livello);
+    tele_assio = new TelecameraAssionometrica(*orig.tele_assio);
+    tele_prosp = new TelecameraProspettica(*orig.tele_prosp);
 
     bottone_destro = orig.bottone_destro;
     bottone_sinistro = orig.bottone_sinistro;
@@ -42,14 +56,18 @@ tele_prosp(orig.tele_prosp) {
     inizializza();
 }
 
+Livello::~Livello() {
+    delete griglia_livello;
+}
+
 int Livello::inizializza() {
     //int aux_mx, aux_my;
     switch (tipo_proiezione) {
         case ASSIONOMETRICA:
-            telecamera_attuale = &tele_assio;
+            telecamera_attuale = tele_assio;
             break;
         case PROSPETTICA:
-            telecamera_attuale = &tele_prosp;
+            telecamera_attuale = tele_prosp;
             break;
     }
     telecamera_attuale->setProiezioneTelecamera(gioco->getWindowL(), gioco->getWindowA());
@@ -107,10 +125,10 @@ void Livello::gestisciInput() {
                     gioco->setFrames(gioco->getFrames() + 1);
                     break;
                 case SDLK_p:
-                    telecamera_attuale = &tele_prosp;
+                    telecamera_attuale = tele_prosp;
                     tipo_proiezione = PROSPETTICA;
                     telecamera_attuale->setProiezioneTelecamera(gioco->getWindowL(), gioco->getWindowA());
-                    telecamera_attuale->mouseSelezione(this, &griglia_livello);
+                    telecamera_attuale->mouseSelezione(this, griglia_livello);
                     attivaSelezioni();
                     //qui devo usare attiva selezioni e non mouseMotion()
                     //lo tolgo ma devo risolvere il problema delle selezioni
@@ -118,10 +136,10 @@ void Livello::gestisciInput() {
                     //mouseMotion();
                     break;
                 case SDLK_a:
-                    telecamera_attuale = &tele_assio;
+                    telecamera_attuale = tele_assio;
                     tipo_proiezione = ASSIONOMETRICA;
                     telecamera_attuale->setProiezioneTelecamera(gioco->getWindowL(), gioco->getWindowA());
-                    telecamera_attuale->mouseSelezione(this, &griglia_livello);
+                    telecamera_attuale->mouseSelezione(this, griglia_livello);
                     attivaSelezioni();
                     //telecamera_attuale->getMousePosGrigliaXY(griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY());
                     //mouseMotion();
@@ -212,7 +230,7 @@ void Livello::cicloGiocoAggiornaEStampa() {
     stampaSfondo();
     telecamera_attuale->visualeOpenGL();
     stampaSuperficeBase();
-    griglia_livello.aggiornaStatoEStampa();
+    griglia_livello->aggiornaStatoEStampa();
     glPopMatrix();
 }
 
@@ -221,7 +239,7 @@ void Livello::cicloGiocoStampa() {
     stampaSfondo();
     telecamera_attuale->visualeOpenGL();
     stampaSuperficeBase();
-    griglia_livello.stampa();
+    griglia_livello->stampa();
     glPopMatrix();
 }
 
@@ -251,33 +269,33 @@ void Livello::stampaSuperficeBase() {
     {
         glNormal3f(0.0, 0.0, 1.0);
         glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
-        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+        glVertex3f(griglia_livello->getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+        glVertex3f(griglia_livello->getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello->getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+        glVertex3f(-ALTEZZA_PEZZO, griglia_livello->getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
 
         glNormal3f(-1.0, 0.0, 0.0);
         glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
         glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -5);
-        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -5);
-        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+        glVertex3f(-ALTEZZA_PEZZO, griglia_livello->getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -5);
+        glVertex3f(-ALTEZZA_PEZZO, griglia_livello->getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
 
         glNormal3f(0.0, -1.0, 0.0);
         glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -5);
+        glVertex3f(griglia_livello->getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+        glVertex3f(griglia_livello->getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -5);
         glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -5);
 
         glNormal3f(0.0, 1.0, 0.0);
-        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
-        glVertex3f(-ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -5);
-        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -5);
-        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+        glVertex3f(-ALTEZZA_PEZZO, griglia_livello->getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+        glVertex3f(-ALTEZZA_PEZZO, griglia_livello->getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -5);
+        glVertex3f(griglia_livello->getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello->getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -5);
+        glVertex3f(griglia_livello->getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello->getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
 
         glNormal3f(1.0, 0.0, 0.0);
-        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
-        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
-        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello.getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -5);
-        glVertex3f(griglia_livello.getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -5);
+        glVertex3f(griglia_livello->getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, 0);
+        glVertex3f(griglia_livello->getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello->getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, 0);
+        glVertex3f(griglia_livello->getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, griglia_livello->getDimGrigliaY() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -5);
+        glVertex3f(griglia_livello->getDimGrigliaX() * ALTEZZA_PEZZO + ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -5);
 
         //        glNormal3f(0.0, 0.0, -1.0);
         //        glVertex3f(-ALTEZZA_PEZZO, -ALTEZZA_PEZZO, -25);
@@ -437,9 +455,16 @@ void Livello::selezioneDavantiBase(unsigned aux_x_base_selezionata, unsigned aux
     y_base_selezionata = aux_y_base_selezionata;
 }
 
-void Livello::configuraStrutturaLivello(StrutturaLivello *livello){
-    livello->griglia_livello = &griglia_livello;
-    livello->posizione_telecamere.telecamera_assionometrica = (*tele_assio.getPosTeleAssio());
-    livello->posizione_telecamere.telecamera_prospettica = (*tele_prosp.getPosTeleProsp());
+void Livello::getStrutturaLivello(StrutturaLivello *livello) {
+    livello->griglia_livello = griglia_livello;
+    livello->posizione_telecamere.telecamera_assionometrica = (*tele_assio->getPosTeleAssio());
+    livello->posizione_telecamere.telecamera_prospettica = (*tele_prosp->getPosTeleProsp());
+    livello->tipo_proiezione = tipo_proiezione;
+}
+
+void Livello::setStrutturaLivello(StrutturaLivello *livello) {
+    livello->griglia_livello = griglia_livello;
+    livello->posizione_telecamere.telecamera_assionometrica = (*tele_assio->getPosTeleAssio());
+    livello->posizione_telecamere.telecamera_prospettica = (*tele_prosp->getPosTeleProsp());
     livello->tipo_proiezione = tipo_proiezione;
 }

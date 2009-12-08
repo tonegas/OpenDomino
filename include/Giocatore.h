@@ -57,11 +57,11 @@ public:
     time_t getTempoDiGioco();
     time_t getTempoDiGiocoApertura();
     void setTempoDiGiocoApertura();
-    void inizializzaTutto();
     void resize(unsigned dim_x, unsigned dim_y);
     StatoGiocatore getStato();
     void setStato(StatoGiocatore stato_aux);
-    void configuraStrutturaLivello(StrutturaLivello *livello);
+    void getStrutturaLivello(StrutturaLivello *livello);
+    void setStrutturaLivello(StrutturaLivello *livello);
     void inizializzaVideo();
     void cicloGioco();
     void cicloGiocoStampa();

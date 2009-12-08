@@ -9,23 +9,23 @@
 
 Partita::Partita(int num_y_righe_aux, int num_x_colonne_aux)
 : Livello(num_x_colonne_aux, num_y_righe_aux) {
-    griglia_livello.setInPartita(true);
+    griglia_livello->setInPartita(true);
 }
 
 Partita::Partita(const Partita& orig) : Livello(orig) {
-    griglia_livello.setInPartita(true);
+    griglia_livello->setInPartita(true);
 }
 
 Partita::Partita(const Livello& orig) : Livello(orig) {
-    griglia_livello.setInPartita(true);
+    griglia_livello->setInPartita(true);
 }
 
 void Partita::mouseButtonDown() {
     if (evento->button.button == SDL_BUTTON_LEFT && telecamera_attuale->indice_griglia_ok) {
-        telecamera_attuale->mouseSelezione(this,&griglia_livello);
+        telecamera_attuale->mouseSelezione(this,griglia_livello);
         if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {
-            if (griglia_livello.getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
-                griglia_livello.setStato(x_pezzo_selezionato, y_pezzo_selezionato, CADE_DESTRA);
+            if (griglia_livello->getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
+                griglia_livello->setStato(x_pezzo_selezionato, y_pezzo_selezionato, CADE_DESTRA);
             }
         }
     }
@@ -34,10 +34,10 @@ void Partita::mouseButtonDown() {
 
 void Partita::mouseMotion() {
     if (telecamera_attuale->indice_griglia_ok) {
-        telecamera_attuale->mouseSelezione(this,&griglia_livello);
+        telecamera_attuale->mouseSelezione(this,griglia_livello);
         if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {
-            if (griglia_livello.getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
-                griglia_livello.attivaSelezione(x_pezzo_selezionato, y_pezzo_selezionato, ELEM_PEZZO);
+            if (griglia_livello->getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
+                griglia_livello->attivaSelezione(x_pezzo_selezionato, y_pezzo_selezionato, ELEM_PEZZO);
             }
         }
     }
@@ -45,8 +45,8 @@ void Partita::mouseMotion() {
 
 void Partita::attivaSelezioni() {
     if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {
-        if (griglia_livello.getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
-            griglia_livello.attivaSelezione(x_pezzo_selezionato, y_pezzo_selezionato, ELEM_PEZZO);
+        if (griglia_livello->getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
+            griglia_livello->attivaSelezione(x_pezzo_selezionato, y_pezzo_selezionato, ELEM_PEZZO);
         }
     }
 }

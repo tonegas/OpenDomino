@@ -67,13 +67,16 @@ Giocatore::Giocatore(QString nome_aux, time_t tempo_di_gioco_aux, time_t data_di
     domino_editor = NULL;
 }
 
-void Giocatore::inizializzaTutto() {
-    if (nome_livello_attuale == "") {
+void Giocatore::setStrutturaLivello(StrutturaLivello *livello) {
+    if (livello == NULL) {
         nome_livello_attuale = nome + "_Editor";
         domino_editor = new Editor();
         domino = domino_editor;
         domino->inizializza();
     } else {
+        nome_livello_attuale = livello->nome_livello;
+        domino_editor = new Editor(livello);
+        domino = domino_editor;
         domino->inizializza();
     }
 }
@@ -158,7 +161,7 @@ StatoGiocatore Giocatore::getStato() {
     return stato;
 }
 
-void Giocatore::configuraStrutturaLivello(StrutturaLivello *livello){
+void Giocatore::getStrutturaLivello(StrutturaLivello *livello){
     livello->nome_livello = nome_livello_attuale;
-    domino->configuraStrutturaLivello(livello);
+    domino->getStrutturaLivello(livello);
 }

@@ -272,7 +272,7 @@ void Menu::cambiaVociMenuGPCambiaProfilo() {
             break;
         default:
             gestore_giocatori->cambiaGiocatore(nomi_giocatori[stato_attivo - 1]);
-            setStato(GP_GESTIONE_PROFILI);
+            setStato(PRINCIPALE);
             break;
     }
 }
@@ -297,7 +297,7 @@ void Menu::cambiaVociMenuGPNuovoProfilo() {
             break;
         case GP_NP_CREA_PROFILO:
             if (gestore_giocatori->nuovoGiocatore(nome_nuovo_giocatore)) {
-                setStato(GP_GESTIONE_PROFILI);
+                setStato(PRINCIPALE);
             }
             break;
     }
@@ -386,8 +386,12 @@ void Menu::gestisciInput() {
                         break;
                     case SDLK_ESCAPE:
                         if (stato != PRINCIPALE) {
-                            stato_attivo = (stato % (stato / 10 * 10)) - 1;
-                            cambiaVociMenu();
+                            if (stato == CL_CONTINUA_LIVELLO) {
+                                gioco->setStato(GIOCATORE);
+                            } else {
+                                stato_attivo = (stato % (stato / 10 * 10)) - 1;
+                                cambiaVociMenu();
+                            }
                         }
                         break;
                     default:

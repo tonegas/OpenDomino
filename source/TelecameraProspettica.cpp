@@ -29,6 +29,11 @@ TelecameraProspettica::TelecameraProspettica(const TelecameraProspettica& orig) 
 TelecameraProspettica::TelecameraProspettica(PosTeleProsp &pos_tele_aux, unsigned dim_grilia_X_aux, unsigned dim_grilia_Y_aux)
 : Telecamera(dim_grilia_X_aux, dim_grilia_Y_aux) {
     posizione_telecamera = pos_tele_aux;
+    max_z = PROSPETTICA_Z_MAX;
+    min_z = PROSPETTICA_Z_MIN;
+    delta_z = PROSPETTICA_DELTA_Z;
+    tempo_reset_delta_z = 0;
+    mouvi_z = false;
 }
 
 void TelecameraProspettica::configuraVisuale() {
@@ -352,6 +357,6 @@ void TelecameraProspettica::visualeOpenGLIniziale() {
     //glScalef(posizione_telecamera_iniziale.z, posizione_telecamera_iniziale.z, posizione_telecamera_iniziale.z);
 }
 
-PosTeleProsp* TelecameraProspettica::getPosTeleProsp(){
+PosTeleProsp* TelecameraProspettica::getPosTeleProsp() {
     return &posizione_telecamera;
 }

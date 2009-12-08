@@ -7,8 +7,6 @@
 
 #include "../include/Domino.h"
 
-extern void fileBackup(QString file);
-
 GestoreLivelli::GestoreLivelli() {
     cout << "Costruttore GestoreLivelli\n";
     file_livello = NULL;
@@ -21,7 +19,7 @@ GestoreLivelli::GestoreLivelli() {
 
 void GestoreLivelli::apriFileLiv() {
     if (!file_livello->open(QIODevice::ReadWrite)) {
-        cout << "ERRORE Aperetua File Giocatore";
+        cout << "ERRORE Aperetua File Giocatore\n";
         //FUNZIONE-DI-USCITA
     }
 }
@@ -35,10 +33,6 @@ void GestoreLivelli::eliminaFileLiv() {
 }
 
 GestoreLivelli::~GestoreLivelli() {
-    if (file_livello != NULL) {
-        chiudiFileLiv();
-        delete file_livello;
-    }
     //poi bisognera capire come va cancellato strutturaLivello
 }
 
@@ -85,6 +79,13 @@ void GestoreLivelli::salvaFileLivello() {
     chiudiFileLiv();
 }
 
+void fileBackupLivelli(QString file) {
+    if (QFile::exists("Livelli/" + file + "_BACKUP.xml")) {
+        QFile::remove("Livelli/" + file + "_BACKUP.xml");
+    }
+    QFile::copy("Livelli/" + file + ".xml", "Livelli/" + file + "_BACKUP.xml");
+}
+
 bool GestoreLivelli::caricaFileLivello() {
     cout << "Carico file livello\n";
     QDir cartella = QDir::current();
@@ -93,19 +94,18 @@ bool GestoreLivelli::caricaFileLivello() {
     apriFileLiv();
     if (!doc.setContent(file_livello)) {
         cout << "ERRORE file sbagliato\n";
-        fileBackup(livello->nome_livello);
+        fileBackupLivelli(livello->nome_livello);
         eliminaFileLiv();
         return false;
     } else {
         cout << "Esiste Livello\n" << flush;
         QDomElement root = doc.documentElement();
         if (root.tagName() != "Livello") {
-            cout << "ERRORE nome livello non presente";
-            fileBackup(livello->nome_livello);
+            cout << "ERRORE nome livello non presente\n";
+            fileBackupLivelli(livello->nome_livello);
             eliminaFileLiv();
             return false;
         } else {
-            livello = new StrutturaLivello();
             livello->nome_livello = root.attribute("nome", "");
             if (livello->nome_livello != "") {
                 QDomNode figlio = root.firstChild();
@@ -116,42 +116,41 @@ bool GestoreLivelli::caricaFileLivello() {
                         unsigned dim_y = griglia.attribute("dim_x", 0).toUInt();
                         if (dim_x != 0 && dim_y != 0) {
                             livello->griglia_livello = new Griglia(dim_x, dim_y);
-                            QDomNode figlio_griglia = griglia.firstChild();
-                            while (!figlio_griglia.isNull()) {
-                                QDomElement elemento = griglia.toElement();
-                                if (!elemento.isNull() && elemento.tagName() == "Elemento") {
+                            QDomElement elemento = griglia.firstChildElement();
+                            while (!elemento.isNull()) {
+                                if (elemento.tagName() == "Elemento") {
                                     unsigned x = elemento.attribute("x", "").toUInt();
                                     unsigned y = elemento.attribute("y", "").toUInt();
                                     unsigned tipo = elemento.attribute("tipo", "").toUInt();
                                     if (!livello->griglia_livello->creaElemento(x, y, (TipoElemento) tipo)) {
-                                        cout << "ERRORE elemento non corretto";
-                                        fileBackup(livello->nome_livello);
+                                        cout << "ERRORE elemento non corretto\n";
+                                        fileBackupLivelli(livello->nome_livello);
                                         eliminaFileLiv();
                                         return false;
                                     }
                                 } else {
-                                    cout << "ERRORE elemento non presente";
-                                    fileBackup(livello->nome_livello);
+                                    cout << "ERRORE elemento tipo sbagliato\n";
+                                    fileBackupLivelli(livello->nome_livello);
                                     eliminaFileLiv();
                                     return false;
                                 }
-                                figlio_griglia = figlio_griglia.nextSibling();
+                                elemento = elemento.nextSiblingElement();
                             }
                         } else {
-                            cout << "ERRORE dimenzioni griglia errate";
-                            fileBackup(livello->nome_livello);
+                            cout << "ERRORE dimenzioni griglia errate\n";
+                            fileBackupLivelli(livello->nome_livello);
                             eliminaFileLiv();
                             return false;
                         }
                     } else {
-                        cout << "ERRORE griglia non presente";
-                        fileBackup(livello->nome_livello);
+                        cout << "ERRORE griglia non presente\n";
+                        fileBackupLivelli(livello->nome_livello);
                         eliminaFileLiv();
                         return false;
                     }
                 } else {
-                    cout << "ERRORE figlio livello non presente";
-                    fileBackup(livello->nome_livello);
+                    cout << "ERRORE figlio livello non presente\n";
+                    fileBackupLivelli(livello->nome_livello);
                     eliminaFileLiv();
                     return false;
                 }
@@ -160,39 +159,38 @@ bool GestoreLivelli::caricaFileLivello() {
                     QDomElement telecamera = figlio.toElement();
                     if (!telecamera.isNull() && telecamera.tagName() == "Telecamera") {
                         livello->tipo_proiezione = (Proiezione) telecamera.attribute("tipo", "").toUInt();
-                        QDomNode figlio_telecamera = telecamera.firstChild();
-                        while (!figlio_telecamera.isNull()) {
-                            QDomElement tele = figlio_telecamera.toElement();
-                            if (!tele.isNull() && tele.tagName() == "TeleProspettica") {
-                                livello->posizione_telecamere.telecamera_prospettica.x = tele.attribute("x", 0).toUInt();
-                                livello->posizione_telecamere.telecamera_prospettica.y = tele.attribute("y", 0).toUInt();
-                                livello->posizione_telecamere.telecamera_prospettica.z = tele.attribute("z", 0).toUInt();
-                                livello->posizione_telecamere.telecamera_prospettica.ang_x = tele.attribute("ang_x", 0).toUInt();
-                                livello->posizione_telecamere.telecamera_prospettica.ang_y = tele.attribute("ang_y", 0).toUInt();
+                        QDomElement tele = telecamera.firstChildElement();
+                        while (!tele.isNull()) {
+                            if (tele.tagName() == "TeleProspettica") {
+                                livello->posizione_telecamere.telecamera_prospettica.x = tele.attribute("x", 0).toFloat();
+                                livello->posizione_telecamere.telecamera_prospettica.y = tele.attribute("y", 0).toFloat();
+                                livello->posizione_telecamere.telecamera_prospettica.z = tele.attribute("z", 0).toFloat();
+                                livello->posizione_telecamere.telecamera_prospettica.ang_x = tele.attribute("ang_x", 0).toFloat();
+                                livello->posizione_telecamere.telecamera_prospettica.ang_y = tele.attribute("ang_y", 0).toFloat();
                             }
-                            if (!tele.isNull() && tele.tagName() == "TeleAssionometrica") {
-                                livello->posizione_telecamere.telecamera_assionometrica.x = tele.attribute("x", 0).toUInt();
-                                livello->posizione_telecamere.telecamera_assionometrica.y = tele.attribute("y", 0).toUInt();
-                                livello->posizione_telecamere.telecamera_assionometrica.zoom = tele.attribute("zoom", 0).toUInt();
+                            if (tele.tagName() == "TeleAssionometrica") {
+                                livello->posizione_telecamere.telecamera_assionometrica.x = tele.attribute("x", 0).toFloat();
+                                livello->posizione_telecamere.telecamera_assionometrica.y = tele.attribute("y", 0).toFloat();
+                                livello->posizione_telecamere.telecamera_assionometrica.zoom = tele.attribute("zoom", 0).toFloat();
                             }
-                            figlio_telecamera = figlio_telecamera.nextSibling();
+                            tele = tele.nextSiblingElement();
                         }
                     } else {
-                        cout << "ERRORE telecamera non presente";
-                        fileBackup(livello->nome_livello);
+                        cout << "ERRORE telecamera non presente\n";
+                        fileBackupLivelli(livello->nome_livello);
                         eliminaFileLiv();
                         return false;
                     }
                 } else {
-                    cout << "ERRORE figlio livello non presente";
-                    fileBackup(livello->nome_livello);
+                    cout << "ERRORE figlio livello non presente\n";
+                    fileBackupLivelli(livello->nome_livello);
                     eliminaFileLiv();
                     return false;
                 }
                 chiudiFileLiv();
                 return true;
             } else {
-                fileBackup(livello->nome_livello);
+                fileBackupLivelli(livello->nome_livello);
                 eliminaFileLiv();
                 return false;
             }
@@ -220,19 +218,19 @@ void GestoreLivelli::creaFileLivello() {
     chiudiFileLiv();
 }
 
-bool GestoreLivelli::caricaLivello(QString nome_livello) {
+bool GestoreLivelli::caricaLivello(QString nome_livello, StrutturaLivello* livello_aux) {
     cout << "Carico livello attuale:" << nome_livello.toStdString() << '\n' << flush;
     QFile aux("Livelli/" + nome_livello + ".xml");
     if (!aux.exists()) {
         return false;
     }
-    if (file_livello != NULL) {
-        delete file_livello;
-    }
+    livello = livello_aux;
     file_livello = new QFile("Livelli/" + nome_livello + ".xml");
     if (caricaFileLivello()) {
+        delete file_livello;
         return true;
     } else {
+        delete file_livello;
         return false;
     }
 }
@@ -310,7 +308,7 @@ QStringList GestoreLivelli::nomiLivelli() {
         QFile file("./Livelli/" + cartella[i]);
         QDomDocument doc("Livelli"); //<!DOCTYPE GiocatoreAttuale SYSTEM ".giocatori.dtd">
         if (!file.open(QIODevice::ReadOnly)) {
-            cout << "ERRORE Aperetua File Giocatore";
+            cout << "ERRORE Aperetua File Giocatore\n";
             //FUNZIONE-DI-USCITA
         }
         if (doc.setContent(&file)) {

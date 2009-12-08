@@ -84,7 +84,7 @@ void GestoreGiocatori::creaFileGiocatoreAttuale(QString nome_giocatore) {
     chiudiFileGioAttuale();
 }
 
-void fileBackup(QString file) {
+void fileBackupGiocatori(QString file) {
     if (QFile::exists("Giocatori/" + file + "_BACKUP.xml")) {
         QFile::remove("Giocatori/" + file + "_BACKUP.xml");
     }
@@ -99,7 +99,7 @@ void GestoreGiocatori::caricaFileGiocatoreAttuale() {
     apriFileGioAttuale();
     if (!doc.setContent(&file_giocatore_attuale)) {
         cout << "ERRORE file sbagliato\n";
-        fileBackup(".giocatoreAttuale");
+        fileBackupGiocatori(".giocatoreAttuale");
         eliminaFileGioAttuale();
         creaFileGiocatoreAttuale();
         caricaFileGiocatoreAttuale();
@@ -108,7 +108,7 @@ void GestoreGiocatori::caricaFileGiocatoreAttuale() {
         QDomElement root = doc.documentElement();
         if (root.tagName() != "Attivo") {
             cout << "ERRORE nome giocatore non presente\n";
-            fileBackup(".giocatoreAttuale");
+            fileBackupGiocatori(".giocatoreAttuale");
             eliminaFileGioAttuale();
             creaFileGiocatoreAttuale();
             caricaFileGiocatoreAttuale();
@@ -120,7 +120,7 @@ void GestoreGiocatori::caricaFileGiocatoreAttuale() {
                 nome_giocatore_attuale = nome;
                 chiudiFileGioAttuale();
             } else {
-                fileBackup(".giocatoreAttuale");
+                fileBackupGiocatori(".giocatoreAttuale");
                 eliminaFileGioAttuale();
                 creaFileGiocatoreAttuale();
                 caricaFileGiocatoreAttuale();
@@ -162,7 +162,7 @@ void GestoreGiocatori::caricaFileGiocatore() {
     apriFileGio();
     if (!doc.setContent(file_giocatore)) {
         cout << "ERRORE file sbagliato\n";
-        fileBackup(nome_giocatore_attuale);
+        fileBackupGiocatori(nome_giocatore_attuale);
         eliminaFileGio();
         creaFileGiocatore();
         caricaFileGiocatore();
@@ -171,7 +171,7 @@ void GestoreGiocatori::caricaFileGiocatore() {
         QDomElement root = doc.documentElement();
         if (root.tagName() != "Giocatore") {
             cout << "ERRORE nome giocatore non presente";
-            fileBackup(nome_giocatore_attuale);
+            fileBackupGiocatori(nome_giocatore_attuale);
             eliminaFileGio();
             creaFileGiocatore();
             caricaFileGiocatore();
@@ -180,25 +180,32 @@ void GestoreGiocatori::caricaFileGiocatore() {
             QString data_di_creazione = root.attribute("data_di_creazione", "");
             QString tempo_di_gioco = root.attribute("tempo_di_gioco", "");
             if (nome == nome_giocatore_attuale && data_di_creazione != "" && tempo_di_gioco != "") {
-                //-------------------------------------
+                if (giocatore_attuale != NULL) {
+                    delete giocatore_attuale;
+                }
+                giocatore_attuale = new Giocatore(nome, tempo_di_gioco.toLong(), data_di_creazione.toLong());
                 QDomNode figlio = root.firstChild();
                 if (!figlio.isNull()) {
                     QDomElement livello = figlio.toElement();
                     if (!livello.isNull() && livello.tagName() == "Livello") {
                         QString nome_livello = livello.attribute("nome", "");
+                        StrutturaLivello aux;
+                        if(gestore_livelli.caricaLivello(nome_livello,&aux)){
+                            giocatore_attuale->setStrutturaLivello(&aux);
+                        }else{
+                            giocatore_attuale->setStrutturaLivello(NULL);
+                        }
+                    }else{
+                        giocatore_attuale->setStrutturaLivello(NULL);
                     }
+                }else{
+                    giocatore_attuale->setStrutturaLivello(NULL);
                 }
-                //-------------------------------------
-                if (giocatore_attuale != NULL) {
-                    delete giocatore_attuale;
-                }
-                giocatore_attuale = new Giocatore(nome, tempo_di_gioco.toLong(), data_di_creazione.toLong());
-                giocatore_attuale->inizializzaTutto();
                 //lista.append(giocatore_attuale);
                 cout << "Caricato giocatore:" << nome.toStdString() << '\n' << flush;
                 chiudiFileGio();
             } else {
-                fileBackup(nome_giocatore_attuale);
+                fileBackupGiocatori(nome_giocatore_attuale);
                 eliminaFileGio();
                 creaFileGiocatore();
                 caricaFileGiocatore();
@@ -366,6 +373,6 @@ Giocatore** GestoreGiocatori::getGiocatoreAttuale() {
 
 void GestoreGiocatori::salvaLivelloGiocatore() {
     StrutturaLivello aux;
-    giocatore_attuale->configuraStrutturaLivello(&aux);
+    giocatore_attuale->getStrutturaLivello(&aux);
     gestore_livelli.salvaLivello(&aux);
 }
