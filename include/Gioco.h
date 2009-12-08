@@ -60,7 +60,6 @@ class Gioco {
     Interfaccia variabili;
     //---------------
     GestoreGiocatori gestore_giocatori;
-    GestoreLivelli gestore_livelli;
     Menu menu;
     Giocatore **giocatore_attuale;
     //   Interfaccia *video;
@@ -92,6 +91,10 @@ public:
     void setStatoGiocatore(StatoGiocatore stato_aux);
 
     StatoGiocatore getStatoGiocatore();
+
+    void setStatoMenu(StatoMenu stato_aux);
+
+    StatoMenu getStatoMenu();
 
     void resize(unsigned dim_x, unsigned dim_y);
 

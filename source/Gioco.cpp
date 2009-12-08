@@ -212,6 +212,14 @@ StatoGiocatore Gioco::getStatoGiocatore() {
     return (*giocatore_attuale)->getStato();
 }
 
+void Gioco::setStatoMenu(StatoMenu stato_aux) {
+    menu.setStato(stato_aux);
+}
+
+StatoMenu Gioco::getStatoMenu() {
+    return menu.getStato();
+}
+
 void Gioco::gameExit() {
     alive = false;
 }
@@ -224,9 +232,9 @@ int Gioco::getFrames() const {
     return frame_ms;
 }
 
-void Gioco::resize(unsigned dim_x,unsigned dim_y) {
+void Gioco::resize(unsigned dim_x, unsigned dim_y) {
     setWindowLA(dim_x, dim_y);
-    menu.resize(dim_x,dim_y);
+    menu.resize(dim_x, dim_y);
     (*giocatore_attuale)->resize(dim_x, dim_y);
 }
 
@@ -277,5 +285,4 @@ int Gioco::getScreenA() const {
 GestoreGiocatori* Gioco::getGestoreGiocatori() {
     return &gestore_giocatori;
 }
-
 

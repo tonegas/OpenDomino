@@ -77,6 +77,8 @@ public:
     void visualeOpenGLIniziale();
 
     void configuraVisuale();
+
+    PosTeleProsp* getPosTeleProsp();
 };
 
 

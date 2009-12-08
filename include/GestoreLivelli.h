@@ -14,7 +14,7 @@ class GestoreLivelli {
     //variabili giocatore attuale
     QFile* file_livello;
     StrutturaLivello* livello;
-    
+
     void apriFileLiv();
     void chiudiFileLiv();
     void eliminaFileLiv();
@@ -24,13 +24,15 @@ class GestoreLivelli {
 public:
     GestoreLivelli();
     ~GestoreLivelli();
+    //Non le uso
+    //----------------------------------------------
     bool nuovoLivello(QString nome_livello, unsigned dim_x, unsigned dim_y);
     bool caricaLivello(QString nome_livello);
     bool eliminaLivello(QString nome_livello);
-    bool copiaLivello(QString old_nome_livello,QString new_nome_livello);
-    void salvaLivello();
-    StrutturaLivello* getStrutturaLivello();
+    bool copiaLivello(QString old_nome_livello, QString new_nome_livello);
     QStringList nomiLivelli();
+    //----------------------------------------------
+    void salvaLivello(StrutturaLivello* livello_aux);
 };
 
 #endif	/* _GESTORELIVELLI_H */

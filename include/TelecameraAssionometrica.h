@@ -66,6 +66,8 @@ public:
     void visualeOpenGL();
 
     void configuraVisuale();
+
+    PosTeleAssio* getPosTeleAssio();
 };
 
 #endif	/* _TELECAMERAASSIONOMETRICA_H */

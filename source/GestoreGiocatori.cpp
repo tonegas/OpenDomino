@@ -73,6 +73,7 @@ GestoreGiocatori::~GestoreGiocatori() {
 
 void GestoreGiocatori::creaFileGiocatoreAttuale(QString nome_giocatore) {
     cout << "Creo file giocatore attuale:" << nome_giocatore.toStdString() << '\n';
+    eliminaFileGioAttuale();
     apriFileGioAttuale();
     QDomDocument doc("GiocatoreAttuale");
     QDomElement root = doc.createElement("Attivo");
@@ -130,6 +131,7 @@ void GestoreGiocatori::caricaFileGiocatoreAttuale() {
 
 void GestoreGiocatori::creaFileGiocatore() {
     cout << "Creo file giocatore:" << nome_giocatore_attuale.toStdString() << '\n';
+    eliminaFileGio();
     apriFileGio();
     QDomDocument doc("Giocatori");
     QDomElement root = doc.createElement("Giocatore");
@@ -178,6 +180,15 @@ void GestoreGiocatori::caricaFileGiocatore() {
             QString data_di_creazione = root.attribute("data_di_creazione", "");
             QString tempo_di_gioco = root.attribute("tempo_di_gioco", "");
             if (nome == nome_giocatore_attuale && data_di_creazione != "" && tempo_di_gioco != "") {
+                //-------------------------------------
+                QDomNode figlio = root.firstChild();
+                if (!figlio.isNull()) {
+                    QDomElement livello = figlio.toElement();
+                    if (!livello.isNull() && livello.tagName() == "Livello") {
+                        QString nome_livello = livello.attribute("nome", "");
+                    }
+                }
+                //-------------------------------------
                 if (giocatore_attuale != NULL) {
                     delete giocatore_attuale;
                 }
@@ -198,6 +209,7 @@ void GestoreGiocatori::caricaFileGiocatore() {
 
 void GestoreGiocatori::salvaFileGiocatore() {
     cout << "Salvo giocatore:" << giocatore_attuale->getNome().toStdString() << '\n' << flush;
+    eliminaFileGio();
     apriFileGio();
     QDomDocument doc("Giocatori");
     QDomElement root = doc.createElement("Giocatore");
@@ -205,6 +217,11 @@ void GestoreGiocatori::salvaFileGiocatore() {
     root.setAttribute((QString) "data_di_creazione", (int) giocatore_attuale->getDataDiCreazione());
     root.setAttribute((QString) "tempo_di_gioco", (int) giocatore_attuale->getTempoDiGioco()+((int) time(NULL)-(int) giocatore_attuale->getTempoDiGiocoApertura()));
     doc.appendChild(root);
+    //-----------------------------
+    QDomElement livello = doc.createElement("Livello");
+    livello.setAttribute((QString) "nome", giocatore_attuale->getNomeLivello());
+    root.appendChild(livello);
+    //----------------------------
     QTextStream scriviFile(file_giocatore);
     scriviFile << doc.toString();
     chiudiFileGio();
@@ -345,4 +362,10 @@ QStringList GestoreGiocatori::nomiGiocatori() {
 
 Giocatore** GestoreGiocatori::getGiocatoreAttuale() {
     return &giocatore_attuale;
+}
+
+void GestoreGiocatori::salvaLivelloGiocatore() {
+    StrutturaLivello aux;
+    giocatore_attuale->configuraStrutturaLivello(&aux);
+    gestore_livelli.salvaLivello(&aux);
 }

@@ -43,7 +43,8 @@ GestoreLivelli::~GestoreLivelli() {
 }
 
 void GestoreLivelli::salvaFileLivello() {
-    cout << "Salvo file Livello:" << livello->nome_livello.toStdString() << '\n';
+    cout << "Salvo file livello:" << livello->nome_livello.toStdString() << '\n';
+    eliminaFileLiv();
     apriFileLiv();
     QDomDocument doc("Livelli");
     QDomElement root = doc.createElement("Livello");
@@ -54,11 +55,13 @@ void GestoreLivelli::salvaFileLivello() {
     griglia.setAttribute((QString) "dim_y", livello->griglia_livello->getDimGrigliaY());
     ElementoAttivo *testa = livello->griglia_livello->getTestaElementi();
     while (testa) {
-        QDomElement elemento = doc.createElement("Elemento");
-        elemento.setAttribute((QString) "x", testa->x);
-        elemento.setAttribute((QString) "y", testa->y);
-        elemento.setAttribute((QString) "tipo", (unsigned) testa->tipo);
-        griglia.appendChild(elemento);
+        if (testa->elem != NULL) {
+            QDomElement elemento = doc.createElement("Elemento");
+            elemento.setAttribute((QString) "x", testa->x);
+            elemento.setAttribute((QString) "y", testa->y);
+            elemento.setAttribute((QString) "tipo", (unsigned) testa->tipo);
+            griglia.appendChild(elemento);
+        }
         testa = testa->next;
     }
     root.appendChild(griglia);
@@ -74,8 +77,8 @@ void GestoreLivelli::salvaFileLivello() {
     telecamera.appendChild(tele_prospettica);
     QDomElement tele_assionometrica = doc.createElement("TeleAssionometrica");
     tele_assionometrica.setAttribute((QString) "x", livello->posizione_telecamere.telecamera_assionometrica.x);
-    tele_assionometrica.setAttribute((QString) "y", livello->posizione_telecamere.telecamera_assionometrica.x);
-    tele_assionometrica.setAttribute((QString) "zoom", livello->posizione_telecamere.telecamera_assionometrica.x);
+    tele_assionometrica.setAttribute((QString) "y", livello->posizione_telecamere.telecamera_assionometrica.y);
+    tele_assionometrica.setAttribute((QString) "zoom", livello->posizione_telecamere.telecamera_assionometrica.zoom);
     telecamera.appendChild(tele_assionometrica);
     QTextStream scriviFile(file_livello);
     scriviFile << doc.toString();
@@ -102,9 +105,6 @@ bool GestoreLivelli::caricaFileLivello() {
             eliminaFileLiv();
             return false;
         } else {
-            if (livello != NULL) {
-                delete livello;
-            }
             livello = new StrutturaLivello();
             livello->nome_livello = root.attribute("nome", "");
             if (livello->nome_livello != "") {
@@ -123,7 +123,7 @@ bool GestoreLivelli::caricaFileLivello() {
                                     unsigned x = elemento.attribute("x", "").toUInt();
                                     unsigned y = elemento.attribute("y", "").toUInt();
                                     unsigned tipo = elemento.attribute("tipo", "").toUInt();
-                                    if (!livello->griglia_livello->creaElemento(x, y, (TipoElemento)tipo)) {
+                                    if (!livello->griglia_livello->creaElemento(x, y, (TipoElemento) tipo)) {
                                         cout << "ERRORE elemento non corretto";
                                         fileBackup(livello->nome_livello);
                                         eliminaFileLiv();
@@ -202,6 +202,7 @@ bool GestoreLivelli::caricaFileLivello() {
 
 void GestoreLivelli::creaFileLivello() {
     cout << "Creo file livello:" << livello->nome_livello.toStdString() << '\n' << flush;
+    eliminaFileLiv();
     apriFileLiv();
     QDomDocument doc("Livelli");
     QDomElement root = doc.createElement("Livello");
@@ -220,7 +221,7 @@ void GestoreLivelli::creaFileLivello() {
 }
 
 bool GestoreLivelli::caricaLivello(QString nome_livello) {
-    cout << "Carico Livello attuale:" << nome_livello.toStdString() << '\n' << flush;
+    cout << "Carico livello attuale:" << nome_livello.toStdString() << '\n' << flush;
     QFile aux("Livelli/" + nome_livello + ".xml");
     if (!aux.exists()) {
         return false;
@@ -229,9 +230,9 @@ bool GestoreLivelli::caricaLivello(QString nome_livello) {
         delete file_livello;
     }
     file_livello = new QFile("Livelli/" + nome_livello + ".xml");
-    if(caricaFileLivello()){
+    if (caricaFileLivello()) {
         return true;
-    }else{
+    } else {
         return false;
     }
 }
@@ -239,7 +240,7 @@ bool GestoreLivelli::caricaLivello(QString nome_livello) {
 bool GestoreLivelli::nuovoLivello(QString nome_livello, unsigned dim_x, unsigned dim_y) {
     if (nome_livello != "") {
         livello->nome_livello = nome_livello;
-        cout << "Nuovo Livello, attuale:" << livello->nome_livello.toStdString() << '\n' << flush;
+        cout << "Nuovo livello, attuale:" << livello->nome_livello.toStdString() << '\n' << flush;
         QFile aux("Livelli/" + livello->nome_livello + ".xml");
         if (aux.exists()) {
             return false;
@@ -268,7 +269,7 @@ bool GestoreLivelli::copiaLivello(QString old_nome_livello, QString new_nome_liv
             delete file_livello;
         }
         file_livello = new QFile("Livelli/" + old_nome_livello + ".xml");
-        if(!caricaFileLivello()){
+        if (!caricaFileLivello()) {
             return false;
         }
         livello->nome_livello = new_nome_livello;
@@ -292,9 +293,12 @@ bool GestoreLivelli::eliminaLivello(QString nome_livello) {
     }
 }
 
-void GestoreLivelli::salvaLivello() {
-    cout << "Salvo Livello attuale:" << livello->nome_livello.toStdString() << '\n' << flush;
+void GestoreLivelli::salvaLivello(StrutturaLivello* livello_aux) {
+    livello = livello_aux;
+    cout << "Salvo livello attuale:" << livello->nome_livello.toStdString() << '\n' << flush;
+    file_livello = new QFile("Livelli/" + livello->nome_livello + ".xml");
     salvaFileLivello();
+    delete file_livello;
 }
 
 QStringList GestoreLivelli::nomiLivelli() {
@@ -323,8 +327,4 @@ QStringList GestoreLivelli::nomiLivelli() {
         file.close();
     }
     return nomi_livelli;
-}
-
-StrutturaLivello* GestoreLivelli::getStrutturaLivello() {
-    return livello;
 }

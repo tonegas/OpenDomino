@@ -351,3 +351,7 @@ void TelecameraProspettica::visualeOpenGLIniziale() {
     glTranslatef(posizione_telecamera_iniziale.x, posizione_telecamera_iniziale.y, 0);
     //glScalef(posizione_telecamera_iniziale.z, posizione_telecamera_iniziale.z, posizione_telecamera_iniziale.z);
 }
+
+PosTeleProsp* TelecameraProspettica::getPosTeleProsp(){
+    return &posizione_telecamera;
+}

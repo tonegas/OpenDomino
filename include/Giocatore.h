@@ -51,6 +51,7 @@ public:
     Giocatore(const Giocatore& orig);
     ~Giocatore();
     QString getNome();
+    QString getNomeLivello();
     void setNome(QString nuovo_nome);
     time_t getDataDiCreazione();
     time_t getTempoDiGioco();
@@ -60,6 +61,7 @@ public:
     void resize(unsigned dim_x, unsigned dim_y);
     StatoGiocatore getStato();
     void setStato(StatoGiocatore stato_aux);
+    void configuraStrutturaLivello(StrutturaLivello *livello);
     void inizializzaVideo();
     void cicloGioco();
     void cicloGiocoStampa();

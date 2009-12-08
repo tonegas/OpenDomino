@@ -238,3 +238,7 @@ void TelecameraAssionometrica::visualeOpenGL() {
     glTranslatef(posizione_telecamera.x, posizione_telecamera.y, 0);
     glScalef(posizione_telecamera.zoom, posizione_telecamera.zoom, posizione_telecamera.zoom);
 }
+
+PosTeleAssio* TelecameraAssionometrica::getPosTeleAssio(){
+    return &posizione_telecamera;
+}

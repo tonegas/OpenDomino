@@ -17,9 +17,12 @@ class Interfaccia;
 
 //questa mi seve qua ma poi va tolta
 
-enum Stato_Menu {
+enum StatoMenu {
     PRINCIPALE = 17,
-    LISTA_LIVELLI_GIOCO = 10,
+    CONTINUA_LIVELLO = 10,
+
+    CL_CONTINUA_LIVELLO = 103, CL_CONTINUA = 100, CL_SALVA_LIVELLO = 101, CL_TORNA_A_MENU_PRINCIPALE = 102,
+
     LISTA_LIVELLI_EDITOR = 11,
     OPTION = 12,
     GESTIONE_PROFILI = 13,
@@ -60,7 +63,7 @@ class Menu : public Interfaccia {
     int posizione_voci_visibili;
 
     //variabili per interagire con il mondo
-    GestoreGiocatori *gestore;
+    GestoreGiocatori *gestore_giocatori;
     QStringList nomi_giocatori;
     //Gioco* gioco;
 
@@ -71,7 +74,7 @@ class Menu : public Interfaccia {
     FTSimpleLayout layout;
 
     //variabili di stato
-    Stato_Menu stato;
+    StatoMenu stato;
     //unsigned numero_max_voci_visibili;
 
     unsigned stato_attivo;
@@ -83,14 +86,15 @@ class Menu : public Interfaccia {
     QVector<FTPoint> posizioni_caselle_menu_attivo;
 
     QStringList voci_menu_principale;
+    QStringList voci_menu_continua_livello;
     QStringList voci_menu_gestione_profili;
     QStringList voci_menu_gp_cambia_profilo;
     QStringList voci_menu_gp_copia_profilo_attuale;
     QStringList voci_menu_gp_elimina_profilo;
     QStringList voci_menu_gp_nuovo_profilo;
 
-    void inizializzaVariabiliMenu(Stato_Menu nuovo_stato, QStringList nuove_voci_menu);
-    void inizializzaVariabiliMenu(Stato_Menu nuovo_stato, QStringList nuove_voci_menu, unsigned numero_voci_in_piu);
+    void inizializzaVariabiliMenu(StatoMenu nuovo_stato, QStringList nuove_voci_menu);
+    void inizializzaVariabiliMenu(StatoMenu nuovo_stato, QStringList nuove_voci_menu, unsigned numero_voci_in_piu);
 
     void costruisciCaselleMenuCentrale();
     void costruisciCaselleMenuLaterale();
@@ -98,6 +102,7 @@ class Menu : public Interfaccia {
 
     void cambiaVociMenu();
     void cambiaVociMenuPrincipale();
+    void cambiaVociMenuContinuaLivello();
     void cambiaVociMenuGestioneProfili();
     void cambiaVociMenuGPNuovoProfilo();
     void cambiaVociMenuGPCambiaProfilo();
@@ -121,9 +126,9 @@ class Menu : public Interfaccia {
 public:
     Menu(unsigned dim_x_fin_aux, unsigned dim_y_fin_aux);
     ~Menu();
-    void setStato(Stato_Menu nuovo_stato);
+    void setStato(StatoMenu nuovo_stato);
     void resize(unsigned dim_x, unsigned dim_y);
-    Stato_Menu getStato();
+    StatoMenu getStato();
     void cicloGioco();
 };
 

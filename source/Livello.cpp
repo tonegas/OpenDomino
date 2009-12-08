@@ -94,6 +94,7 @@ void Livello::gestisciInput() {
             switch (evento->key.keysym.sym) {
                 case SDLK_ESCAPE:
                     gioco->setStato(MENU);
+                    gioco->setStatoMenu(CL_CONTINUA_LIVELLO);
                     break;
                 case SDLK_PAGEUP:
                     if (gioco->getFrames() > 1)
@@ -434,4 +435,11 @@ void Livello::selezioneDavantiBase(unsigned aux_x_base_selezionata, unsigned aux
     caratteristiche_selezione = DAVANTI_BASE;
     x_base_selezionata = aux_x_base_selezionata;
     y_base_selezionata = aux_y_base_selezionata;
+}
+
+void Livello::configuraStrutturaLivello(StrutturaLivello *livello){
+    livello->griglia_livello = &griglia_livello;
+    livello->posizione_telecamere.telecamera_assionometrica = (*tele_assio.getPosTeleAssio());
+    livello->posizione_telecamere.telecamera_prospettica = (*tele_prosp.getPosTeleProsp());
+    livello->tipo_proiezione = tipo_proiezione;
 }

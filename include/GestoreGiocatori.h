@@ -16,6 +16,8 @@ class GestoreGiocatori {
     QFile* file_giocatore;
     QString nome_giocatore_attuale;
     Giocatore *giocatore_attuale;
+    GestoreLivelli gestore_livelli;
+    
     void apriFileGioAttuale();
     void chiudiFileGioAttuale();
     void eliminaFileGioAttuale();
@@ -30,13 +32,18 @@ class GestoreGiocatori {
 public:
     GestoreGiocatori();
     ~GestoreGiocatori();
+
     Giocatore** getGiocatoreAttuale();
+
     bool nuovoGiocatore(QString nome_giocatore);
     bool copiaGiocatoreAttuale(QString nome_giocatore);
     bool cambiaGiocatore(QString nome_giocatore);
     bool eliminaGiocatore(QString nome_giocatore);
     void eliminaGiocatore();
     void salvaGiocatore();
+
+    void salvaLivelloGiocatore();
+
     QString nomeGiocatoreAttuale();
     QStringList nomiGiocatori();
 };
