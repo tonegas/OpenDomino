@@ -14,31 +14,13 @@ enum Tex {
     TEX_PEZZO, TEX_BASE, TEX_NUVOLA1, TEX_NUVOLA2,
 };
 
-//class ColorRGB {
-//public:
-//    int R;
-//    int G;
-//    int B;
-//    ColorRGB(int r,int g,int b){
-//        R=r; G=g; B=b;
-//    }
-//};
-//
-//class ColorRGBA : public {
-//public:
-//    int A;
-//    ColorRGBA(int r,int g,int b, int a):ColorRGB(r,g,b){
-//        A=a;
-//    }
-//};
+struct TexWH{
+    unsigned int w,h;
+};
 
 using std::string;
 
 #include "Domino.h"
-
-struct TexWH{
-    unsigned int w,h;
-};
 
 class Textures {
 protected:
@@ -49,6 +31,7 @@ protected:
 public:
     Textures();
     ~Textures();
+    static void pulisci();
     static void loadTextures(string nome_immagine, Tex numero_tex_caricate,int* key_color, bool gradiente=false);
     static void loadTextures(string nome_immagine, Tex numero_tex_caricate);
 };

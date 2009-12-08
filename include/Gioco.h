@@ -55,16 +55,21 @@ class Gioco {
     //variabile per la modifica della velocità di gioco
     int frame_ms;
 
-    //Questo farà parte del GestoreGiocatori
+    //questa voce deve stare prima delle altre altrimenti non inizializza variabili statiche servono al giocatore
+    //---------------
+    Interfaccia variabili;
+    //---------------
     GestoreGiocatori gestore_giocatori;
     GestoreLivelli gestore_livelli;
     Menu menu;
     Giocatore **giocatore_attuale;
     //   Interfaccia *video;
 
-
     //indica se il gioco deve smettere di ciclare
     bool alive;
+
+    void setWindowLA(int larghezza_finestra_aux, int altezza_finestra_aux);
+
 public:
 
 
@@ -88,7 +93,7 @@ public:
 
     StatoGiocatore getStatoGiocatore();
 
-    void setWindowLA(int larghezza_finestra_aux, int altezza_finestra_aux);
+    void resize(unsigned dim_x, unsigned dim_y);
 
     void setFullScreen();
 

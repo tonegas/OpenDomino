@@ -7,7 +7,7 @@
 
 #include "../include/Domino.h"
 
-Gioco::Gioco() : menu(this, &evento, LARGHEZZA_FIN, ALTEZZA_FIN) {// : domino_editor(this, &evento) {
+Gioco::Gioco() : variabili(this, &evento), menu(LARGHEZZA_FIN, ALTEZZA_FIN) {// : domino_editor(this, &evento) {
     bpp = BPP_FIN;
 
     //    test_partita_allocata = false;
@@ -122,12 +122,12 @@ Gioco::Gioco() : menu(this, &evento, LARGHEZZA_FIN, ALTEZZA_FIN) {// : domino_ed
     Textures::loadTextures("nuvola1.bmp", TEX_NUVOLA1, key_color, true);
     Textures::loadTextures("nuvola2.bmp", TEX_NUVOLA2, key_color, true);
 
-
     giocatore_attuale = gestore_giocatori.getGiocatoreAttuale();
-    (*giocatore_attuale)->inizializza(this, &evento);
+    (*giocatore_attuale)->inizializzaVideo();
 }
 
-Gioco::~Gioco() {}
+Gioco::~Gioco() {
+}
 
 void Gioco::loop() {
     Uint32 inizio, fine;
@@ -137,7 +137,7 @@ void Gioco::loop() {
     while (alive) {
         if (cambia_stato) {
             if (stato == GIOCATORE) {
-                (*giocatore_attuale)->riconfiguraVideo();
+                (*giocatore_attuale)->inizializzaVideo();
             }
             cambia_stato = false;
         }
@@ -190,6 +190,7 @@ void Gioco::loop() {
         //        stato();
         //        video();
     }
+    Textures::pulisci();
 }
 
 void Gioco::setStato(Stato stato_aux) {
@@ -221,6 +222,12 @@ void Gioco::setFrames(int frame_aux) {
 
 int Gioco::getFrames() const {
     return frame_ms;
+}
+
+void Gioco::resize(unsigned dim_x,unsigned dim_y) {
+    setWindowLA(dim_x, dim_y);
+    menu.resize(dim_x,dim_y);
+    (*giocatore_attuale)->resize(dim_x, dim_y);
 }
 
 void Gioco::setWindowLA(int larghezza_finestra_aux, int altezza_finestra_aux) {

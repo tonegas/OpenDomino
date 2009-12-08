@@ -8,13 +8,17 @@
 #ifndef _INTERFACCIA_H
 #define	_INTERFACCIA_H
 
+class Gioco;
+
 #include "Domino.h"
 
 class Interfaccia {
 protected:
-    SDL_Event *evento;
+    static Gioco *gioco;
+    static SDL_Event *evento;
 public:
-    virtual void cicloGioco() = 0;
+    Interfaccia();
+    Interfaccia(Gioco *gioco_aux, SDL_Event *evento);
 };
 
 #endif	/* _INERFACCIA_H */

@@ -17,6 +17,9 @@ Textures::Textures() {
 }
 
 Textures::~Textures() {
+}
+
+void Textures::pulisci(){
     glDeleteTextures(NUMERO_TEXTURES, &indice_texture[0]);
 }
 

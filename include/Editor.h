@@ -39,7 +39,7 @@ protected:
     void attivaSelezioni();
 
 public:
-    Editor(Gioco *gioco_aux, SDL_Event * evento,int num_x_colonne_aux = GRIGLIA_EDITOR_X, int num_y_righe_aux = GRIGLIA_EDITOR_Y);
+    Editor(int num_x_colonne_aux = GRIGLIA_EDITOR_X, int num_y_righe_aux = GRIGLIA_EDITOR_Y);
     ~Editor();
 };
 

@@ -31,7 +31,7 @@ enum StatoGiocatore {
     EDITOR_TEST
 };
 
-class Giocatore : public Interfaccia {
+class Giocatore {
     QString nome;
     time_t tempo_di_gioco_apertura;
     time_t tempo_di_gioco;
@@ -56,10 +56,11 @@ public:
     time_t getTempoDiGioco();
     time_t getTempoDiGiocoApertura();
     void setTempoDiGiocoApertura();
-    void inizializza(Gioco *gioco_aux, SDL_Event *evento_aux);
+    void inizializzaTutto();
+    void resize(unsigned dim_x, unsigned dim_y);
     StatoGiocatore getStato();
     void setStato(StatoGiocatore stato_aux);
-    void riconfiguraVideo();
+    void inizializzaVideo();
     void cicloGioco();
     void cicloGiocoStampa();
 };

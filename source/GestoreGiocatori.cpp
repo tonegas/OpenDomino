@@ -182,6 +182,7 @@ void GestoreGiocatori::caricaFileGiocatore() {
                     delete giocatore_attuale;
                 }
                 giocatore_attuale = new Giocatore(nome, tempo_di_gioco.toLong(), data_di_creazione.toLong());
+                giocatore_attuale->inizializzaTutto();
                 //lista.append(giocatore_attuale);
                 cout << "Caricato giocatore:" << nome.toStdString() << '\n' << flush;
                 chiudiFileGio();

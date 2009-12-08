@@ -7,8 +7,8 @@
 
 #include "../include/Domino.h"
 
-Editor::Editor(Gioco *gioco_aux,SDL_Event *evento ,int num_x_colonne_aux, int num_y_righe_aux)
-: Livello(gioco_aux, evento, num_x_colonne_aux, num_y_righe_aux) {
+Editor::Editor(int num_x_colonne_aux, int num_y_righe_aux)
+: Livello(num_x_colonne_aux, num_y_righe_aux) {
     num_y_righe = num_y_righe_aux;
     num_x_colonne = num_x_colonne_aux;
     azione_continua = NESSUNA_AZIONE;

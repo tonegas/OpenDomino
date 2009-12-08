@@ -10,12 +10,10 @@
 
 using namespace std;
 
-Livello::Livello(Gioco *gioco_aux, SDL_Event *evento_aux,int num_x_colonne_aux, int num_y_righe_aux) :
+Livello::Livello(int num_x_colonne_aux, int num_y_righe_aux) :
 griglia_livello(num_x_colonne_aux, num_y_righe_aux),
 tele_assio(num_x_colonne_aux, num_y_righe_aux),
 tele_prosp(num_x_colonne_aux, num_y_righe_aux) {
-    evento = evento_aux;
-    gioco = gioco_aux;
 
     bottone_destro = false;
     bottone_sinistro = false;
@@ -30,8 +28,6 @@ Livello::Livello(const Livello& orig) :
 griglia_livello(orig.griglia_livello),
 tele_assio(orig.tele_assio),
 tele_prosp(orig.tele_prosp) {
-    gioco = orig.gioco;
-    evento = orig.evento;
 
     bottone_destro = orig.bottone_destro;
     bottone_sinistro = orig.bottone_sinistro;
@@ -64,7 +60,7 @@ int Livello::inizializza() {
     return 1;
 }
 
-void Livello::configuraVisuale(){
+void Livello::configuraVisuale() {
     telecamera_attuale->configuraVisuale();
 }
 
@@ -190,11 +186,14 @@ void Livello::gestisciInput() {
             mouseButtonUp();
             break;
         case SDL_VIDEORESIZE:
-            gioco->setWindowLA(evento->resize.w, evento->resize.h);
-            telecamera_attuale->setProiezioneTelecamera(evento->resize.w, evento->resize.h);
+            gioco->resize(evento->resize.w, evento->resize.h);
         default:
             break;
     }
+}
+
+void Livello::resize(unsigned dim_x, unsigned dim_y) {
+    telecamera_attuale->setProiezioneTelecamera(dim_x, dim_y);
 }
 
 void Livello::cicloGioco() {

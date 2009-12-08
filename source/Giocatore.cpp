@@ -67,18 +67,18 @@ Giocatore::Giocatore(QString nome_aux, time_t tempo_di_gioco_aux, time_t data_di
     domino_editor = NULL;
 }
 
-void Giocatore::inizializza(Gioco *gioco_aux, SDL_Event *evento_aux) {
+void Giocatore::inizializzaTutto() {
     if (nome_livello_attuale == "") {
         nome_livello_attuale = nome + "Editor";
-        domino_editor = new Editor(gioco_aux, evento_aux);
-        domino_editor->inizializza();
+        domino_editor = new Editor();
         domino = domino_editor;
+        domino->inizializza();
     } else {
-
+        domino->inizializza();
     }
 }
 
-void Giocatore::riconfiguraVideo() {
+void Giocatore::inizializzaVideo() {
     domino->inizializza();
 }
 
@@ -132,6 +132,10 @@ void Giocatore::cicloGioco() {
         cambia_stato = false;
     }
     domino->cicloGioco();
+}
+
+void Giocatore::resize(unsigned dim_x,unsigned dim_y) {
+    domino->resize(dim_x,dim_y);
 }
 
 void Giocatore::cicloGiocoStampa() {

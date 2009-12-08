@@ -47,7 +47,7 @@ enum Stato_Menu {
     ESCI = 16
 };
 
-class Menu: public Interfaccia {
+class Menu : public Interfaccia {
     unsigned dim_x_fin, dim_y_fin;
 
     int dim_nome, dist_da_destra_nome, dist_da_alto_nome;
@@ -60,7 +60,6 @@ class Menu: public Interfaccia {
     int posizione_voci_visibili;
 
     //variabili per interagire con il mondo
-    Gioco* gioco;
     GestoreGiocatori *gestore;
     QStringList nomi_giocatori;
     //Gioco* gioco;
@@ -119,11 +118,11 @@ class Menu: public Interfaccia {
     void aggiornaStatoAttivoVociMenuLaterale();
     void aggiornaStatoAttivoVociMenuLateraleMouse();
 
-    void resize(unsigned dim_x, unsigned dim_y);
 public:
-    Menu(Gioco *gioco_aux, SDL_Event *evento_aux, unsigned dim_x_fin_aux, unsigned dim_y_fin_aux);
+    Menu(unsigned dim_x_fin_aux, unsigned dim_y_fin_aux);
     ~Menu();
     void setStato(Stato_Menu nuovo_stato);
+    void resize(unsigned dim_x, unsigned dim_y);
     Stato_Menu getStato();
     void cicloGioco();
 };

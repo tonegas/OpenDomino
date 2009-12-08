@@ -8,10 +8,8 @@
 
 #include "../include/Domino.h"
 
-Menu::Menu(Gioco *gioco_aux, SDL_Event* evento_aux, unsigned dim_x_fin_aux, unsigned dim_y_fin_aux) {
-    gioco = gioco_aux;
+Menu::Menu(unsigned dim_x_fin_aux, unsigned dim_y_fin_aux) {
     gestore = gioco->getGestoreGiocatori();
-    evento = evento_aux;
     dim_x_fin = dim_x_fin_aux;
     dim_y_fin = dim_y_fin_aux;
 
@@ -48,10 +46,8 @@ Menu::Menu(Gioco *gioco_aux, SDL_Event* evento_aux, unsigned dim_x_fin_aux, unsi
     voci_menu_gp_copia_profilo_attuale.append("Torna alla gestione profili");
     voci_menu_gp_copia_profilo_attuale.append("Inserisci nome profilo della copia");
 
-    inizializzaVariabiliMenu(PRINCIPALE, voci_menu_principale);
     nome_nuovo_giocatore = "";
-
-    costruisciCaselleMenuCentrale();
+    inizializzaVariabiliMenu(PRINCIPALE, voci_menu_principale);
 }
 
 void Menu::resize(unsigned dim_x, unsigned dim_y) {
@@ -244,10 +240,6 @@ void Menu::cambiaVociMenuGPCambiaProfilo() {
             break;
         default:
             gestore->cambiaGiocatore(nomi_giocatori[stato_attivo - 1]);
-            //BISOGNA RAGIONARE SU QUESTO!!!!!!!!!!!
-            Giocatore **aux = gestore->getGiocatoreAttuale();
-            (*aux)->inizializza(gioco,evento);
-            //??????????????????????????????????????????
             inizializzaVariabiliMenu(GP_GESTIONE_PROFILI, voci_menu_gestione_profili);
             costruisciCaselleMenuCentrale();
             break;
@@ -387,6 +379,9 @@ void Menu::gestisciInput() {
                     cambiaVociMenu();
                 }
             break;
+        case SDL_VIDEORESIZE:
+            gioco->resize(evento->resize.w, evento->resize.h);
+            break;
         default:
             break;
     }
@@ -465,15 +460,16 @@ void Menu::stampaMenuCentrale() {
     layout.SetLineLength(dim_x_fin);
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     glRasterPos2i(0, dist_da_basso_voce_principale);
-    if (primo) {
-        titolo = glGenLists(1);
-        glNewList(titolo, GL_COMPILE);
+//    Facendo così ci sono problemi nel ridimensionamento della finestra
+//    if (primo) {
+//        titolo = glGenLists(1);
+//        glNewList(titolo, GL_COMPILE);
         layout.Render(voci_menu_attivo[numero_voci_menu_attivo].toStdString().c_str());
-        glEndList();
-        primo=false;
-    } else {
-        glCallList(titolo);
-    }
+//        glEndList();
+//        primo = false;
+//    } else {
+//        glCallList(titolo);
+//    }
 
     font->FaceSize(dim_voce);
     for (unsigned i = 0; i < numero_voci_menu_attivo; i++) {

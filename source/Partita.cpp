@@ -7,8 +7,8 @@
 
 #include "../include/Domino.h"
 
-Partita::Partita(Gioco *gioco_aux, SDL_Event * evento,int num_y_righe_aux, int num_x_colonne_aux)
-: Livello(gioco_aux, evento ,num_x_colonne_aux, num_y_righe_aux) {
+Partita::Partita(int num_y_righe_aux, int num_x_colonne_aux)
+: Livello(num_x_colonne_aux, num_y_righe_aux) {
     griglia_livello.setInPartita(true);
 }
 

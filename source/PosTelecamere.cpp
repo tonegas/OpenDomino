@@ -22,13 +22,13 @@ PosTeleProsp::PosTeleProsp(GLfloat x_aux, GLfloat y_aux, GLfloat z_aux, GLfloat 
     y = y_aux;
     z = z_aux;
     ang_x = ang_x_aux;
-    ang_x = ang_y_aux;
+    ang_y = ang_y_aux;
 }
 
 PosTeleProsp::PosTeleProsp(const PosTeleProsp& orig):PosTeleXY(orig.x, orig.y) {
     z = orig.z;
     ang_x = orig.ang_x;
-    ang_x = orig.ang_y;
+    ang_y = orig.ang_y;
 }
 
 PosTeleAssio::PosTeleAssio(GLfloat x_aux, GLfloat y_aux, GLfloat zoom_aux) {

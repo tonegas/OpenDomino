@@ -42,11 +42,8 @@ public:
     PosTelecamere posizione_telecamere;
 };
 
-class Livello : public Textures {
+class Livello : public Textures, public Interfaccia {
 protected:
-    //puntatore al gioco per interagire sulle funzionidi gioco
-    Gioco *gioco; //ok
-    SDL_Event* evento;
 
     //matrici dinamiche di pezzi e basi
     Griglia griglia_livello; //ok
@@ -91,7 +88,7 @@ protected:
 
 public:
 
-    Livello(Gioco *gioco_aux,SDL_Event *evento_aux, int num_x_colonne_aux, int num_y_righe_aux);
+    Livello(int num_x_colonne_aux, int num_y_righe_aux);
 
     Livello(const Livello &orig);
 
@@ -103,6 +100,8 @@ public:
     //void cicloGiocoDentroMenu(SDL_event *evento);
 
     void cicloGioco();
+
+    void resize(unsigned dim_x,unsigned dim_y);
 
     void cicloGiocoAggiornaEStampa();
 
