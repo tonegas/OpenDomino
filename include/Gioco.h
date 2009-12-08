@@ -59,17 +59,9 @@ class Gioco {
     GestoreGiocatori gestore_giocatori;
     GestoreLivelli gestore_livelli;
     Menu menu;
-    Giocatore *giocatore_attuale;
+    Giocatore **giocatore_attuale;
     //   Interfaccia *video;
-    //    GestoreLivelli gestore_livelli;
-    //Questa roba va a finire dentro giocatore
-    //------------------------
-    //Oggetto editor per la gestione della grafica della partita
-    //    Editor domino_editor;
-    //    bool test_partita_allocata;
-    //    //Puntatore a domino in eseguzione
-    //    Livello *domino;
-    //------------------------
+
 
     //indica se il gioco deve smettere di ciclare
     bool alive;

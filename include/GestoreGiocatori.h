@@ -30,7 +30,7 @@ class GestoreGiocatori {
 public:
     GestoreGiocatori();
     ~GestoreGiocatori();
-    Giocatore* getGiocatoreAttuale();
+    Giocatore** getGiocatoreAttuale();
     bool nuovoGiocatore(QString nome_giocatore);
     bool copiaGiocatoreAttuale(QString nome_giocatore);
     bool cambiaGiocatore(QString nome_giocatore);

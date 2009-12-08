@@ -244,6 +244,10 @@ void Menu::cambiaVociMenuGPCambiaProfilo() {
             break;
         default:
             gestore->cambiaGiocatore(nomi_giocatori[stato_attivo - 1]);
+            //BISOGNA RAGIONARE SU QUESTO!!!!!!!!!!!
+            Giocatore **aux = gestore->getGiocatoreAttuale();
+            (*aux)->inizializza(gioco,evento);
+            //??????????????????????????????????????????
             inizializzaVariabiliMenu(GP_GESTIONE_PROFILI, voci_menu_gestione_profili);
             costruisciCaselleMenuCentrale();
             break;
@@ -348,7 +352,6 @@ void Menu::gestisciInput() {
                             stato_attivo = (stato % (stato / 10 * 10)) - 1;
                             cambiaVociMenu();
                         } else {
-                            //gioco->setStato(EDITOR_COSTRUISCI);
                             gioco->setStato(GIOCATORE);
                         }
                         break;

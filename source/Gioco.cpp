@@ -124,15 +124,10 @@ Gioco::Gioco() : menu(this, &evento, LARGHEZZA_FIN, ALTEZZA_FIN) {// : domino_ed
 
 
     giocatore_attuale = gestore_giocatori.getGiocatoreAttuale();
-    giocatore_attuale->inizializza(this, &evento);
-    //    domino = &domino_editor;
-    //    domino->inizializza();
+    (*giocatore_attuale)->inizializza(this, &evento);
 }
 
-Gioco::~Gioco() {
-    //    if (test_partita_allocata)
-    //        delete domino;
-}
+Gioco::~Gioco() {}
 
 void Gioco::loop() {
     Uint32 inizio, fine;
@@ -142,49 +137,20 @@ void Gioco::loop() {
     while (alive) {
         if (cambia_stato) {
             if (stato == GIOCATORE) {
-                giocatore_attuale->riconfiguraVideo();
+                (*giocatore_attuale)->riconfiguraVideo();
             }
             cambia_stato = false;
         }
-        //                if (cambia_stato) {
-        //                    switch (stato) {
-        //                        case MENU:
-        //                            menu.setVisibile(true);
-        //                            break;
-        //                        case EDITOR_TEST:
-        //                            if (test_partita_allocata) {
-        //                                delete domino;
-        //                                domino = new Partita(domino_editor);
-        //                            } else {
-        //                                test_partita_allocata = true;
-        //                                domino = new Partita(domino_editor);
-        //                            }
-        //                            break;
-        //                        case EDITOR_COSTRUISCI:
-        //                            if (test_partita_allocata) {
-        //                                delete domino;
-        //                            }
-        //                            test_partita_allocata = false;
-        //                            domino = &domino_editor;
-        //                            break;
-        //                        default:
-        //                            break;
-        //                    }
-        //                    cambia_stato = false;
-        //                    domino->inizializza();
-        //                }
         inizio = SDL_GetTicks();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         switch (stato) {
             case MENU:
-                //                domino->configuraVisuale();
-                //                domino->cicloGiocoStampa();
-                giocatore_attuale->cicloGiocoStampa();
+                (*giocatore_attuale)->cicloGiocoStampa();
                 menu.cicloGioco();
                 break;
             case GIOCATORE:
-                giocatore_attuale->cicloGioco();
+                (*giocatore_attuale)->cicloGioco();
                 break;
         }
         //        if (menu.getVisibile()) {
@@ -238,11 +204,11 @@ Stato Gioco::getStato() const {
 }
 
 void Gioco::setStatoGiocatore(StatoGiocatore stato_aux) {
-    giocatore_attuale->setStato(stato_aux);
+    (*giocatore_attuale)->setStato(stato_aux);
 }
 
 StatoGiocatore Gioco::getStatoGiocatore() {
-    return giocatore_attuale->getStato();
+    return (*giocatore_attuale)->getStato();
 }
 
 void Gioco::gameExit() {

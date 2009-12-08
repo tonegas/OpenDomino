@@ -342,6 +342,6 @@ QStringList GestoreGiocatori::nomiGiocatori() {
     return nomi_giocatori;
 }
 
-Giocatore* GestoreGiocatori::getGiocatoreAttuale() {
-    return giocatore_attuale;
+Giocatore** GestoreGiocatori::getGiocatoreAttuale() {
+    return &giocatore_attuale;
 }
