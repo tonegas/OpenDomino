@@ -16,7 +16,8 @@ Menu::Menu(unsigned dim_x_fin_aux, unsigned dim_y_fin_aux) {
     font = new FTGLPixmapFont("./Caratteri/Abscissa.ttf");
     layout.SetFont(font);
 
-    voci_menu_principale.append("Continua partita");
+    //::::::::::::::::::::::::::::::::::
+    voci_menu_principale.append("Gioca");
     voci_menu_principale.append("Editor livelli");
     voci_menu_principale.append("Opzioni");
     voci_menu_principale.append("Gestione profili");
@@ -25,10 +26,34 @@ Menu::Menu(unsigned dim_x_fin_aux, unsigned dim_y_fin_aux) {
     voci_menu_principale.append("Esci");
     voci_menu_principale.append("Open Domino");
 
-    voci_menu_continua_livello.append("Continua");
-    voci_menu_continua_livello.append("Salva livello");
-    voci_menu_continua_livello.append("Torna al menu principale");
-    voci_menu_continua_livello.append("Open Domino");
+    voci_menu_gioca.append("Continua ultimo livello");
+    voci_menu_gioca.append("Cambia livello");
+    voci_menu_gioca.append("Torna al menu");
+    voci_menu_gioca.append("Gioca");
+
+    voci_menu_g_scegli_livello.append("Torna al menu");
+    voci_menu_g_scegli_livello.append("Scegli livello");
+
+    voci_menu_gestione_livelli.append("Nuovo livello");
+    voci_menu_gestione_livelli.append("Scegli livello");
+    voci_menu_gestione_livelli.append("Elimina livello");
+    voci_menu_gestione_livelli.append("Torna al menu");
+    voci_menu_gestione_livelli.append("Editor livelli");
+
+    voci_menu_gl_nuovo_livello.append("Crea livello");
+    voci_menu_gl_nuovo_livello.append("Torna indietro");
+    voci_menu_gl_nuovo_livello.append("Nuovo livello");
+
+    voci_menu_gl_scegli_livello.append("Torna indietro");
+    voci_menu_gl_scegli_livello.append("Scegli livello");
+
+    voci_menu_gl_elimina_livello.append("Torna indietro");
+    voci_menu_gl_elimina_livello.append("Elimina livello");
+
+    //    voci_menu_continua_livello.append("Continua");
+    //    voci_menu_continua_livello.append("Salva livello");
+    //    voci_menu_continua_livello.append("Torna al menu principale");
+    //    voci_menu_continua_livello.append("Open Domino");
 
     voci_menu_gestione_profili.append("Nuovo profilo");
     voci_menu_gestione_profili.append("Cambia profilo");
@@ -37,19 +62,45 @@ Menu::Menu(unsigned dim_x_fin_aux, unsigned dim_y_fin_aux) {
     voci_menu_gestione_profili.append("Torna al menu");
     voci_menu_gestione_profili.append("Gestione profili");
 
-    voci_menu_gp_cambia_profilo.append("Torna alla gestione profili");
+    voci_menu_gp_cambia_profilo.append("Torna indietro");
     voci_menu_gp_cambia_profilo.append("Cambia profilo");
 
-    voci_menu_gp_elimina_profilo.append("Torna alla gestione profili");
+    voci_menu_gp_elimina_profilo.append("Torna indietro");
     voci_menu_gp_elimina_profilo.append("Elimina profilo");
 
     voci_menu_gp_nuovo_profilo.append("Crea profilo");
-    voci_menu_gp_nuovo_profilo.append("Torna alla gestione profili");
+    voci_menu_gp_nuovo_profilo.append("Torna indietro");
     voci_menu_gp_nuovo_profilo.append("Inserisci nome profilo");
 
     voci_menu_gp_copia_profilo_attuale.append("Crea copia del profilo");
-    voci_menu_gp_copia_profilo_attuale.append("Torna alla gestione profili");
+    voci_menu_gp_copia_profilo_attuale.append("Torna indietro");
     voci_menu_gp_copia_profilo_attuale.append("Inserisci nome profilo della copia");
+    //::::::::::::::::::::::::::::::::::
+
+    //::::::::::::::::::::::::::::::::::
+    voci_menu_el_editor_livello.append("Salva livello");
+    voci_menu_el_editor_livello.append("Salva con nome livello");
+    voci_menu_el_editor_livello.append("Cambia livello");
+    voci_menu_el_editor_livello.append("Torna al menu principale");
+    voci_menu_el_editor_livello.append("Open Domino");
+
+    voci_menu_el_salva_con_nome.append("Salva livello");
+    voci_menu_el_salva_con_nome.append("Torna indietro");
+    voci_menu_el_salva_con_nome.append("Scegli nome livello");
+
+    voci_menu_el_cambia_livello.append("Torna indietro");
+    voci_menu_el_cambia_livello.append("Scegli Livello");
+    //::::::::::::::::::::::::::::::::::
+
+    //::::::::::::::::::::::::::::::::::
+    voci_menu_gl_gioca_livello.append("Salva livello");
+    voci_menu_gl_gioca_livello.append("Cambia Livello");
+    voci_menu_gl_gioca_livello.append("Torna al menu principale");
+    voci_menu_gl_gioca_livello.append("Open Domino");
+
+    voci_menu_gl_cambia_livello.append("Torna indietro");
+    voci_menu_gl_cambia_livello.append("Scegli Livello");
+    //::::::::::::::::::::::::::::::::::
 
     nome_nuovo_giocatore = "";
     setStato(PRINCIPALE);

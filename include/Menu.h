@@ -19,35 +19,82 @@ class Interfaccia;
 
 enum StatoMenu {
     PRINCIPALE = 17,
-    CONTINUA_LIVELLO = 10,
+    //:::::::::::::::::::::::::::::::::::::::::::::::::
+    GIOCA = 10,
+    G_GIOCA = 103,
+    //---------------
+    G_CONTINUA = 100,
 
-    CL_CONTINUA_LIVELLO = 103, CL_CONTINUA = 100, CL_SALVA_LIVELLO = 101, CL_TORNA_A_MENU_PRINCIPALE = 102,
+    G_SCEGLI_LIVELLO = 101,
+    G_SL_SCEGLI_LIVELLO = 1011, G_SL_TORNA_A_MENU_PRINCIPALE = 1010,
 
-    LISTA_LIVELLI_EDITOR = 11,
+    G_TORNA_A_MENU_PRINCIPALE = 102,
+    //---------------
+
+    GESTIONE_LIVELLI = 11,
+    GL_GESTIONE_LIVELLI = 115,
+    //---------------
+    GL_NUOVO_LIVELLO = 110,
+    GL_NL_NUOVO_LIVELLO = 1102, GL_NL_CREA_LIVELLO = 1100, EL_NL_TORNA_GESTIONE_LIVELLI = 1101,
+
+    GL_SCEGLI_LIVELLO = 111,
+    GL_SL_SCEGLI_LIVELLO = 1111, GL_SL_TORNA_GESTIONE_LIVELLI = 1110,
+
+    GL_ELIMINA_LIVELLO = 113,
+    GL_EL_ELIMINA_LIVELLO = 1131, GL_EL_TORNA_GESTIONE_LIVELLI = 1130,
+
+    GL_TORNA_A_MENU_PRINCIPALE = 114,
+    //---------------
+
     OPTION = 12,
+
     GESTIONE_PROFILI = 13,
-
     GP_GESTIONE_PROFILI = 135,
+    //---------------
     GP_NUOVO_PROFILO = 130,
-
     GP_NP_NUOVO_PROFILO = 1302, GP_NP_CREA_PROFILO = 1300, GP_NP_TORNA_A_MENU_GESTIONE_PROFILI = 1301,
 
     GP_CAMBIA_PROFILO = 131,
-
     GP_CP_CAMBIA_PROFILO = 1311, GP_CP_TORNA_A_MENU_GESTIONE_PROFILI = 1310,
 
     GP_COPIA_PROFILO_ATTUALE = 132,
-
     GP_CPA_COPIA_PROFILO_ATTUALE = 1322, GP_CPA_CREA_COPIA_PROFILO = 1320, GP_CPA_TORNA_A_MENU_GESTIONE_PROFILI = 1321,
 
     GP_ELIMINA_PROFILO = 133,
-
     GP_EL_ELIMINA_PROFILO = 1331, GP_EL_TORNA_A_MENU_GESTIONE_PROFILI = 1330,
 
     GP_TORNA_A_MENU_PRINCIPALE = 134,
+    //----------------
+
     ISTRUZIONI = 14,
+
     RINGRAZIAMENTI = 15,
-    ESCI = 16
+
+    ESCI = 16,
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    EL_EDITOR_LIVELLO = 24,
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    EL_SALVA_LIVELLO = 20,
+
+    EL_SALVA_LIVELLO_CON_NOME = 21,
+    EL_SLCN_SALVA_LIVELLO_CON_NOME = 212, EL_SLCN_SALVA_LIVELLO = 210, EL_SLCN_TORNA_LIVELLO_PRECEDENTE = 211,
+
+    EL_CAMBIA_LIVELLO = 22,
+    EL_CL_CAMBIA_LIVELLO = 221, EL_SLCN_TORNA_LIVELLO_PRECEDENTE = 220,
+
+    EL_TORNA_A_MENU_PRINCIPALE_SENZA_SALVARE = 23,
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    GL_GIOCA_LIVELLO = 33,
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    GL_SALVA_LIVELLO = 30,
+
+    GL_CAMBIA_LIVELLO = 31,
+    GL_CL_CAMBIA_LIVELLO = 311, GL_SLCN_TORNA_LIVELLO_PRECEDENTE = 310,
+
+    GL_TORNA_A_MENU_PRINCIPALE_SENZA_SALVARE = 32
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::
 };
 
 class Menu : public Interfaccia {
@@ -86,12 +133,33 @@ class Menu : public Interfaccia {
     QVector<FTPoint> posizioni_caselle_menu_attivo;
 
     QStringList voci_menu_principale;
-    QStringList voci_menu_continua_livello;
+    //::::::::::::::::::::::::::::::::::
+    QStringList voci_menu_gioca;
+    QStringList voci_menu_g_scegli_livello;
+
+    QStringList voci_menu_gestione_livelli;
+    QStringList voci_menu_gl_nuovo_livello;
+    QStringList voci_menu_gl_scegli_livello;
+    QStringList voci_menu_gl_elimina_livello;
+
     QStringList voci_menu_gestione_profili;
+    QStringList voci_menu_gp_nuovo_profilo;
     QStringList voci_menu_gp_cambia_profilo;
     QStringList voci_menu_gp_copia_profilo_attuale;
     QStringList voci_menu_gp_elimina_profilo;
-    QStringList voci_menu_gp_nuovo_profilo;
+    //::::::::::::::::::::::::::::::::::
+
+    QStringList voci_menu_el_editor_livello;
+    //::::::::::::::::::::::::::::::::::
+    QStringList voci_menu_el_salva_con_nome;
+    QStringList voci_menu_el_cambia_livello;
+    //::::::::::::::::::::::::::::::::::
+
+    QStringList voci_menu_gl_gioca_livello;
+    //::::::::::::::::::::::::::::::::::
+    QStringList voci_menu_gl_cambia_livello;
+    //::::::::::::::::::::::::::::::::::
+
 
     void inizializzaVariabiliMenu(StatoMenu nuovo_stato, QStringList nuove_voci_menu);
     void inizializzaVariabiliMenu(StatoMenu nuovo_stato, QStringList nuove_voci_menu, unsigned numero_voci_in_piu);
