@@ -44,6 +44,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Livello.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Telecamera.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/TelecameraProspettica.o \
+	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/MenuAppoggio.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Gioco.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/ElementoAttivo.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Interfaccia.o \
@@ -140,6 +141,11 @@ ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/TelecameraPros
 	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/TelecameraProspettica.o /home/tonegas/workspace/Domino/OpenDomino/source/TelecameraProspettica.cpp
+
+${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/MenuAppoggio.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino/OpenDomino/source/MenuAppoggio.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/MenuAppoggio.o /home/tonegas/workspace/Domino/OpenDomino/source/MenuAppoggio.cpp
 
 ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Gioco.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino/OpenDomino/source/Gioco.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source

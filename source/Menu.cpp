@@ -40,15 +40,15 @@ Menu::Menu(unsigned dim_x_fin_aux, unsigned dim_y_fin_aux) {
     voci_menu_gestione_livelli.append("Torna al menu");
     voci_menu_gestione_livelli.append("Editor livelli");
 
-    voci_menu_gl_nuovo_livello.append("Crea livello");
-    voci_menu_gl_nuovo_livello.append("Torna indietro");
-    voci_menu_gl_nuovo_livello.append("Nuovo livello");
+    voci_menu_gel_nuovo_livello.append("Crea livello");
+    voci_menu_gel_nuovo_livello.append("Torna indietro");
+    voci_menu_gel_nuovo_livello.append("Nuovo livello");
 
-    voci_menu_gl_scegli_livello.append("Torna indietro");
-    voci_menu_gl_scegli_livello.append("Scegli livello");
+    voci_menu_gel_scegli_livello.append("Torna indietro");
+    voci_menu_gel_scegli_livello.append("Scegli livello");
 
-    voci_menu_gl_elimina_livello.append("Torna indietro");
-    voci_menu_gl_elimina_livello.append("Elimina livello");
+    voci_menu_gel_elimina_livello.append("Torna indietro");
+    voci_menu_gel_elimina_livello.append("Elimina livello");
 
     //    voci_menu_continua_livello.append("Continua");
     //    voci_menu_continua_livello.append("Salva livello");
@@ -78,6 +78,7 @@ Menu::Menu(unsigned dim_x_fin_aux, unsigned dim_y_fin_aux) {
     //::::::::::::::::::::::::::::::::::
 
     //::::::::::::::::::::::::::::::::::
+    voci_menu_el_editor_livello.append("Prova livello");
     voci_menu_el_editor_livello.append("Salva livello");
     voci_menu_el_editor_livello.append("Salva con nome livello");
     voci_menu_el_editor_livello.append("Cambia livello");
@@ -100,6 +101,12 @@ Menu::Menu(unsigned dim_x_fin_aux, unsigned dim_y_fin_aux) {
 
     voci_menu_gl_cambia_livello.append("Torna indietro");
     voci_menu_gl_cambia_livello.append("Scegli Livello");
+    //::::::::::::::::::::::::::::::::::
+
+    //::::::::::::::::::::::::::::::::::
+    voci_menu_elp_editor_livello_prova.append("Torna all'editor");
+    voci_menu_elp_editor_livello_prova.append("Torna al menu principale");
+    voci_menu_elp_editor_livello_prova.append("Open Domino");
     //::::::::::::::::::::::::::::::::::
 
     nome_nuovo_giocatore = "";
@@ -151,15 +158,11 @@ void Menu::resize(unsigned dim_x, unsigned dim_y) {
             break;
         case GP_CPA_COPIA_PROFILO_ATTUALE:
         case GP_NP_NUOVO_PROFILO:
-            costruisciCaselleMenuCreaProfilo();
+            costruisciCaselleMenuCrea();
         default:
             costruisciCaselleMenuCentrale();
             break;
     }
-}
-
-Menu::~Menu() {
-    delete font;
 }
 
 void Menu::setStato(StatoMenu nuovo_stato) {
@@ -168,17 +171,43 @@ void Menu::setStato(StatoMenu nuovo_stato) {
             inizializzaVariabiliMenu(PRINCIPALE, voci_menu_principale);
             costruisciCaselleMenuCentrale();
             break;
-        case CL_CONTINUA_LIVELLO:
-            inizializzaVariabiliMenu(CL_CONTINUA_LIVELLO, voci_menu_continua_livello);
+            //--------------------------
+        case G_GIOCA:
+            inizializzaVariabiliMenu(G_GIOCA, voci_menu_gioca);
             costruisciCaselleMenuCentrale();
             break;
+        case G_SL_SCEGLI_LIVELLO:
+            inizializzaVariabiliMenu(G_SL_SCEGLI_LIVELLO,
+                    (QStringList) voci_menu_g_scegli_livello[0] + lista_livelli + (QStringList) voci_menu_g_scegli_livello[1], lista_livelli.count());
+            costruisciCaselleMenuLaterale();
+            break;
+            //--------------------------
+        case GEL_GESTIONE_LIVELLI:
+            inizializzaVariabiliMenu(GEL_GESTIONE_LIVELLI, voci_menu_gestione_livelli);
+            costruisciCaselleMenuCentrale();
+            break;
+        case GEL_NL_NUOVO_LIVELLO:
+            inizializzaVariabiliMenu(GEL_NL_NUOVO_LIVELLO, voci_menu_gel_nuovo_livello + (QStringList) nome_nuovo_livello);
+            costruisciCaselleMenuCrea();
+            break;
+        case GEL_SL_SCEGLI_LIVELLO:
+            inizializzaVariabiliMenu(GEL_SL_SCEGLI_LIVELLO,
+                    (QStringList) voci_menu_gel_scegli_livello[0] + lista_livelli + (QStringList) voci_menu_gel_scegli_livello[1], lista_livelli.count());
+            costruisciCaselleMenuLaterale();
+            break;
+        case GEL_EL_ELIMINA_LIVELLO:
+            inizializzaVariabiliMenu(GEL_EL_ELIMINA_LIVELLO,
+                    (QStringList) voci_menu_gel_elimina_livello[0] + lista_livelli + (QStringList) voci_menu_gel_elimina_livello[1], lista_livelli.count());
+            costruisciCaselleMenuLaterale();
+            break;
+            //--------------------------
         case GP_GESTIONE_PROFILI:
             inizializzaVariabiliMenu(GP_GESTIONE_PROFILI, voci_menu_gestione_profili);
             costruisciCaselleMenuCentrale();
             break;
         case GP_NP_NUOVO_PROFILO:
             inizializzaVariabiliMenu(GP_NP_NUOVO_PROFILO, voci_menu_gp_nuovo_profilo + (QStringList) nome_nuovo_giocatore);
-            costruisciCaselleMenuCreaProfilo();
+            costruisciCaselleMenuCrea();
             break;
         case GP_CP_CAMBIA_PROFILO:
             inizializzaVariabiliMenu(GP_CP_CAMBIA_PROFILO,
@@ -192,220 +221,13 @@ void Menu::setStato(StatoMenu nuovo_stato) {
             break;
         case GP_CPA_COPIA_PROFILO_ATTUALE:
             inizializzaVariabiliMenu(GP_CPA_COPIA_PROFILO_ATTUALE, voci_menu_gp_copia_profilo_attuale + (QStringList) nome_nuovo_giocatore);
-            costruisciCaselleMenuCreaProfilo();
+            costruisciCaselleMenuCrea();
             break;
+            //--------------------------
+            //:::::::::::::::::::::::::::::::::::
+            
         default:
             cout << "ERRORE DI INDIRIZZAMENTO MENU" << flush;
-            break;
-    }
-}
-
-StatoMenu Menu::getStato() {
-    return stato;
-}
-
-void Menu::cicloGioco() {
-    SDL_PumpEvents();
-    while (SDL_PollEvent(evento)) {
-        gestisciInput();
-    }
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_LIGHTING);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluOrtho2D(0, dim_x_fin, 0, dim_y_fin);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    stampa();
-    glEnable(GL_LIGHTING);
-    glEnable(GL_DEPTH_TEST);
-}
-
-bool Menu::gestisciSelezioneMouse() {
-    double pos_x = (double) evento->motion.x;
-    double pos_y = dim_y_fin - (double) evento->motion.y;
-    for (unsigned i = 0; i < numero_voci_menu_attivo; i++) {
-        if (pos_x < posizioni_caselle_menu_attivo[i].X() + caselle_menu_attivo[i].Upper().X() &&
-                pos_x > posizioni_caselle_menu_attivo[i].X() + caselle_menu_attivo[i].Lower().X() &&
-                pos_y < posizioni_caselle_menu_attivo[i].Y() + caselle_menu_attivo[i].Upper().Y() &&
-                pos_y > posizioni_caselle_menu_attivo[i].Y() + caselle_menu_attivo[i].Lower().Y()) {
-            stato_attivo = i;
-            return true;
-        }
-    }
-    return false;
-}
-
-bool Menu::gestisciSelezioneMouseMenuLaterale() {
-    double pos_y = dim_y_fin - (double) evento->motion.y;
-    for (unsigned i = 0; i < numero_voci_menu_attivo; i++) {
-        if (pos_y < posizioni_caselle_menu_attivo[i].Y() + caselle_menu_attivo[i].Upper().Y() &&
-                pos_y > posizioni_caselle_menu_attivo[i].Y() + caselle_menu_attivo[i].Lower().Y()) {
-            stato_attivo = i;
-            return true;
-        }
-    }
-    return false;
-}
-
-void Menu::cambiaVociMenuPrincipale() {
-    switch (stato_attivo + 10) {
-        case ESCI:
-            gioco->gameExit();
-            break;
-        case CONTINUA_LIVELLO:
-            gioco->setStato(GIOCATORE);
-            break;
-        case GESTIONE_PROFILI:
-            setStato(GP_GESTIONE_PROFILI);
-            break;
-        default:
-            break;
-    }
-}
-
-void Menu::inizializzaVariabiliMenu(StatoMenu nuovo_stato, QStringList nuove_voci_menu) {
-    stato = nuovo_stato;
-    stato_attivo_voci_menu.clear();
-    if (((nuovo_stato / 10) * 10) != 0) {
-        numero_voci_menu_attivo = nuovo_stato % ((nuovo_stato / 10) * 10);
-        stato_attivo_voci_menu.fill(0.0f, numero_voci_menu_attivo);
-    }
-    voci_menu_attivo = nuove_voci_menu;
-    stato_attivo = 0;
-    resize(dim_x_fin, dim_y_fin);
-}
-
-void Menu::inizializzaVariabiliMenu(StatoMenu nuovo_stato, QStringList nuove_voci_menu, unsigned numero_voci_in_piu) {
-    stato = nuovo_stato;
-    stato_attivo_voci_menu.clear();
-    trasparenza_voci_visibili.clear();
-    if (((nuovo_stato / 10) * 10) != 0) {
-        numero_voci_menu_attivo = nuovo_stato % ((nuovo_stato / 10) * 10) + numero_voci_in_piu;
-        stato_attivo_voci_menu.fill(0.0f, numero_voci_menu_attivo + numero_voci_in_piu);
-        trasparenza_voci_visibili.fill(1.0f, numero_voci_menu_attivo + numero_voci_in_piu);
-    }
-    voci_menu_attivo = nuove_voci_menu;
-    stato_attivo = 0;
-    resize(dim_x_fin, dim_y_fin);
-}
-
-void Menu::cambiaVociMenuGestioneProfili() {
-    switch (stato_attivo + GESTIONE_PROFILI * 10) {
-        case GP_NUOVO_PROFILO:
-            setStato(GP_NP_NUOVO_PROFILO);
-            nome_nuovo_giocatore.clear();
-            break;
-        case GP_CAMBIA_PROFILO:
-            nomi_giocatori = gestore_giocatori->nomiGiocatori();
-            setStato(GP_CP_CAMBIA_PROFILO);
-            break;
-        case GP_COPIA_PROFILO_ATTUALE:
-            setStato(GP_CPA_COPIA_PROFILO_ATTUALE);
-            nome_nuovo_giocatore.clear();
-            break;
-        case GP_ELIMINA_PROFILO:
-            nomi_giocatori = gestore_giocatori->nomiGiocatori();
-            setStato(GP_EL_ELIMINA_PROFILO);
-            break;
-        case GP_TORNA_A_MENU_PRINCIPALE:
-            setStato(PRINCIPALE);
-            break;
-        default:
-            break;
-    }
-}
-
-void Menu::cambiaVociMenuGPCambiaProfilo() {
-    switch (stato_attivo + GP_CAMBIA_PROFILO * 10) {
-        case GP_CP_TORNA_A_MENU_GESTIONE_PROFILI:
-            setStato(GP_GESTIONE_PROFILI);
-            break;
-        default:
-            gestore_giocatori->cambiaGiocatore(nomi_giocatori[stato_attivo - 1]);
-            setStato(PRINCIPALE);
-            break;
-    }
-}
-
-void Menu::cambiaVociMenuGPEliminaProfilo() {
-    //aggiungere una schermata dove si dice sicuro di voler eliminare il giocatore comic si no
-    switch (stato_attivo + GP_ELIMINA_PROFILO * 10) {
-        case GP_EL_TORNA_A_MENU_GESTIONE_PROFILI:
-            setStato(GP_GESTIONE_PROFILI);
-            break;
-        default:
-            gestore_giocatori->eliminaGiocatore(nomi_giocatori[stato_attivo - 1]);
-            setStato(GP_GESTIONE_PROFILI);
-            break;
-    }
-}
-
-void Menu::cambiaVociMenuGPNuovoProfilo() {
-    switch (stato_attivo + GP_NUOVO_PROFILO * 10) {
-        case GP_NP_TORNA_A_MENU_GESTIONE_PROFILI:
-            setStato(GP_GESTIONE_PROFILI);
-            break;
-        case GP_NP_CREA_PROFILO:
-            if (gestore_giocatori->nuovoGiocatore(nome_nuovo_giocatore)) {
-                setStato(PRINCIPALE);
-            }
-            break;
-    }
-}
-
-void Menu::cambiaVociMenuGPCopiaProfiloAttuale() {
-    switch (stato_attivo + GP_COPIA_PROFILO_ATTUALE * 10) {
-        case GP_CPA_TORNA_A_MENU_GESTIONE_PROFILI:
-            setStato(GP_GESTIONE_PROFILI);
-            break;
-        case GP_CPA_CREA_COPIA_PROFILO:
-            if (gestore_giocatori->copiaGiocatoreAttuale(nome_nuovo_giocatore)) {
-                setStato(GP_GESTIONE_PROFILI);
-            }
-            break;
-    }
-}
-
-void Menu::cambiaVociMenuContinuaLivello() {
-    switch (stato_attivo + CONTINUA_LIVELLO * 10) {
-        case CL_CONTINUA:
-            gioco->setStato(GIOCATORE);
-            break;
-        case CL_SALVA_LIVELLO:
-            gestore_giocatori->salvaLivelloGiocatore();
-            gioco->setStato(GIOCATORE);
-            break;
-        case CL_TORNA_A_MENU_PRINCIPALE:
-            setStato(PRINCIPALE);
-            break;
-    }
-}
-
-void Menu::cambiaVociMenu() {
-    switch (stato) {
-        case PRINCIPALE:
-            cambiaVociMenuPrincipale();
-            break;
-        case CL_CONTINUA_LIVELLO:
-            cambiaVociMenuContinuaLivello();
-            break;
-        case GP_GESTIONE_PROFILI:
-            cambiaVociMenuGestioneProfili();
-            break;
-        case GP_CP_CAMBIA_PROFILO:
-            cambiaVociMenuGPCambiaProfilo();
-            break;
-        case GP_EL_ELIMINA_PROFILO:
-            cambiaVociMenuGPEliminaProfilo();
-            break;
-        case GP_NP_NUOVO_PROFILO:
-            cambiaVociMenuGPNuovoProfilo();
-            break;
-        case GP_CPA_COPIA_PROFILO_ATTUALE:
-            cambiaVociMenuGPCopiaProfiloAttuale();
-            break;
-        default:
             break;
     }
 }
@@ -503,164 +325,144 @@ void Menu::stampa() {
     aggiornaStatoAttivoVociMenu();
 }
 
-void Menu::costruisciCaselleMenuCreaProfilo() {
-    font->FaceSize(dim_voce);
-    layout.SetAlignment(FTGL::ALIGN_CENTER);
-    layout.SetLineLength(dim_x_fin);
-    posizioni_caselle_menu_attivo.clear();
-    caselle_menu_attivo.clear();
-    for (unsigned i = 0; i < numero_voci_menu_attivo; i++) {
-        FTPoint aux(0, dist_da_basso_voce_principale - dist_da_voce_principale_voce - dist_da_voce / 2 - dist_da_voce * i);
-        posizioni_caselle_menu_attivo += aux;
-        caselle_menu_attivo += layout.BBox(voci_menu_attivo[i].toStdString().c_str());
+
+void Menu::cambiaVociMenu() {
+    switch (stato) {
+        case PRINCIPALE:
+            cambiaVociMenuPrincipale();
+            break;
+        case CL_CONTINUA_LIVELLO:
+            cambiaVociMenuContinuaLivello();
+            break;
+        case GP_GESTIONE_PROFILI:
+            cambiaVociMenuGestioneProfili();
+            break;
+        case GP_CP_CAMBIA_PROFILO:
+            cambiaVociMenuGPCambiaProfilo();
+            break;
+        case GP_EL_ELIMINA_PROFILO:
+            cambiaVociMenuGPEliminaProfilo();
+            break;
+        case GP_NP_NUOVO_PROFILO:
+            cambiaVociMenuGPNuovoProfilo();
+            break;
+        case GP_CPA_COPIA_PROFILO_ATTUALE:
+            cambiaVociMenuGPCopiaProfiloAttuale();
+            break;
+        default:
+            break;
     }
 }
 
-void Menu::stampaMenuCreaProfilo() {
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    layout.SetLineLength(dim_x_fin);
-    layout.SetAlignment(FTGL::ALIGN_CENTER);
-    font->FaceSize(dim_voce_principale);
-    glRasterPos2i(0, dist_da_basso_voce_principale + dist_da_voce / 2);
-    layout.Render(voci_menu_attivo[numero_voci_menu_attivo].toStdString().c_str());
-
-    font->FaceSize(dim_voce);
-    glRasterPos2i(0, dist_da_basso_voce_principale - dist_da_voce_principale_voce + dist_da_voce / 2);
-    layout.Render((nome_nuovo_giocatore + '_').toStdString().c_str());
-    for (unsigned i = 0; i < numero_voci_menu_attivo; i++) {
-        glColor4f(1.0f - stato_attivo_voci_menu[i], 1.0f, 1.0f - stato_attivo_voci_menu[i], 1.0f);
-        glRasterPos2i(0, posizioni_caselle_menu_attivo[i].Y());
-        layout.Render(voci_menu_attivo[i].toStdString().c_str());
+void Menu::cambiaVociMenuPrincipale() {
+    switch (stato_attivo + 10) {
+        case ESCI:
+            gioco->gameExit();
+            break;
+        case GIOCA:
+            setStato(G_GIOCA);
+            break;
+        case GESTIONE_LIVELLI:
+            setStato(GEL_GESTIONE_LIVELLI);
+            break;
+        case GESTIONE_PROFILI:
+            setStato(GP_GESTIONE_PROFILI);
+            break;
+        default:
+            break;
     }
 }
 
-void Menu::costruisciCaselleMenuCentrale() {
-    layout.SetAlignment(FTGL::ALIGN_CENTER);
-    font->FaceSize(dim_voce);
-    layout.SetLineLength(dim_x_fin);
-    posizioni_caselle_menu_attivo.clear();
-    caselle_menu_attivo.clear();
-    for (unsigned i = 0; i < numero_voci_menu_attivo; i++) {
-        FTPoint aux(0, dist_da_basso_voce_principale - dist_da_voce_principale_voce - dist_da_voce * i);
-        posizioni_caselle_menu_attivo += aux;
-        caselle_menu_attivo += layout.BBox(voci_menu_attivo[i].toStdString().c_str());
-    }
-}
-//sarabbe meglio poi usare il genList
-bool primo = true;
-GLuint titolo, nomi;
 
-void Menu::stampaMenuCentrale() {
-    font->FaceSize(dim_voce_principale);
-    layout.SetAlignment(FTGL::ALIGN_CENTER);
-    layout.SetLineLength(dim_x_fin);
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    glRasterPos2i(0, dist_da_basso_voce_principale);
-    //    Facendo così ci sono problemi nel ridimensionamento della finestra
-    //    if (primo) {
-    //        titolo = glGenLists(1);
-    //        glNewList(titolo, GL_COMPILE);
-    layout.Render(voci_menu_attivo[numero_voci_menu_attivo].toStdString().c_str());
-    //        glEndList();
-    //        primo = false;
-    //    } else {
-    //        glCallList(titolo);
-    //    }
 
-    font->FaceSize(dim_voce);
-    for (unsigned i = 0; i < numero_voci_menu_attivo; i++) {
-        //        glPushMatrix();
-        //        glTranslatef(posizioni_caselle_menu_attivo[i].X(), posizioni_caselle_menu_attivo[i].Y(), 0);
-        //        //la devo attivare per fare le sfumature = glEnable(GL_BLEND);
-        //        glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
-        //        glBegin(GL_QUADS);
-        //        {
-        //            glVertex2d(caselle_menu_attivo[i].Lower().X(), caselle_menu_attivo[i].Lower().Y());
-        //            glVertex2d(caselle_menu_attivo[i].Lower().X(), caselle_menu_attivo[i].Upper().Y());
-        //            glVertex2d(caselle_menu_attivo[i].Upper().X(), caselle_menu_attivo[i].Upper().Y());
-        //            glVertex2d(caselle_menu_attivo[i].Upper().X(), caselle_menu_attivo[i].Lower().Y());
-        //        }
-        //        glEnd();
-        //        glPopMatrix();
-        glColor4f(1.0f - stato_attivo_voci_menu[i], 1.0f, 1.0f - stato_attivo_voci_menu[i], 1.0f);
-        glRasterPos2i(0, posizioni_caselle_menu_attivo[i].Y());
-        layout.Render(voci_menu_attivo[i].toStdString().c_str());
+void Menu::cambiaVociMenuGestioneProfili() {
+    switch (stato_attivo + GESTIONE_PROFILI * 10) {
+        case GP_NUOVO_PROFILO:
+            setStato(GP_NP_NUOVO_PROFILO);
+            nome_nuovo_giocatore.clear();
+            break;
+        case GP_CAMBIA_PROFILO:
+            nomi_giocatori = gestore_giocatori->nomiGiocatori();
+            setStato(GP_CP_CAMBIA_PROFILO);
+            break;
+        case GP_COPIA_PROFILO_ATTUALE:
+            setStato(GP_CPA_COPIA_PROFILO_ATTUALE);
+            nome_nuovo_giocatore.clear();
+            break;
+        case GP_ELIMINA_PROFILO:
+            nomi_giocatori = gestore_giocatori->nomiGiocatori();
+            setStato(GP_EL_ELIMINA_PROFILO);
+            break;
+        case GP_TORNA_A_MENU_PRINCIPALE:
+            setStato(PRINCIPALE);
+            break;
+        default:
+            break;
     }
 }
 
-void Menu::costruisciCaselleMenuLaterale() {
-    //qui si può evitare di rifare tutti i conti ogni volta che si sposta il mouse e poi bisognerebbe considerare
-    //i nomi da stampare e quelli da non stampare cioè quelli fuori dal video!!!
-    layout.SetAlignment(FTGL::ALIGN_LEFT);
-    font->FaceSize(dim_voce);
-    layout.SetLineLength(dim_x_fin);
-    posizioni_caselle_menu_attivo.clear();
-    caselle_menu_attivo.clear();
-    FTPoint aux(dist_da_sinistra, dist_da_basso_voce_uscita);
-    posizioni_caselle_menu_attivo += aux;
-    caselle_menu_attivo += layout.BBox(voci_menu_attivo[0].toStdString().c_str());
-    for (unsigned i = 1; i < numero_voci_menu_attivo; i++) {
-        FTPoint aux(dist_da_sinistra, dist_da_basso_voce_principale - dist_da_voce_principale_voce + dist_da_voce - dist_da_voce * i + posizione_voci_visibili);
-        if (aux.Y() > dist_da_basso_voce_principale - dist_da_voce_principale_voce) {
-            trasparenza_voci_visibili[i] = 1.0f - (aux.Y() - (dist_da_basso_voce_principale - dist_da_voce_principale_voce))
-                    / (dim_y_fin - dist_da_basso_voce_principale + dist_da_voce_principale_voce);
-        } else if (aux.Y() < dist_da_basso_voce_uscita + dist_da_voce) {
-            trasparenza_voci_visibili[i] = 1.0f - ((dist_da_basso_voce_uscita + dist_da_voce) - aux.Y()) / (dist_da_basso_voce_uscita + dist_da_voce);
-        } else {
-            trasparenza_voci_visibili[i] = 1.0f;
-        }
-        posizioni_caselle_menu_attivo += aux;
-        caselle_menu_attivo += layout.BBox(voci_menu_attivo[i].toStdString().c_str());
+void Menu::cambiaVociMenuGPCambiaProfilo() {
+    switch (stato_attivo + GP_CAMBIA_PROFILO * 10) {
+        case GP_CP_TORNA_A_MENU_GESTIONE_PROFILI:
+            setStato(GP_GESTIONE_PROFILI);
+            break;
+        default:
+            gestore_giocatori->cambiaGiocatore(nomi_giocatori[stato_attivo - 1]);
+            setStato(PRINCIPALE);
+            break;
     }
 }
 
-void Menu::stampaMenuLaterale() {
-    font->FaceSize(dim_voce_principale);
-    layout.SetAlignment(FTGL::ALIGN_LEFT);
-    layout.SetLineLength(dim_x_fin);
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    glRasterPos2i(dist_da_sinistra, dist_da_basso_voce_principale);
-    layout.Render(voci_menu_attivo[numero_voci_menu_attivo].toStdString().c_str());
-
-    font->FaceSize(dim_voce);
-    for (unsigned i = 1; i < numero_voci_menu_attivo; i++) {
-        glColor4f(1.0f - stato_attivo_voci_menu[i], 1.0f, 1.0f - stato_attivo_voci_menu[i], trasparenza_voci_visibili[i]);
-        glRasterPos2i(posizioni_caselle_menu_attivo[i].X(), posizioni_caselle_menu_attivo[i].Y());
-        layout.Render(voci_menu_attivo[i].toStdString().c_str());
-    }
-    glColor4f(1.0f - stato_attivo_voci_menu[0], 1.0f, 1.0f - stato_attivo_voci_menu[0], 1.0f);
-    glRasterPos2i(posizioni_caselle_menu_attivo[0].X(), posizioni_caselle_menu_attivo[0].Y());
-    layout.Render(voci_menu_attivo[0].toStdString().c_str());
-}
-
-void Menu::stampaGiocatoreAttuale() {
-    font->FaceSize(dim_nome);
-    layout.SetAlignment(FTGL::ALIGN_RIGHT);
-    layout.SetLineLength(dim_x_fin - dist_da_destra_nome);
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    glRasterPos2i(0, dim_y_fin - dist_da_alto_nome);
-    layout.Render(gestore_giocatori->nomeGiocatoreAttuale().toStdString().c_str());
-}
-
-void Menu::aggiornaStatoAttivoVociMenu() {
-    for (unsigned i = 0; i < numero_voci_menu_attivo; i++) {
-        if (i == stato_attivo) {
-            stato_attivo_voci_menu[i] = 1.0f;
-        } else {
-            stato_attivo_voci_menu[i] = stato_attivo_voci_menu[i] - 0.05 > 0.0 ? stato_attivo_voci_menu[i] - 0.05 : 0.0;
-        }
+void Menu::cambiaVociMenuGPEliminaProfilo() {
+    //aggiungere una schermata dove si dice sicuro di voler eliminare il giocatore comic si no
+    switch (stato_attivo + GP_ELIMINA_PROFILO * 10) {
+        case GP_EL_TORNA_A_MENU_GESTIONE_PROFILI:
+            setStato(GP_GESTIONE_PROFILI);
+            break;
+        default:
+            gestore_giocatori->eliminaGiocatore(nomi_giocatori[stato_attivo - 1]);
+            setStato(GP_GESTIONE_PROFILI);
+            break;
     }
 }
 
-void Menu::aggiornaStatoAttivoVociMenuLaterale() {
-    if (stato_attivo != 0)
-        posizione_voci_visibili = (((double) stato_attivo - 1.0) / (double) numero_voci_menu_attivo)* (numero_voci_menu_attivo + 1 - voci_visibili) * dist_da_voce;
+void Menu::cambiaVociMenuGPNuovoProfilo() {
+    switch (stato_attivo + GP_NUOVO_PROFILO * 10) {
+        case GP_NP_TORNA_A_MENU_GESTIONE_PROFILI:
+            setStato(GP_GESTIONE_PROFILI);
+            break;
+        case GP_NP_CREA_PROFILO:
+            if (gestore_giocatori->nuovoGiocatore(nome_nuovo_giocatore)) {
+                setStato(PRINCIPALE);
+            }
+            break;
+    }
 }
 
-void Menu::aggiornaStatoAttivoVociMenuLateraleMouse() {
-    if ((int) dim_y_fin - evento->motion.y < (int) dist_da_basso_voce_principale && (int) dim_y_fin - evento->motion.y > (int) dist_da_basso_voce_uscita + dist_da_voce) {
-        posizione_voci_visibili = (double) (dist_da_basso_voce_principale - (dim_y_fin - evento->motion.y))
-                / (double) (dist_da_basso_voce_principale - dist_da_basso_voce_uscita)
-                * (numero_voci_menu_attivo + 1 - voci_visibili) * dist_da_voce;
+void Menu::cambiaVociMenuGPCopiaProfiloAttuale() {
+    switch (stato_attivo + GP_COPIA_PROFILO_ATTUALE * 10) {
+        case GP_CPA_TORNA_A_MENU_GESTIONE_PROFILI:
+            setStato(GP_GESTIONE_PROFILI);
+            break;
+        case GP_CPA_CREA_COPIA_PROFILO:
+            if (gestore_giocatori->copiaGiocatoreAttuale(nome_nuovo_giocatore)) {
+                setStato(GP_GESTIONE_PROFILI);
+            }
+            break;
+    }
+}
+
+void Menu::cambiaVociMenuContinuaLivello() {
+    switch (stato_attivo + CONTINUA_LIVELLO * 10) {
+        case CL_CONTINUA:
+            gioco->setStato(GIOCATORE);
+            break;
+        case CL_SALVA_LIVELLO:
+            gestore_giocatori->salvaLivelloGiocatore();
+            gioco->setStato(GIOCATORE);
+            break;
+        case CL_TORNA_A_MENU_PRINCIPALE:
+            setStato(PRINCIPALE);
+            break;
     }
 }
