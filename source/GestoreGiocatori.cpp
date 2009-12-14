@@ -184,24 +184,27 @@ void GestoreGiocatori::caricaFileGiocatore() {
                     delete giocatore_attuale;
                 }
                 giocatore_attuale = new Giocatore(nome, tempo_di_gioco.toLong(), data_di_creazione.toLong());
-                QDomNode figlio = root.firstChild();
-                if (!figlio.isNull()) {
-                    QDomElement livello = figlio.toElement();
-                    if (!livello.isNull() && livello.tagName() == "Livello") {
-                        QString nome_livello = livello.attribute("nome", "");
-                        StrutturaLivello aux;
-                        if(gestore_livelli.caricaLivello(nome_livello,&aux)){
-                            giocatore_attuale->setStrutturaLivello(&aux);
-                        }else{
-                            giocatore_attuale->setStrutturaLivello(NULL);
+                QDomElement livello = root.firstChildElement();
+                StrutturaLivello aux;
+                if (!livello.isNull() && livello.tagName() == "Livello") {
+                    QString nome_livello = livello.attribute("nome", "");
+                    TipoLivello tipo = (TipoLivello) livello.attribute("tipo", 0).toUInt();
+                    if (gestore_livelli.caricaLivello(nome_livello, &aux)) {
+                        giocatore_attuale->setStrutturaLivello(&aux, tipo);
+                    } else {
+                        if (gestore_livelli.caricaLivello("Intro", &aux)) {
+                            giocatore_attuale->setStrutturaLivello(&aux, LIVELLO_PRESENTAZIONE);
+                        } else {
+                            giocatore_attuale->setStrutturaLivello(NULL, LIVELLO_PRESENTAZIONE);
                         }
-                    }else{
-                        giocatore_attuale->setStrutturaLivello(NULL);
                     }
-                }else{
-                    giocatore_attuale->setStrutturaLivello(NULL);
+                } else {
+                    if (gestore_livelli.caricaLivello("Intro", &aux)) {
+                        giocatore_attuale->setStrutturaLivello(&aux, LIVELLO_PRESENTAZIONE);
+                    } else {
+                        giocatore_attuale->setStrutturaLivello(NULL, LIVELLO_PRESENTAZIONE);
+                    }
                 }
-                //lista.append(giocatore_attuale);
                 cout << "Caricato giocatore:" << nome.toStdString() << '\n' << flush;
                 chiudiFileGio();
             } else {
@@ -227,6 +230,7 @@ void GestoreGiocatori::salvaFileGiocatore() {
     //-----------------------------
     QDomElement livello = doc.createElement("Livello");
     livello.setAttribute((QString) "nome", giocatore_attuale->getNomeLivello());
+    livello.setAttribute((QString) "tipo", giocatore_attuale->getTipoLivello());
     root.appendChild(livello);
     //----------------------------
     QTextStream scriviFile(file_giocatore);
@@ -375,4 +379,43 @@ void GestoreGiocatori::salvaLivelloGiocatore() {
     StrutturaLivello aux;
     giocatore_attuale->getStrutturaLivello(&aux);
     gestore_livelli.salvaLivello(&aux);
+}
+
+bool GestoreGiocatori::cambiaLivelloGiocatore(QString nome_livello, TipoLivello tipo) {
+    StrutturaLivello aux;
+    if (gestore_livelli.caricaLivello(nome_livello, &aux)) {
+        giocatore_attuale->setStrutturaLivello(&aux, tipo);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool GestoreGiocatori::salvaLivelloConNomeGiocatore(QString nome_livello) {
+    StrutturaLivello aux;
+    giocatore_attuale->setNomeLivello(nome_livello);
+    giocatore_attuale->getStrutturaLivello(&aux);
+    if (gestore_livelli.nuovoLivello(&aux)) {
+        giocatore_attuale->setStrutturaLivello(&aux, LIVELLO_EDITOR);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool GestoreGiocatori::nuovoLivelloGiocatore(QString nome_livello, unsigned dim_x_livello, unsigned dim_y_livello) {
+    StrutturaLivello aux;
+    aux.nome_livello = nome_livello;
+    aux.griglia_livello = new Griglia(dim_x_livello, dim_y_livello);
+    aux.tipo_proiezione = ASSIONOMETRICA;
+    if (gestore_livelli.nuovoLivello(&aux)) {
+        giocatore_attuale->setStrutturaLivello(&aux, LIVELLO_EDITOR);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+QStringList GestoreGiocatori::listaLivelliGiocatore() {
+    return gestore_livelli.nomiLivelli();
 }

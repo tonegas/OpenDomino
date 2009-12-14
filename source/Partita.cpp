@@ -7,8 +7,12 @@
 
 #include "../include/Domino.h"
 
-Partita::Partita(int num_y_righe_aux, int num_x_colonne_aux)
-: Livello(num_x_colonne_aux, num_y_righe_aux) {
+Partita::Partita(StrutturaLivello *livello) : Livello(livello,LIVELLO_PARTITA) {
+    griglia_livello->setInPartita(true);
+}
+
+Partita::Partita(int num_x_colonne_aux, int num_y_righe_aux)
+: Livello(num_x_colonne_aux, num_y_righe_aux, LIVELLO_PARTITA) {
     griglia_livello->setInPartita(true);
 }
 

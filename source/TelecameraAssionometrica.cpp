@@ -105,7 +105,7 @@ bool TelecameraAssionometrica::mouseSelezione(Livello *liv, Griglia* griglia_liv
             for (int i = -1; i < 2; i++) {
                 for (int j = -1; j < 2; j++) {
                     if ((int) indice_x_griglia + i >= 0 && (int) indice_x_griglia + i < (int) griglia_livello->getDimGrigliaX() &&
-                            (int) indice_y_griglia + j >= 0 && (int) indice_y_griglia + j < (int) griglia_livello->getDimGrigliaX()) {
+                            (int) indice_y_griglia + j >= 0 && (int) indice_y_griglia + j < (int) griglia_livello->getDimGrigliaY()) {
                         if (griglia_livello->getOccupato(indice_x_griglia + i, indice_y_griglia + j)) {
                             if (griglia_livello->getTipo(indice_x_griglia + i, indice_y_griglia + j) == ELEM_PEZZO) {
                                 glLoadName((i + 1) * 3 + (j + 1) + 1);

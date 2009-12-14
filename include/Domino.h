@@ -38,6 +38,7 @@ using namespace std;
 #include "Interfaccia.h"
 #include "Livello.h"
 #include "Partita.h"
+#include "Presentazione.h"
 #include "Editor.h"
 #include "GestoreLivelli.h"
 #include "Giocatore.h"

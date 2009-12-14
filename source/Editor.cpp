@@ -7,14 +7,14 @@
 
 #include "../include/Domino.h"
 
-Editor::Editor(StrutturaLivello *livello) : Livello(livello) {
+Editor::Editor(StrutturaLivello *livello) : Livello(livello,LIVELLO_EDITOR) {
     num_y_righe = livello->griglia_livello->getDimGrigliaX();
     num_x_colonne = livello->griglia_livello->getDimGrigliaY();
     azione_continua = NESSUNA_AZIONE;
 }
 
 Editor::Editor(int num_x_colonne_aux, int num_y_righe_aux)
-: Livello(num_x_colonne_aux, num_y_righe_aux) {
+: Livello(num_x_colonne_aux, num_y_righe_aux, LIVELLO_EDITOR) {
     num_y_righe = num_y_righe_aux;
     num_x_colonne = num_x_colonne_aux;
     azione_continua = NESSUNA_AZIONE;

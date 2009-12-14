@@ -17,8 +17,8 @@ protected:
     void mouseButtonDown();
     void mouseMotion();
     void attivaSelezioni();
-
 public:
+    Partita(StrutturaLivello *livello);
     Partita(int num_x_colonne_aux, int num_y_righe_aux);
     Partita(const Partita& orig);
     Partita(const Livello& orig);

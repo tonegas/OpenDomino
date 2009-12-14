@@ -67,22 +67,12 @@ Giocatore::Giocatore(QString nome_aux, time_t tempo_di_gioco_aux, time_t data_di
     domino_editor = NULL;
 }
 
-void Giocatore::setStrutturaLivello(StrutturaLivello *livello) {
-    if (livello == NULL) {
-        nome_livello_attuale = nome + "_Editor";
-        domino_editor = new Editor();
-        domino = domino_editor;
-        domino->inizializza();
-    } else {
-        nome_livello_attuale = livello->nome_livello;
-        domino_editor = new Editor(livello);
-        domino = domino_editor;
-        domino->inizializza();
-    }
+QString Giocatore::getNomeLivello() {
+    return nome_livello_attuale;
 }
 
-QString Giocatore::getNomeLivello(){
-    return nome_livello_attuale;
+void Giocatore::setNomeLivello(QString nuovo_nome_livello) {
+    nome_livello_attuale = nuovo_nome_livello;
 }
 
 void Giocatore::inizializzaVideo() {
@@ -141,13 +131,18 @@ void Giocatore::cicloGioco() {
     domino->cicloGioco();
 }
 
-void Giocatore::resize(unsigned dim_x,unsigned dim_y) {
-    domino->resize(dim_x,dim_y);
+void Giocatore::resize(unsigned dim_x, unsigned dim_y) {
+    domino->resize(dim_x, dim_y);
 }
 
 void Giocatore::cicloGiocoStampa() {
-    domino->configuraVisuale();
-    domino->cicloGiocoStampa();
+    if (domino->getTipoLivello() == LIVELLO_PRESENTAZIONE) {
+        domino->configuraVisuale();
+        domino->cicloGiocoAggiornaEStampa();
+    } else {
+        domino->configuraVisuale();
+        domino->cicloGiocoStampa();
+    }
 }
 
 void Giocatore::setStato(StatoGiocatore stato_aux) {
@@ -161,7 +156,38 @@ StatoGiocatore Giocatore::getStato() {
     return stato;
 }
 
-void Giocatore::getStrutturaLivello(StrutturaLivello *livello){
+TipoLivello Giocatore::getTipoLivello() {
+    return domino->getTipoLivello();
+}
+
+void Giocatore::getStrutturaLivello(StrutturaLivello *livello) {
     livello->nome_livello = nome_livello_attuale;
     domino->getStrutturaLivello(livello);
+}
+
+void Giocatore::setStrutturaLivello(StrutturaLivello *livello, TipoLivello tipo) {
+    if (livello != NULL) {
+        switch (tipo) {
+            case LIVELLO_EDITOR:
+                nome_livello_attuale = livello->nome_livello;
+                domino_editor = new Editor(livello);
+                domino = domino_editor;
+                domino->inizializza();
+                break;
+            case LIVELLO_PARTITA:
+                nome_livello_attuale = livello->nome_livello;
+                domino = new Partita(livello);
+                domino->inizializza();
+                break;
+            case LIVELLO_PRESENTAZIONE:
+                nome_livello_attuale = livello->nome_livello;
+                domino = new Presentazione(livello);
+                domino->inizializza();
+                break;
+        }
+    } else {
+        nome_livello_attuale = "Intro";
+        domino = new Presentazione(GRIGLIA_EDITOR_X,GRIGLIA_EDITOR_Y);
+        domino->inizializza();
+    }
 }

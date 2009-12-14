@@ -19,6 +19,10 @@ enum Selezione {
     NIENTE, DAVANTI_PEZZO, DAVANTI_BASE
 };
 
+enum TipoLivello{
+    LIVELLO_PARTITA, LIVELLO_EDITOR, LIVELLO_PRESENTAZIONE
+};
+
 //enum TipologiaLivello{
 //    LIVELLO_EDITOR,LIVELLO_PARTITA
 //};
@@ -47,6 +51,7 @@ protected:
 
     //matrici dinamiche di pezzi e basi
     Griglia *griglia_livello; //ok
+    TipoLivello tipo_livello;
 
     //per ora sono solo due bottoni ma penso che diventerà una struttura per gestire l'input in maniera
     //differente a seconda che il livello si editor partita o altro
@@ -87,9 +92,9 @@ protected:
     virtual void mouseButtonUp();
 
 public:
-    Livello(StrutturaLivello *livello);
+    Livello(StrutturaLivello *livello, TipoLivello tipo);
 
-    Livello(int num_x_colonne_aux, int num_y_righe_aux);
+    Livello(int num_x_colonne_aux, int num_y_righe_aux, TipoLivello tipo);
 
     Livello(const Livello &orig);
 
@@ -103,8 +108,11 @@ public:
 
     void setStrutturaLivello(StrutturaLivello *livello);
 
-    //questa funzione la chiamero da dentro il menu per stampare dietro il livello mentro ci sono dentro
-    //void cicloGiocoDentroMenu(SDL_event *evento);
+    TipoLivello getTipoLivello();
+
+//    void setInPartita(bool aux_in_partita);
+//
+//    bool getInPartita();
 
     void cicloGioco();
 

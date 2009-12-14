@@ -269,6 +269,10 @@ void Griglia::setInPartita(bool aux_in_partita) {
     in_partita = aux_in_partita;
 }
 
+bool Griglia::getInPartita(){
+    return in_partita;
+}
+
 
 bool Griglia::setStato(unsigned x, unsigned y, StatoPezzo stato) {
     if (x < num_x_colonne && y < num_y_righe) {

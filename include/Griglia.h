@@ -49,6 +49,8 @@ public:
 
     void setInPartita(bool aux_in_partita);
 
+    bool getInPartita();
+
     unsigned getDimGrigliaX() const;
 
     unsigned getDimGrigliaY() const;

@@ -1,11 +1,9 @@
 
 #include "../include/Domino.h"
 
-
 Menu::~Menu() {
     delete font;
 }
-
 
 StatoMenu Menu::getStato() {
     return stato;
@@ -26,6 +24,13 @@ void Menu::cicloGioco() {
     stampa();
     glEnable(GL_LIGHTING);
     glEnable(GL_DEPTH_TEST);
+    if (stato_cambio_posticipato != stato) {
+        setStato(stato_cambio_posticipato);
+    }
+}
+
+void Menu::setStatoCambioPosticipato(StatoMenu nuovo_stato) {
+    stato_cambio_posticipato = nuovo_stato;
 }
 
 bool Menu::gestisciSelezioneMouse() {
@@ -81,7 +86,6 @@ void Menu::inizializzaVariabiliMenu(StatoMenu nuovo_stato, QStringList nuove_voc
     resize(dim_x_fin, dim_y_fin);
 }
 
-
 void Menu::costruisciCaselleMenuCrea() {
     font->FaceSize(dim_voce);
     layout.SetAlignment(FTGL::ALIGN_CENTER);
@@ -95,7 +99,7 @@ void Menu::costruisciCaselleMenuCrea() {
     }
 }
 
-void Menu::stampaMenuCreaProfilo() {
+void Menu::stampaMenuInserisciParola() {
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     layout.SetLineLength(dim_x_fin);
     layout.SetAlignment(FTGL::ALIGN_CENTER);
@@ -105,7 +109,7 @@ void Menu::stampaMenuCreaProfilo() {
 
     font->FaceSize(dim_voce);
     glRasterPos2i(0, dist_da_basso_voce_principale - dist_da_voce_principale_voce + dist_da_voce / 2);
-    layout.Render((nome_nuovo_giocatore + '_').toStdString().c_str());
+    layout.Render((nuovo_nome + '_').toStdString().c_str());
     for (unsigned i = 0; i < numero_voci_menu_attivo; i++) {
         glColor4f(1.0f - stato_attivo_voci_menu[i], 1.0f, 1.0f - stato_attivo_voci_menu[i], 1.0f);
         glRasterPos2i(0, posizioni_caselle_menu_attivo[i].Y());
@@ -118,16 +122,27 @@ void Menu::stampaMenuCreaLivello() {
     layout.SetLineLength(dim_x_fin);
     layout.SetAlignment(FTGL::ALIGN_CENTER);
     font->FaceSize(dim_voce_principale);
-    glRasterPos2i(0, dist_da_basso_voce_principale + dist_da_voce / 2);
+    glRasterPos2i(0, dist_da_basso_voce_principale);
     layout.Render(voci_menu_attivo[numero_voci_menu_attivo].toStdString().c_str());
 
     font->FaceSize(dim_voce);
-    glRasterPos2i(0, dist_da_basso_voce_principale - dist_da_voce_principale_voce + dist_da_voce / 2);
-    layout.Render((nome_nuovo_livello + '_').toStdString().c_str());
     for (unsigned i = 0; i < numero_voci_menu_attivo; i++) {
         glColor4f(1.0f - stato_attivo_voci_menu[i], 1.0f, 1.0f - stato_attivo_voci_menu[i], 1.0f);
         glRasterPos2i(0, posizioni_caselle_menu_attivo[i].Y());
-        layout.Render(voci_menu_attivo[i].toStdString().c_str());
+        switch (i) {
+            case 0:
+                layout.Render((nuovo_nome + '_').toStdString().c_str());
+                break;
+            case 1:
+                layout.Render((voci_menu_attivo[i] + dim_x_nuovo_livello).toStdString().c_str());
+                break;
+            case 2:
+                layout.Render((voci_menu_attivo[i] + dim_y_nuovo_livello).toStdString().c_str());
+                break;
+            default:
+                layout.Render(voci_menu_attivo[i].toStdString().c_str());
+                break;
+        }
     }
 }
 
@@ -258,6 +273,6 @@ void Menu::aggiornaStatoAttivoVociMenuLateraleMouse() {
     if ((int) dim_y_fin - evento->motion.y < (int) dist_da_basso_voce_principale && (int) dim_y_fin - evento->motion.y > (int) dist_da_basso_voce_uscita + dist_da_voce) {
         posizione_voci_visibili = (double) (dist_da_basso_voce_principale - (dim_y_fin - evento->motion.y))
                 / (double) (dist_da_basso_voce_principale - dist_da_basso_voce_uscita)
-                * (numero_voci_menu_attivo + 1 - voci_visibili) * dist_da_voce;
+                * (numero_voci_menu_attivo + 2 - voci_visibili) * dist_da_voce;
     }
 }

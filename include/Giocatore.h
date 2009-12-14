@@ -22,6 +22,8 @@
 
 #include <FTGL/ftgl.h>
 
+#include "Livello.h"
+
 using namespace std;
 class Interfaccia;
 
@@ -52,6 +54,8 @@ public:
     ~Giocatore();
     QString getNome();
     QString getNomeLivello();
+    void setNomeLivello(QString nuovo_nome_livello);
+    TipoLivello getTipoLivello();
     void setNome(QString nuovo_nome);
     time_t getDataDiCreazione();
     time_t getTempoDiGioco();
@@ -61,7 +65,7 @@ public:
     StatoGiocatore getStato();
     void setStato(StatoGiocatore stato_aux);
     void getStrutturaLivello(StrutturaLivello *livello);
-    void setStrutturaLivello(StrutturaLivello *livello);
+    void setStrutturaLivello(StrutturaLivello *livello, TipoLivello tipo);
     void inizializzaVideo();
     void cicloGioco();
     void cicloGiocoStampa();

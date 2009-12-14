@@ -10,11 +10,12 @@
 
 using namespace std;
 
-Livello::Livello(StrutturaLivello *livello) {
+Livello::Livello(StrutturaLivello *livello, TipoLivello tipo) {
     griglia_livello = livello->griglia_livello;
     tele_assio = new TelecameraAssionometrica(livello->posizione_telecamere.telecamera_assionometrica, griglia_livello->getDimGrigliaX(), griglia_livello->getDimGrigliaY());
     tele_prosp = new TelecameraProspettica(livello->posizione_telecamere.telecamera_prospettica, griglia_livello->getDimGrigliaX(), griglia_livello->getDimGrigliaY());
     tipo_proiezione = livello->tipo_proiezione;
+    tipo_livello = tipo;
     bottone_destro = false;
     bottone_sinistro = false;
     bottone_centrale = false;
@@ -22,11 +23,11 @@ Livello::Livello(StrutturaLivello *livello) {
     entrambi = false;
 }
 
-Livello::Livello(int num_x_colonne_aux, int num_y_righe_aux) {
-
+Livello::Livello(int num_x_colonne_aux, int num_y_righe_aux, TipoLivello tipo) {
     griglia_livello = new Griglia(num_x_colonne_aux, num_y_righe_aux);
     tele_assio = new TelecameraAssionometrica(num_x_colonne_aux, num_y_righe_aux);
     tele_prosp = new TelecameraProspettica(num_x_colonne_aux, num_y_righe_aux);
+    tipo_livello = tipo;
 
     bottone_destro = false;
     bottone_sinistro = false;
@@ -38,10 +39,10 @@ Livello::Livello(int num_x_colonne_aux, int num_y_righe_aux) {
 }
 
 Livello::Livello(const Livello& orig) {
-
     griglia_livello = new Griglia(*orig.griglia_livello);
     tele_assio = new TelecameraAssionometrica(*orig.tele_assio);
     tele_prosp = new TelecameraProspettica(*orig.tele_prosp);
+    tipo_livello = orig.tipo_livello;
 
     bottone_destro = orig.bottone_destro;
     bottone_sinistro = orig.bottone_sinistro;
@@ -96,10 +97,12 @@ void Livello::mouseButtonUp() {
 }
 
 void Livello::keyDownF5() {
-    if (gioco->getStatoGiocatore() == EDITOR_TEST) {
-        gioco->setStatoGiocatore(EDITOR_COSTRUISCI);
-    } else {
-        gioco->setStatoGiocatore(EDITOR_TEST);
+    if (tipo_livello == LIVELLO_EDITOR) {
+        if (gioco->getStatoGiocatore() == EDITOR_TEST) {
+            gioco->setStatoGiocatore(EDITOR_COSTRUISCI);
+        } else {
+            gioco->setStatoGiocatore(EDITOR_TEST);
+        }
     }
 }
 
@@ -112,7 +115,21 @@ void Livello::gestisciInput() {
             switch (evento->key.keysym.sym) {
                 case SDLK_ESCAPE:
                     gioco->setStato(MENU);
-                    gioco->setStatoMenu(CL_CONTINUA_LIVELLO);
+                    switch (tipo_livello) {
+                        case LIVELLO_PARTITA:
+                            gioco->setStatoMenu(GL_GIOCA_LIVELLO);
+                            break;
+                        case LIVELLO_EDITOR://devo diversicare nel caso sia a fare i test!!!!!!!!!!!
+                            if (gioco->getStatoGiocatore() == EDITOR_COSTRUISCI){
+                                gioco->setStatoMenu(EL_EDITOR_LIVELLO);
+                            }else{
+                                gioco->setStatoMenu(ELP_EDITOR_LIVELLO_PROVA);
+                            }
+                            break;
+                        case LIVELLO_PRESENTAZIONE:
+                            gioco->setStatoMenu(PRINCIPALE);
+                            break;
+                    }
                     break;
                 case SDLK_PAGEUP:
                     if (gioco->getFrames() > 1)
@@ -124,7 +141,7 @@ void Livello::gestisciInput() {
                 case SDLK_PAGEDOWN:
                     gioco->setFrames(gioco->getFrames() + 1);
                     break;
-                case SDLK_p:
+                case SDLK_F1:
                     telecamera_attuale = tele_prosp;
                     tipo_proiezione = PROSPETTICA;
                     telecamera_attuale->setProiezioneTelecamera(gioco->getWindowL(), gioco->getWindowA());
@@ -135,7 +152,7 @@ void Livello::gestisciInput() {
                     //telecamera_attuale->getMousePosGrigliaXY(griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY());
                     //mouseMotion();
                     break;
-                case SDLK_a:
+                case SDLK_F2:
                     telecamera_attuale = tele_assio;
                     tipo_proiezione = ASSIONOMETRICA;
                     telecamera_attuale->setProiezioneTelecamera(gioco->getWindowL(), gioco->getWindowA());
@@ -143,6 +160,10 @@ void Livello::gestisciInput() {
                     attivaSelezioni();
                     //telecamera_attuale->getMousePosGrigliaXY(griglia_livello.getDimGrigliaX(), griglia_livello.getDimGrigliaY());
                     //mouseMotion();
+                    break;
+                case SDLK_p:
+                    gioco->setStato(MENU);
+                    gioco->setStatoMenu(PAUSA);
                     break;
                 case SDLK_f:
                     if (gioco->getFullScreen()) {
@@ -468,3 +489,15 @@ void Livello::setStrutturaLivello(StrutturaLivello *livello) {
     livello->posizione_telecamere.telecamera_prospettica = (*tele_prosp->getPosTeleProsp());
     livello->tipo_proiezione = tipo_proiezione;
 }
+
+TipoLivello Livello::getTipoLivello() {
+    return tipo_livello;
+}
+
+//void Livello::setInPartita(bool aux_in_partita) {
+//    griglia_livello->setInPartita(aux_in_partita);
+//}
+//
+//bool Livello::getInPartita() {
+//    return griglia_livello->getInPartita();
+//}
