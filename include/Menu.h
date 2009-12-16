@@ -8,135 +8,44 @@
 #ifndef _MENU_H
 #define	_MENU_H
 
-#include "Domino.h"
-
-using namespace std;
-
 class GestoreGiocatori;
 class Interfaccia;
+class MenuAttivo;
+class MenuCentrale;
+class MenuLaterale;
+
 
 //questa mi seve qua ma poi va tolta
 
-enum StatoMenu {
-    PRIMO = 1,
-    PRINCIPALE = 17,
-    //:::::::::::::::::::::::::::::::::::::::::::::::::
-    GIOCA = 10,
-    G_GIOCA = 103,
-    //---------------
-    G_CONTINUA = 100,
-
-    G_SCEGLI_LIVELLO = 101,
-    G_SL_SCEGLI_LIVELLO = 1011, G_SL_TORNA_INDIETRO = 1010,
-
-    G_TORNA_A_MENU_PRINCIPALE = 102,
-    //---------------
-
-    GESTIONE_LIVELLI = 11,
-    GEL_GESTIONE_LIVELLI = 114,
-    //---------------
-    GEL_NUOVO_LIVELLO = 110,
-    GEL_NL_NUOVO_LIVELLO = 1105, GEL_NL_NOME_LIVELLO = 1100, GEL_NL_DIMX_LIVELLO = 1101, GEL_NL_DIMY_LIVELLO = 1102, GEL_NL_CREA_LIVELLO = 1103, GEL_NL_TORNA_INDIETRO = 1104,
-
-    GEL_SCEGLI_LIVELLO = 111,
-    GEL_SL_SCEGLI_LIVELLO = 1111, GEL_SL_TORNA_INDIETRO = 1110,
-
-    GEL_ELIMINA_LIVELLO = 112,
-    GEL_EL_ELIMINA_LIVELLO = 1121, GEL_EL_TORNA_INDIETRO = 1120,
-
-    GEL_TORNA_A_MENU_PRINCIPALE = 113,
-    //---------------
-
-    OPTION = 12,
-
-    GESTIONE_PROFILI = 13,
-    GP_GESTIONE_PROFILI = 135,
-    //---------------
-    GP_NUOVO_PROFILO = 130,
-    GP_NP_NUOVO_PROFILO = 1302, GP_NP_CREA_PROFILO = 1300, GP_NP_TORNA_INDIETRO = 1301,
-
-    GP_CAMBIA_PROFILO = 131,
-    GP_CP_CAMBIA_PROFILO = 1311, GP_CP_TORNA_INDIETRO = 1310,
-
-    GP_COPIA_PROFILO_ATTUALE = 132,
-    GP_CPA_COPIA_PROFILO_ATTUALE = 1322, GP_CPA_CREA_COPIA_PROFILO = 1320, GP_CPA_TORNA_INDIETRO = 1321,
-
-    GP_ELIMINA_PROFILO = 133,
-    GP_EL_ELIMINA_PROFILO = 1331, GP_EL_TORNA_INDIETRO = 1330,
-
-    GP_TORNA_A_MENU_PRINCIPALE = 134,
-    //----------------
-
-    ISTRUZIONI = 14,
-
-    RINGRAZIAMENTI = 15,
-
-    ESCI = 16,
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    SECONDO = 2,
-    EL_EDITOR_LIVELLO = 25,
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    EL_PROVA_LIVELLO = 20,
-
-    EL_SALVA_LIVELLO = 21,
-
-    EL_SALVA_LIVELLO_CON_NOME = 22,
-    EL_SLCN_SALVA_LIVELLO_CON_NOME = 222, EL_SLCN_SALVA_LIVELLO = 220, EL_SLCN_TORNA_INDIETRO = 221,
-
-    EL_CAMBIA_LIVELLO = 23,
-    EL_CL_CAMBIA_LIVELLO = 231, EL_CL_TORNA_INDIETRO = 230,
-
-    EL_TORNA_A_MENU_PRINCIPALE_SENZA_SALVARE = 24,
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-    TERZO = 3,
-    GL_GIOCA_LIVELLO = 33,
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    GL_SALVA_LIVELLO = 30,
-
-    GL_CAMBIA_LIVELLO = 31,
-    GL_CL_CAMBIA_LIVELLO = 311, GL_CL_TORNA_INDIETRO = 310,
-
-    GL_TORNA_A_MENU_PRINCIPALE_SENZA_SALVARE = 32,
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-    QUARTO = 4,
-    ELP_EDITOR_LIVELLO_PROVA = 42,
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    ELP_TORNA_EDITOR = 40,
-
-    ELP_TORNA_A_MENU_PRINCIPALE_SENZA_SALVARE = 41,
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-    QUINTO = 5,
-    PAUSA = 51
-};
+#include "Domino.h"
 
 class Menu : public Interfaccia {
-    unsigned dim_x_fin, dim_y_fin;
-
-    int dim_nome, dist_da_destra_nome, dist_da_alto_nome;
-    int dim_voce_principale, dist_da_basso_voce_principale;
-    int dim_voce, dist_da_voce_principale_voce, dist_da_voce;
-    int dist_da_sinistra, dist_da_basso_voce_uscita;
-
-    unsigned prima_voce_visibile;
-    unsigned voci_visibili;
-    int posizione_voci_visibili;
-
-    //variabili per interagire con il mondo
     GestoreGiocatori *gestore_giocatori;
+    MenuAttivo* menu_attuale;
+    MenuCentrale menu_centrale;
+    MenuLaterale menu_laterale;
+    MenuCreaLivello menu_crea_livello;
+    MenuInserisciParola menu_inserisci_parola;
+
     QStringList nomi_giocatori;
     QStringList lista_livelli;
-    //Gioco* gioco;
 
     QString nuovo_nome;
     QString dim_x_nuovo_livello;
     QString dim_y_nuovo_livello;
 
-    //    //variabili per scrivere
+    //variabili per scrivere
     FTPixmapFont *font;
     FTSimpleLayout layout;
+
+    unsigned dim_x_fin, dim_y_fin;
+
+    int dim_nome, dist_da_destra_nome, dist_da_alto_nome;
+
+    unsigned prima_voce_visibile;
+    unsigned voci_visibili;
+    int posizione_voci_visibili;
+
 
     //variabili di stato
     StatoMenu stato;
@@ -183,12 +92,12 @@ class Menu : public Interfaccia {
 
     QStringList pausa;
 
-    void inizializzaVariabiliMenu(StatoMenu nuovo_stato, QStringList nuove_voci_menu);
-    void inizializzaVariabiliMenu(StatoMenu nuovo_stato, QStringList nuove_voci_menu, unsigned numero_voci_in_piu);
+//    void inizializzaVariabiliMenu(StatoMenu nuovo_stato, QStringList nuove_voci_menu);
+//    void inizializzaVariabiliMenu(StatoMenu nuovo_stato, QStringList nuove_voci_menu, unsigned numero_voci_in_piu);
 
-    void costruisciCaselleMenuCentrale();
-    void costruisciCaselleMenuLaterale();
-    void costruisciCaselleMenuCrea();
+//    void costruisciCaselleMenuCentrale();
+//    void costruisciCaselleMenuLaterale();
+//    void costruisciCaselleMenuCrea();
 
     void cambiaVociMenu();
     //:::::::::::::::::::::::::::::::
@@ -215,27 +124,28 @@ class Menu : public Interfaccia {
     void cambiaVociMenuELPEditorLivelloProva();
 
 
-    bool gestisciSelezioneMouse();
-    bool gestisciSelezioneMouseMenuLaterale();
+//    bool gestisciSelezioneMouse();
+//    bool gestisciSelezioneMouseMenuLaterale();
     void gestisciInput();
 
     void stampa();
     void stampaGiocatoreAttuale();
-    void stampaMenuCentrale();
-    void stampaMenuLaterale();
-    void stampaMenuCreaLivello();
-    void stampaMenuInserisciParola();
+//    void stampaMenuCentrale();
+//    void stampaMenuLaterale();
+//    void stampaMenuCreaLivello();
+//    void stampaMenuInserisciParola();
 
-    void aggiornaStatoAttivoVociMenu();
-    void aggiornaStatoAttivoVociMenuLaterale();
-    void aggiornaStatoAttivoVociMenuLateraleMouse();
+//    void aggiornaStatoAttivoVociMenu();
+//    void aggiornaStatoAttivoVociMenuLaterale();
+//    void aggiornaStatoAttivoVociMenuLateraleMouse();
 
 public:
     Menu(unsigned dim_x_fin_aux, unsigned dim_y_fin_aux);
     ~Menu();
     void setStato(StatoMenu nuovo_stato);
-    void setStatoCambioPosticipato(StatoMenu nuovo_stato);
+//    void setStatoCambioPosticipato(StatoMenu nuovo_stato);
     void resize(unsigned dim_x, unsigned dim_y);
+    void resize();
     StatoMenu getStato();
     void cicloGioco();
 };

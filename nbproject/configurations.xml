@@ -24,6 +24,11 @@
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Interfaccia.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Livello.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Menu.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/MenuAttivo.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/MenuCentrale.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/MenuCreaLivello.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/MenuInserisciParola.h</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/MenuLaterale.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Partita.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/PosTelecamere.h</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Presentazione.h</itemPath>
@@ -55,6 +60,11 @@
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Livello.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Menu.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/MenuAppoggio.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/MenuAttivo.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/MenuCentrale.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/MenuCreaLivello.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/MenuInserisciParola.cpp</itemPath>
+      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/MenuLaterale.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Partita.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/PosTelecamere.cpp</itemPath>
       <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Presentazione.cpp</itemPath>

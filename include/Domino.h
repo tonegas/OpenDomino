@@ -22,7 +22,6 @@
 #include <FTGL/FTPoint.h>
 #include <QFile>
 
-
 using namespace std;
 
 #include "Textures.h"
@@ -43,6 +42,11 @@ using namespace std;
 #include "GestoreLivelli.h"
 #include "Giocatore.h"
 #include "GestoreGiocatori.h"
+#include "MenuAttivo.h"
+#include "MenuCentrale.h"
+#include "MenuLaterale.h"
+#include "MenuCreaLivello.h"
+#include "MenuInserisciParola.h"
 #include "Menu.h"
 #include "Gioco.h"
 
