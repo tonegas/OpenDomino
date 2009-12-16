@@ -114,8 +114,7 @@ Menu::Menu(unsigned dim_x_fin_aux, unsigned dim_y_fin_aux) {
 
     menu_centrale.setCarattere(font, &layout);
     menu_laterale.setCarattere(font, &layout);
-    menu_crea_livello.setCarattere(font, &layout);
-    menu_inserisci_parola.setCarattere(font, &layout);
+    menu_voci_dinamiche.setCarattere(font, &layout);
 
     setStato(PRINCIPALE);
 }
@@ -147,7 +146,8 @@ void Menu::resize(unsigned dim_x, unsigned dim_y) {
 
 void Menu::setStato(StatoMenu nuovo_stato) {
     //   stato_cambio_posticipato = nuovo_stato;
-    switch (nuovo_stato) {
+    stato = nuovo_stato;
+    switch (stato) {
         case TORNA_INDIETRO:
             setStato(PRINCIPALE);
             break;
@@ -161,10 +161,10 @@ void Menu::setStato(StatoMenu nuovo_stato) {
             }
             menu_attuale->inserisci("Scegli Livello", SCEGLI_LIVELLO);
             menu_attuale->inserisci("Editor livelli", GESTIONE_LIVELLI);
-            menu_attuale->inserisci("Opzioni", OPZIONI, false);
+            menu_attuale->inserisci("Opzioni", OPZIONI, false, false);
             menu_attuale->inserisci("Gestione profili", GESTIONE_PROFILI);
-            menu_attuale->inserisci("Istruzioni", ISTRUZIONI, false);
-            menu_attuale->inserisci("Ringraziamenti", RINGRAZIAMENTI, false);
+            menu_attuale->inserisci("Istruzioni", ISTRUZIONI, false, false);
+            menu_attuale->inserisci("Ringraziamenti", RINGRAZIAMENTI, false, false);
             menu_attuale->inserisci("Esci", ESCI);
             resize();
             break;
@@ -198,15 +198,28 @@ void Menu::setStato(StatoMenu nuovo_stato) {
             resize();
             break;
         case GEL_NUOVO_LIVELLO:
-//            menu_attuale = &menu_crea_livello;
-//            menu_attuale->tipo = MENU_CREA_LIVELLO;
-//            menu_attuale->azzera();
-//            menu_attuale->inserisci("Editor livelli", GESTIONE_LIVELLI);
-//            menu_attuale->inserisci("Nuovo livello", GEL_NUOVO_LIVELLO);
-//            menu_attuale->inserisci("Scegli livello", GEL_SCEGLI_LIVELLO);
-//            menu_attuale->inserisci("Elimina livello", GEL_ELIMINA_LIVELLO);
-//            menu_attuale->inserisci("Torna al menu", TORNA_INDIETRO);
-//            resize();
+            menu_attuale = &menu_voci_dinamiche;
+            menu_attuale->tipo = MENU_VOCI_DINAMICHE;
+            menu_attuale->azzera();
+            menu_attuale->inserisci("Scegli caratteristiche livello", GEL_NUOVO_LIVELLO);
+            menu_attuale->inserisci("Nome livello",VUOTA, true, false);
+            menu_attuale->inserisci("", &nuovo_nome, GEL_NL_NOME_LIVELLO, true);
+            menu_attuale->inserisci("Larghezza livello: ", &dim_x_nuovo_livello, GEL_NL_DIMX_LIVELLO, true);
+            menu_attuale->inserisci("Altrzza livello: ", &dim_y_nuovo_livello, GEL_NL_DIMY_LIVELLO, true);
+            menu_attuale->inserisci("Crea livello", GEL_NL_CREA_LIVELLO);
+            menu_attuale->inserisci("Torna al menu", TORNA_INDIETRO);
+            menu_attuale->setVoceSelezionata(1);
+            resize();
+            break;
+            //            menu_attuale = &menu_crea_livello;
+            //            menu_attuale->tipo = MENU_CREA_LIVELLO;
+            //            menu_attuale->azzera();
+            //            menu_attuale->inserisci("Editor livelli", GESTIONE_LIVELLI);
+            //            menu_attuale->inserisci("Nuovo livello", GEL_NUOVO_LIVELLO);
+            //            menu_attuale->inserisci("Scegli livello", GEL_SCEGLI_LIVELLO);
+            //            menu_attuale->inserisci("Elimina livello", GEL_ELIMINA_LIVELLO);
+            //            menu_attuale->inserisci("Torna al menu", TORNA_INDIETRO);
+            //            resize();
             //            setStato(GEL_NL_NUOVO_LIVELLO);
             //            nuovo_nome.clear();
             //            dim_x_nuovo_livello = "100";
@@ -394,59 +407,61 @@ void Menu::gestisciInput() {
                         }
                         break;
                     default:
-                        //                        switch (stato) {
-                        //                            case PAUSA:
-                        //                                gioco->setStato(GIOCATORE);
-                        //                                break;
-                        //                            case GEL_NL_NUOVO_LIVELLO:
-                        //                                switch (stato_attivo + GEL_NUOVO_LIVELLO * 10) {
-                        //                                    case GEL_NL_NOME_LIVELLO:
-                        //                                        if (evento->key.keysym.sym <= SDLK_z && evento->key.keysym.sym >= SDLK_a && nuovo_nome.count() <= 30) {
-                        //                                            if (evento->key.keysym.mod & KMOD_SHIFT) {
-                        //                                                nuovo_nome += evento->key.keysym.sym - 32;
-                        //                                            } else {
-                        //                                                nuovo_nome += evento->key.keysym.sym;
-                        //                                            }
-                        //                                        }
-                        //                                        if (evento->key.keysym.sym == SDLK_BACKSPACE) {
-                        //                                            nuovo_nome.resize(nuovo_nome.count() - 1);
-                        //                                        }
-                        //                                        break;
-                        //                                    case GEL_NL_DIMX_LIVELLO:
-                        //                                        if (evento->key.keysym.sym <= SDLK_9 && evento->key.keysym.sym >= SDLK_0 && dim_x_nuovo_livello.count() < 4) {
-                        //                                            dim_x_nuovo_livello += evento->key.keysym.sym;
-                        //                                        }
-                        //                                        if (evento->key.keysym.sym == SDLK_BACKSPACE) {
-                        //                                            dim_x_nuovo_livello.resize(dim_x_nuovo_livello.count() - 1);
-                        //                                        }
-                        //                                        break;
-                        //                                    case GEL_NL_DIMY_LIVELLO:
-                        //                                        if (evento->key.keysym.sym <= SDLK_9 && evento->key.keysym.sym >= SDLK_0 && dim_y_nuovo_livello.count() < 4) {
-                        //                                            dim_y_nuovo_livello += evento->key.keysym.sym;
-                        //                                        }
-                        //                                        if (evento->key.keysym.sym == SDLK_BACKSPACE) {
-                        //                                            dim_y_nuovo_livello.resize(dim_y_nuovo_livello.count() - 1);
-                        //                                        }
-                        //                                        break;
-                        //                                }
-                        //                                break;
-                        //                            case GP_NP_NUOVO_PROFILO:
-                        //                            case GP_CPA_COPIA_PROFILO_ATTUALE:
-                        //                            case EL_SLCN_SALVA_LIVELLO_CON_NOME:
-                        //                                if (evento->key.keysym.sym <= SDLK_z && evento->key.keysym.sym >= SDLK_a && nuovo_nome.count() <= 30) {
-                        //                                    if (evento->key.keysym.mod & KMOD_SHIFT) {
-                        //                                        nuovo_nome += evento->key.keysym.sym - 32;
-                        //                                    } else {
-                        //                                        nuovo_nome += evento->key.keysym.sym;
-                        //                                    }
-                        //                                }
-                        //                                if (evento->key.keysym.sym == SDLK_BACKSPACE) {
-                        //                                    nuovo_nome.resize(nuovo_nome.count() - 1);
-                        //                                }
-                        //                                break;
-                        //                            default:
-                        //                                break;
-                        //                        }
+                        switch (stato) {
+                            case PAUSA:
+                                gioco->setStato(GIOCATORE);
+                                break;
+                            case GEL_NUOVO_LIVELLO:
+                                switch (menu_attuale->statoSelezionato()) {
+                                    case GEL_NL_NOME_LIVELLO:
+                                        if (evento->key.keysym.sym <= SDLK_z && evento->key.keysym.sym >= SDLK_a && nuovo_nome.count() <= 30) {
+                                            if (evento->key.keysym.mod & KMOD_SHIFT) {
+                                                nuovo_nome += evento->key.keysym.sym - 32;
+                                            } else {
+                                                nuovo_nome += evento->key.keysym.sym;
+                                            }
+                                        }
+                                        if (evento->key.keysym.sym == SDLK_BACKSPACE) {
+                                            nuovo_nome.resize(nuovo_nome.count() - 1);
+                                        }
+                                        break;
+                                    case GEL_NL_DIMX_LIVELLO:
+                                        if (evento->key.keysym.sym <= SDLK_9 && evento->key.keysym.sym >= SDLK_0 && dim_x_nuovo_livello.count() < 4) {
+                                            dim_x_nuovo_livello += evento->key.keysym.sym;
+                                        }
+                                        if (evento->key.keysym.sym == SDLK_BACKSPACE) {
+                                            dim_x_nuovo_livello.resize(dim_x_nuovo_livello.count() - 1);
+                                        }
+                                        break;
+                                    case GEL_NL_DIMY_LIVELLO:
+                                        if (evento->key.keysym.sym <= SDLK_9 && evento->key.keysym.sym >= SDLK_0 && dim_y_nuovo_livello.count() < 4) {
+                                            dim_y_nuovo_livello += evento->key.keysym.sym;
+                                        }
+                                        if (evento->key.keysym.sym == SDLK_BACKSPACE) {
+                                            dim_y_nuovo_livello.resize(dim_y_nuovo_livello.count() - 1);
+                                        }
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                break;
+                                //                            case GP_NP_NUOVO_PROFILO:
+                                //                            case GP_CPA_COPIA_PROFILO_ATTUALE:
+                                //                            case EL_SLCN_SALVA_LIVELLO_CON_NOME:
+                                //                                if (evento->key.keysym.sym <= SDLK_z && evento->key.keysym.sym >= SDLK_a && nuovo_nome.count() <= 30) {
+                                //                                    if (evento->key.keysym.mod & KMOD_SHIFT) {
+                                //                                        nuovo_nome += evento->key.keysym.sym - 32;
+                                //                                    } else {
+                                //                                        nuovo_nome += evento->key.keysym.sym;
+                                //                                    }
+                                //                                }
+                                //                                if (evento->key.keysym.sym == SDLK_BACKSPACE) {
+                                //                                    nuovo_nome.resize(nuovo_nome.count() - 1);
+                                //                                }
+                                //                                break;
+                            default:
+                                break;
+                        }
                         break;
                 }
             }
@@ -611,7 +626,7 @@ void Menu::cambiaVociMenuPrincipale() {
             //            setStato(G_GIOCA);
             break;
         case GESTIONE_LIVELLI:
-            setStato(GEL_GESTIONE_LIVELLI);
+            //            setStato(GEL_GESTIONE_LIVELLI);
             break;
         case GESTIONE_PROFILI:
             setStato(GP_GESTIONE_PROFILI);
@@ -707,12 +722,12 @@ void Menu::cambiaVociMenuGeLScegliLivello() {
 
 void Menu::cambiaVociMenuGeLEliminaLivello() {
     switch (stato_attivo + GEL_ELIMINA_LIVELLO * 10) {
-        case GEL_EL_TORNA_INDIETRO:
-            setStato(GEL_GESTIONE_LIVELLI);
-            break;
-        default:
+            //        case GEL_EL_TORNA_INDIETRO:
+            //            setStato(GEL_GESTIONE_LIVELLI);
+            //            break;
+            //        default:
             //??????????????????????????
-            break;
+            //            break;
     }
 }
 

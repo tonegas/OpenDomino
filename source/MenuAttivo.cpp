@@ -18,13 +18,15 @@ void MenuAttivo::setCarattere(FTPixmapFont *font_aux, FTSimpleLayout *layout_aux
     layout = layout_aux;
 }
 
-void MenuAttivo::inserisci(QString voce, StatoMenu stato, bool attivo) {
+void MenuAttivo::inserisci(QString voce, StatoMenu stato, bool attivo, bool selezionabile) {
     if (titolo.isEmpty()) {
         titolo = voce;
     } else {
         voci_menu += voce;
         stati_menu += stato;
-        stati_menu_selezionabili += attivo;
+        voci_dinamiche += NULL;
+        stati_menu_attivi += attivo;
+        stati_menu_selezionabili += selezionabile;
         stato_attivo_voci_menu += 0;
     }
     numero_voci_menu_attivo = voci_menu.count();
@@ -32,9 +34,21 @@ void MenuAttivo::inserisci(QString voce, StatoMenu stato, bool attivo) {
 
 void MenuAttivo::inserisci(QStringList lista_voci, StatoMenu stato) {
     voci_menu += lista_voci;
-    stati_menu.fill(stato,lista_voci.count());
-    stati_menu_selezionabili.fill(true,lista_voci.count());
-    stato_attivo_voci_menu.fill(true,lista_voci.count());
+    stati_menu.fill(stato, lista_voci.count());
+    stati_menu_attivi.fill(true, lista_voci.count());
+    voci_dinamiche.fill(NULL, lista_voci.count());
+    stati_menu_selezionabili.fill(true, lista_voci.count());
+    stato_attivo_voci_menu.fill(true, lista_voci.count());
+    numero_voci_menu_attivo = voci_menu.count();
+}
+
+void MenuAttivo::inserisci(QString parte_iniziale_voce, QString* voce_dinamica, StatoMenu stato, bool selezionabile) {
+    voci_menu += parte_iniziale_voce;
+    stati_menu += stato;
+    stati_menu_attivi += true;
+    voci_dinamiche += voce_dinamica;
+    stati_menu_selezionabili += selezionabile;
+    stato_attivo_voci_menu += 0;
     numero_voci_menu_attivo = voci_menu.count();
 }
 
@@ -44,7 +58,9 @@ void MenuAttivo::azzera() {
     titolo.clear();
     voci_menu.clear();
     stati_menu.clear();
+    voci_dinamiche.clear();
     stati_menu_selezionabili.clear();
+    stati_menu_attivi.clear();
     stato_attivo_voci_menu.clear();
 }
 
@@ -56,7 +72,6 @@ void MenuAttivo::incrementoSelezione() {
     do {
         voce_selezionata = (++voce_selezionata % numero_voci_menu_attivo);
     } while (!stati_menu_selezionabili[voce_selezionata]);
-    cout << voce_selezionata << '\n' << numero_voci_menu_attivo << flush;
     aggiornaMovimento();
 }
 
@@ -64,7 +79,6 @@ void MenuAttivo::decrementoSelezione() {
     do {
         voce_selezionata = ((voce_selezionata - 1 >= numero_voci_menu_attivo) ? numero_voci_menu_attivo - 1 : voce_selezionata - 1);
     } while (!stati_menu_selezionabili[voce_selezionata]);
-    cout << voce_selezionata << '\n' << numero_voci_menu_attivo << flush;
     aggiornaMovimento();
 }
 
@@ -122,10 +136,14 @@ void MenuAttivo::resize(unsigned dim_x, unsigned dim_y) {
     resize();
 }
 
-unsigned MenuAttivo::getVoceSelezionata(){
+unsigned MenuAttivo::getVoceSelezionata() {
     return voce_selezionata;
 }
 
-QString MenuAttivo::getStringa(){
+void MenuAttivo::setVoceSelezionata(unsigned num_voce){
+    voce_selezionata = num_voce;
+}
+
+QString MenuAttivo::getStringa() {
     return "";
 }

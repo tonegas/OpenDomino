@@ -13,7 +13,7 @@ class Interfaccia;
 class MenuAttivo;
 class MenuCentrale;
 class MenuLaterale;
-
+class MenuVociDinamiche;
 
 //questa mi seve qua ma poi va tolta
 
@@ -24,8 +24,7 @@ class Menu : public Interfaccia {
     MenuAttivo* menu_attuale;
     MenuCentrale menu_centrale;
     MenuLaterale menu_laterale;
-    MenuCreaLivello menu_crea_livello;
-    MenuInserisciParola menu_inserisci_parola;
+    MenuVociDinamiche menu_voci_dinamiche;
 
     QStringList nomi_giocatori;
     QStringList lista_livelli;

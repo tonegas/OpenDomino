@@ -31,7 +31,6 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/MenuCreaLivello.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/GestoreLivelli.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Editor.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/PosTelecamere.o \
@@ -47,7 +46,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Interfaccia.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/TelecameraAssionometrica.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/GestoreGiocatori.o \
-	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/MenuInserisciParola.o \
+	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/MenuVociDinamiche.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/Livello.o \
 	${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/MenuAppoggio.o \
@@ -82,11 +81,6 @@ LDLIBSOPTIONS=
 dist/Release/GNU-Linux-x86/opendomino: ${OBJECTFILES}
 	${MKDIR} -p dist/Release/GNU-Linux-x86
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/opendomino ${OBJECTFILES} ${LDLIBSOPTIONS} 
-
-${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/MenuCreaLivello.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino/OpenDomino/source/MenuCreaLivello.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/MenuCreaLivello.o /home/tonegas/workspace/Domino/OpenDomino/source/MenuCreaLivello.cpp
 
 ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/GestoreLivelli.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino/OpenDomino/source/GestoreLivelli.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source
@@ -163,10 +157,10 @@ ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/GestoreGiocato
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/GestoreGiocatori.o /home/tonegas/workspace/Domino/OpenDomino/source/GestoreGiocatori.cpp
 
-${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/MenuInserisciParola.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino/OpenDomino/source/MenuInserisciParola.cpp 
+${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/MenuVociDinamiche.o: nbproject/Makefile-${CND_CONF}.mk /home/tonegas/workspace/Domino/OpenDomino/source/MenuVociDinamiche.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/MenuInserisciParola.o /home/tonegas/workspace/Domino/OpenDomino/source/MenuInserisciParola.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/home/tonegas/workspace/Domino/OpenDomino/source/MenuVociDinamiche.o /home/tonegas/workspace/Domino/OpenDomino/source/MenuVociDinamiche.cpp
 
 ${OBJECTDIR}/main.o: nbproject/Makefile-${CND_CONF}.mk main.cpp 
 	${MKDIR} -p ${OBJECTDIR}

@@ -9,6 +9,7 @@
 #define	_MENUATTIVO_H
 
 enum StatoMenu {
+    VUOTA,
     PRINCIPALE,
     //:::::::::::::::::::::::::::::::::::::::::::::::::
     /**/ TORNA_INDIETRO,
@@ -94,8 +95,7 @@ enum StatoMenu {
 enum TipoMenu {
     MENU_CENTRALE,
     MENU_LATERALE_SCORRIMENTO,
-    MENU_INSERISCI_PAROLA,
-    MENU_CREA_LIVELLO
+    MENU_VOCI_DINAMICHE
 };
 
 #include "Domino.h"
@@ -112,6 +112,8 @@ protected:
     QString titolo;
     QStringList voci_menu;
     QVector<StatoMenu> stati_menu;
+    QVector<QString*> voci_dinamiche;
+    QVector<bool> stati_menu_attivi;
     QVector<bool> stati_menu_selezionabili;
     QVector<float> stato_attivo_voci_menu;
     QVector<FTBBox> caselle_menu_attivo;
@@ -132,9 +134,11 @@ public:
 
     void setCarattere(FTPixmapFont *font_aux, FTSimpleLayout *layout_aux);
 
-    void inserisci(QString voce, StatoMenu stato, bool attivo = true);
+    void inserisci(QString voce, StatoMenu stato, bool attivo = true, bool selezionabile = true);
 
     void inserisci(QStringList lista_voci, StatoMenu stato);
+
+    void inserisci(QString parte_iniziale_voce, QString* voce_dinamica, StatoMenu stato, bool selezionabile = false);
 
     void azzera();
 
@@ -149,6 +153,8 @@ public:
     void decrementoSelezione();
 
     unsigned getVoceSelezionata();
+
+    void setVoceSelezionata(unsigned num_voce);
 
     void aggiorna();
 

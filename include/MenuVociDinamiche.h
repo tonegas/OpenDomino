@@ -5,17 +5,14 @@
  * Created on 14 dicembre 2009, 22.52
  */
 
-#ifndef _MENUCREALIVELLO_H
-#define	_MENUCREALIVELLO_H
+#ifndef _MENUVOCIDINAMICHE_H
+#define	_MENUVOCIDINAMICHE_H
 
 #include "Domino.h"
 
-class MenuCreaLivello : public MenuAttivo {
-    QString nuovo_nome;
-    QString dim_x_nuovo_livello;
-    QString dim_y_nuovo_livello;
+class MenuVociDinamiche : public MenuAttivo {
 public:
-    MenuCreaLivello();
+    MenuVociDinamiche();
     void costruisciCaselle();
     void stampa();
 };

@@ -45,8 +45,7 @@ using namespace std;
 #include "MenuAttivo.h"
 #include "MenuCentrale.h"
 #include "MenuLaterale.h"
-#include "MenuCreaLivello.h"
-#include "MenuInserisciParola.h"
+#include "MenuVociDinamiche.h"
 #include "Menu.h"
 #include "Gioco.h"
 

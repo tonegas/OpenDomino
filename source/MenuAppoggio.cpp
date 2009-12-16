@@ -18,12 +18,14 @@ void Menu::cicloGioco() {
     }
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
+    glEnable(GL_BLEND);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(0, dim_x_fin, 0, dim_y_fin);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     stampa();
+    glDisable(GL_BLEND);
     glEnable(GL_LIGHTING);
     glEnable(GL_DEPTH_TEST);
 //    if (stato_cambio_posticipato != stato) {
