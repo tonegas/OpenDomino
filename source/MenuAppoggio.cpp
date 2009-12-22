@@ -28,14 +28,14 @@ void Menu::cicloGioco() {
     glDisable(GL_BLEND);
     glEnable(GL_LIGHTING);
     glEnable(GL_DEPTH_TEST);
-//    if (stato_cambio_posticipato != stato) {
-//        setStato(stato_cambio_posticipato);
-//    }
+    if (stato_cambio_posticipato != stato) {
+        setStato(stato_cambio_posticipato);
+    }
 }
 
-//void Menu::setStatoCambioPosticipato(StatoMenu nuovo_stato) {
-//    stato_cambio_posticipato = nuovo_stato;
-//}
+void Menu::setStatoCambioPosticipato(StatoMenu nuovo_stato) {
+    stato_cambio_posticipato = nuovo_stato;
+}
 
 //bool Menu::gestisciSelezioneMouse() {
 //    double pos_x = (double) evento->motion.x;
@@ -154,14 +154,15 @@ void Menu::cicloGioco() {
 //bool primo = true;
 //GLuint titolo, nomi;
 
-
 void Menu::stampaGiocatoreAttuale() {
     font->FaceSize(dim_nome);
     layout.SetAlignment(FTGL::ALIGN_RIGHT);
     layout.SetLineLength(dim_x_fin - dist_da_destra_nome);
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     glRasterPos2i(0, dim_y_fin - dist_da_alto_nome);
-    layout.Render(gestore_giocatori->nomeGiocatoreAttuale().toStdString().c_str());
+    layout.Render((gestore_giocatori->getNomeGiocatoreAttuale()
+            + ' ' + stringaStatoGiocatore[gioco->getStatoGiocatore()]
+            + ' ' + gestore_giocatori->getnomeLivelloAttuale()).toStdString().c_str());
 }
 
 //void Menu::aggiornaStatoAttivoVociMenu() {

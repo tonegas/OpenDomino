@@ -16,36 +16,7 @@ Menu::Menu(unsigned dim_x_fin_aux, unsigned dim_y_fin_aux) {
     font = new FTGLPixmapFont("./Caratteri/Abscissa.ttf");
     layout.SetFont(font);
 
-    //::::::::::::::::::::::::::::::::::
-    voci_menu_principale.append("Gioca");
-    voci_menu_principale.append("Editor livelli");
-    voci_menu_principale.append("Opzioni");
-    voci_menu_principale.append("Gestione profili");
-    voci_menu_principale.append("Istruzioni");
-    voci_menu_principale.append("Ringraziamenti");
-    voci_menu_principale.append("Esci");
-    voci_menu_principale.append("Open Domino");
-
-    voci_menu_gioca.append("Continua ultimo livello");
-    voci_menu_gioca.append("Cambia livello");
-    voci_menu_gioca.append("Torna al menu");
-    voci_menu_gioca.append("Gioca");
-
-    voci_menu_g_scegli_livello.append("Torna al menu");
-    voci_menu_g_scegli_livello.append("Scegli livello");
-
-    voci_menu_gestione_livelli.append("Nuovo livello");
-    voci_menu_gestione_livelli.append("Scegli livello");
-    voci_menu_gestione_livelli.append("Elimina livello");
-    voci_menu_gestione_livelli.append("Torna al menu");
-    voci_menu_gestione_livelli.append("Editor livelli");
-
-    voci_menu_gel_nuovo_livello.append("Nome livello: ");
-    voci_menu_gel_nuovo_livello.append("Dimensione X: ");
-    voci_menu_gel_nuovo_livello.append("Dimensione Y: ");
-    voci_menu_gel_nuovo_livello.append("Crea livello");
-    voci_menu_gel_nuovo_livello.append("Torna indietro");
-    voci_menu_gel_nuovo_livello.append("Nuovo livello");
+    stringaStatoGiocatore = (QStringList) "gioca" + (QStringList) "costruisce" + (QStringList) "prova";
 
     voci_menu_gel_scegli_livello.append("Torna indietro");
     voci_menu_gel_scegli_livello.append("Scegli livello");
@@ -145,17 +116,33 @@ void Menu::resize(unsigned dim_x, unsigned dim_y) {
 }
 
 void Menu::setStato(StatoMenu nuovo_stato) {
-    //   stato_cambio_posticipato = nuovo_stato;
-    stato = nuovo_stato;
-    switch (stato) {
+    stato_cambio_posticipato = nuovo_stato;
+    switch (nuovo_stato) {
         case TORNA_INDIETRO:
-            setStato(PRINCIPALE);
+            switch (stato) {
+                case GL_CAMBIA_LIVELLO:
+                    setStato(GL_GIOCA_LIVELLO);
+                    break;
+                case EL_CAMBIA_LIVELLO:
+                case EL_SALVA_LIVELLO_CON_NOME:
+                    setStato(EL_EDITOR_LIVELLO);
+                    break;
+                case GEL_NUOVO_LIVELLO:
+                case GEL_SCEGLI_LIVELLO:
+                case GEL_ELIMINA_LIVELLO:
+                case CONFERMA_ELIMINA_LIVELLO_SCELTO:
+                    setStato(GESTIONE_LIVELLI);
+                    break;
+                default:
+                    setStato(PRINCIPALE);
+                    break;
+            }
             break;
         case PRINCIPALE:
             menu_attuale = &menu_centrale;
             menu_attuale->tipo = MENU_CENTRALE;
             menu_attuale->azzera();
-            menu_attuale->inserisci("Open Domino", PRINCIPALE);
+            menu_attuale->inserisci("Open Domino");
             if ((*gestore_giocatori->getGiocatoreAttuale())->getNomeLivello() != "Intro") {
                 menu_attuale->inserisci("Continua Partita", CONTINUA_PARTITA);
             }
@@ -172,17 +159,19 @@ void Menu::setStato(StatoMenu nuovo_stato) {
             gioco->setStato(GIOCATORE);
             break;
         case SCEGLI_LIVELLO:
+        case GL_CAMBIA_LIVELLO:
             menu_attuale = &menu_laterale;
             menu_attuale->tipo = MENU_LATERALE_SCORRIMENTO;
             menu_attuale->azzera();
-            menu_attuale->inserisci("Scegli livello", SCEGLI_LIVELLO);
-            menu_attuale->inserisci(gestore_giocatori->listaLivelliGiocatore(), SL_LIVELLO);
+            menu_attuale->inserisci("Scegli livello");
+            menu_attuale->inserisci(gestore_giocatori->listaLivelliGiocatore(), LIVELLO_SCELTO_PARTITA);
             menu_attuale->inserisci("Torna al menu", TORNA_INDIETRO);
             resize();
             break;
-        case SL_LIVELLO:
+        case LIVELLO_SCELTO_PARTITA:
             if (gestore_giocatori->cambiaLivelloGiocatore(menu_attuale->getStringa(), LIVELLO_PARTITA)) {
-                setStato(GL_GIOCA_LIVELLO);
+                setStatoCambioPosticipato(GL_GIOCA_LIVELLO);
+                gioco->setStatoGiocatore(PARTITA);
                 gioco->setStato(GIOCATORE);
             }
             break;
@@ -190,7 +179,7 @@ void Menu::setStato(StatoMenu nuovo_stato) {
             menu_attuale = &menu_centrale;
             menu_attuale->tipo = MENU_CENTRALE;
             menu_attuale->azzera();
-            menu_attuale->inserisci("Editor livelli", GESTIONE_LIVELLI);
+            menu_attuale->inserisci("Editor livelli");
             menu_attuale->inserisci("Nuovo livello", GEL_NUOVO_LIVELLO);
             menu_attuale->inserisci("Scegli livello", GEL_SCEGLI_LIVELLO);
             menu_attuale->inserisci("Elimina livello", GEL_ELIMINA_LIVELLO);
@@ -200,10 +189,13 @@ void Menu::setStato(StatoMenu nuovo_stato) {
         case GEL_NUOVO_LIVELLO:
             menu_attuale = &menu_voci_dinamiche;
             menu_attuale->tipo = MENU_VOCI_DINAMICHE;
+            nuovo_nome.clear();
+            dim_x_nuovo_livello.clear();
+            dim_y_nuovo_livello.clear();
             menu_attuale->azzera();
-            menu_attuale->inserisci("Scegli caratteristiche livello", GEL_NUOVO_LIVELLO);
-            menu_attuale->inserisci("Nome livello",VUOTA, true, false);
-            menu_attuale->inserisci("", &nuovo_nome, GEL_NL_NOME_LIVELLO, true);
+            menu_attuale->inserisci("Scegli caratteristiche livello");
+            menu_attuale->inserisci("Nome livello", VUOTA, true, false);
+            menu_attuale->inserisci("", &nuovo_nome, NOME_LIVELLO, true);
             menu_attuale->inserisci("Larghezza livello: ", &dim_x_nuovo_livello, GEL_NL_DIMX_LIVELLO, true);
             menu_attuale->inserisci("Altrzza livello: ", &dim_y_nuovo_livello, GEL_NL_DIMY_LIVELLO, true);
             menu_attuale->inserisci("Crea livello", GEL_NL_CREA_LIVELLO);
@@ -211,37 +203,209 @@ void Menu::setStato(StatoMenu nuovo_stato) {
             menu_attuale->setVoceSelezionata(1);
             resize();
             break;
-            //            menu_attuale = &menu_crea_livello;
-            //            menu_attuale->tipo = MENU_CREA_LIVELLO;
-            //            menu_attuale->azzera();
-            //            menu_attuale->inserisci("Editor livelli", GESTIONE_LIVELLI);
-            //            menu_attuale->inserisci("Nuovo livello", GEL_NUOVO_LIVELLO);
-            //            menu_attuale->inserisci("Scegli livello", GEL_SCEGLI_LIVELLO);
-            //            menu_attuale->inserisci("Elimina livello", GEL_ELIMINA_LIVELLO);
-            //            menu_attuale->inserisci("Torna al menu", TORNA_INDIETRO);
-            //            resize();
-            //            setStato(GEL_NL_NUOVO_LIVELLO);
-            //            nuovo_nome.clear();
-            //            dim_x_nuovo_livello = "100";
-            //            dim_y_nuovo_livello = "100";
-            //            if (gestore_giocatori->nuovoLivelloGiocatore(nuovo_nome, dim_x_nuovo_livello.toUInt(), dim_y_nuovo_livello.toUInt())) {
-            //                setStatoCambioPosticipato(EL_EDITOR_LIVELLO);
-            //                gioco->setStato(GIOCATORE);
-            //            }
+        case GEL_NL_CREA_LIVELLO:
+            if (gestore_giocatori->nuovoLivelloGiocatore(nuovo_nome, dim_x_nuovo_livello.toUInt(), dim_y_nuovo_livello.toUInt())) {
+                setStatoCambioPosticipato(EL_EDITOR_LIVELLO);
+                gioco->setStatoGiocatore(EDITOR_COSTRUISCI);
+                gioco->setStato(GIOCATORE);
+            }
+            break;
         case GEL_SCEGLI_LIVELLO:
+        case EL_CAMBIA_LIVELLO:
             menu_attuale = &menu_laterale;
             menu_attuale->tipo = MENU_LATERALE_SCORRIMENTO;
             menu_attuale->azzera();
-            menu_attuale->inserisci("Scegli livello", GEL_SCEGLI_LIVELLO);
-            menu_attuale->inserisci(gestore_giocatori->listaLivelliGiocatore(), GEL_SL_LIVELLO);
+            menu_attuale->inserisci("Scegli livello");
+            menu_attuale->inserisci(gestore_giocatori->listaLivelliGiocatore(), LIVELLO_SCELTO_EDITOR);
             menu_attuale->inserisci("Torna al menu", TORNA_INDIETRO);
             resize();
             break;
-        case GEL_SL_LIVELLO:
+        case GEL_ELIMINA_LIVELLO:
+            menu_attuale = &menu_laterale;
+            menu_attuale->tipo = MENU_LATERALE_SCORRIMENTO;
+            menu_attuale->azzera();
+            menu_attuale->inserisci("Elimina livello");
+            menu_attuale->inserisci(gestore_giocatori->listaLivelliGiocatore(), CONFERMA_ELIMINA_LIVELLO_SCELTO);
+            menu_attuale->inserisci("Torna al menu", TORNA_INDIETRO);
+            resize();
+            break;
+        case CONFERMA_ELIMINA_LIVELLO_SCELTO:
+            livello_da_eliminare = menu_attuale->getStringa();
+            menu_attuale = &menu_centrale;
+            menu_attuale->tipo = MENU_CENTRALE;
+            menu_attuale->azzera();
+            menu_attuale->inserisci("Eliminazione livello");
+            menu_attuale->inserisci(livello_da_eliminare, VUOTA, true, false);
+            menu_attuale->inserisci("Conferma eliminazione", ELIMINA_LIVELLO_SCELTO);
+            menu_attuale->inserisci("Torna al menu", TORNA_INDIETRO);
+            resize();
+            break;
+        case ELIMINA_LIVELLO_SCELTO:
+            if (gestore_giocatori->eliminaLivello(livello_da_eliminare)) {
+                setStato(GESTIONE_LIVELLI);
+            }
+            break;
+        case LIVELLO_SCELTO_EDITOR:
             if (gestore_giocatori->cambiaLivelloGiocatore(menu_attuale->getStringa(), LIVELLO_EDITOR)) {
-                setStato(EL_EDITOR_LIVELLO);
+                setStatoCambioPosticipato(EL_EDITOR_LIVELLO);
+                gioco->setStatoGiocatore(EDITOR_COSTRUISCI);
                 gioco->setStato(GIOCATORE);
             }
+            break;
+        case GESTIONE_PROFILI:
+            menu_attuale = &menu_centrale;
+            menu_attuale->tipo = MENU_CENTRALE;
+            menu_attuale->azzera();
+            menu_attuale->inserisci("Gestore Profili");
+            menu_attuale->inserisci("Nuovo profilo", GP_NUOVO_PROFILO);
+            menu_attuale->inserisci("Cambia profilo", GP_CAMBIA_PROFILO);
+            menu_attuale->inserisci("Copia profilo attuale", GP_COPIA_PROFILO_ATTUALE);
+            menu_attuale->inserisci("Elimina livello", GP_ELIMINA_PROFILO);
+            menu_attuale->inserisci("Torna al menu", TORNA_INDIETRO);
+            resize();
+            break;
+        case GP_NUOVO_PROFILO:
+            menu_attuale = &menu_voci_dinamiche;
+            menu_attuale->tipo = MENU_VOCI_DINAMICHE;
+            nuovo_nome.clear();
+            menu_attuale->azzera();
+            menu_attuale->inserisci("Nuovo profilo");
+            menu_attuale->inserisci("", &nuovo_nome, NOME_PROFILO, false);
+            menu_attuale->inserisci("Crea profilo", GP_NP_CREA_PROFILO);
+            menu_attuale->inserisci("Torna indierto", TORNA_INDIETRO);
+            menu_attuale->setVoceSelezionata(1);
+            resize();
+            break;
+        case GP_NP_CREA_PROFILO:
+            if (gestore_giocatori->nuovoGiocatore(nuovo_nome)) {
+                setStato(PRINCIPALE);
+            }
+            break;
+        case GP_COPIA_PROFILO_ATTUALE:
+            menu_attuale = &menu_voci_dinamiche;
+            menu_attuale->tipo = MENU_VOCI_DINAMICHE;
+            nuovo_nome.clear();
+            menu_attuale->azzera();
+            menu_attuale->inserisci("Inserisci nome del profilo");
+            menu_attuale->inserisci("", &nuovo_nome, NOME_PROFILO, false);
+            menu_attuale->inserisci("Crea copia del profilo", GP_CPA_CREA_PROFILO);
+            menu_attuale->inserisci("Torna indierto", TORNA_INDIETRO);
+            menu_attuale->setVoceSelezionata(1);
+            resize();
+            break;
+        case GP_CPA_CREA_PROFILO:
+            if (gestore_giocatori->copiaGiocatoreAttuale(nuovo_nome)) {
+                setStato(GESTIONE_PROFILI);
+            }
+            break;
+        case GP_CAMBIA_PROFILO:
+            menu_attuale = &menu_laterale;
+            menu_attuale->tipo = MENU_LATERALE_SCORRIMENTO;
+            menu_attuale->azzera();
+            menu_attuale->inserisci("Cambia profilo");
+            menu_attuale->inserisci(gestore_giocatori->nomiGiocatori(), PROFILO_SCELTO);
+            menu_attuale->inserisci("Torna al menu", TORNA_INDIETRO);
+            resize();
+            break;
+        case PROFILO_SCELTO:
+            if (gestore_giocatori->cambiaGiocatore(menu_attuale->getStringa())) {
+                setStato(PRINCIPALE);
+            }
+            break;
+        case GP_ELIMINA_PROFILO:
+            menu_attuale = &menu_laterale;
+            menu_attuale->tipo = MENU_LATERALE_SCORRIMENTO;
+            menu_attuale->azzera();
+            menu_attuale->inserisci("Elimina profilo");
+            menu_attuale->inserisci(gestore_giocatori->nomiGiocatori(), CONFERMA_ELIMINA_PROFILO_SCELTO);
+            menu_attuale->inserisci("Torna al menu", TORNA_INDIETRO);
+            resize();
+            break;
+        case CONFERMA_ELIMINA_PROFILO_SCELTO:
+            profilo_da_eliminare = menu_attuale->getStringa();
+            menu_attuale = &menu_centrale;
+            menu_attuale->tipo = MENU_CENTRALE;
+            menu_attuale->azzera();
+            menu_attuale->inserisci("Eliminazione profilo");
+            menu_attuale->inserisci(profilo_da_eliminare, VUOTA, true, false);
+            menu_attuale->inserisci("Conferma eliminazione", ELIMINA_PROFILO_SCELTO);
+            menu_attuale->inserisci("Torna al menu", TORNA_INDIETRO);
+            menu_attuale->setVoceSelezionata(1);
+            resize();
+            break;
+        case ELIMINA_PROFILO_SCELTO:
+            gestore_giocatori->eliminaGiocatore(profilo_da_eliminare);
+            setStato(GESTIONE_PROFILI);
+            break;
+        case EL_EDITOR_LIVELLO:
+            menu_attuale = &menu_centrale;
+            menu_attuale->tipo = MENU_CENTRALE;
+            menu_attuale->azzera();
+            menu_attuale->inserisci("Open Domino");
+            menu_attuale->inserisci("Prova livello", EL_PROVA_LIVELLO);
+            menu_attuale->inserisci("Salva livello", EL_SALVA_LIVELLO);
+            menu_attuale->inserisci("Salve livello con nome", EL_SALVA_LIVELLO_CON_NOME);
+            menu_attuale->inserisci("Cambia livello", EL_CAMBIA_LIVELLO);
+            menu_attuale->inserisci("Torna al menu principale", TORNA_INDIETRO);
+            resize();
+            break;
+        case EL_PROVA_LIVELLO:
+            gioco->setStato(GIOCATORE);
+            gioco->setStatoGiocatore(EDITOR_TEST);
+            setStatoCambioPosticipato(ELP_EDITOR_LIVELLO_PROVA);
+            break;
+        case EL_SALVA_LIVELLO:
+            gestore_giocatori->salvaLivelloGiocatore();
+            gioco->setStato(GIOCATORE);
+            break;
+        case EL_SALVA_LIVELLO_CON_NOME:
+            menu_attuale = &menu_voci_dinamiche;
+            menu_attuale->tipo = MENU_VOCI_DINAMICHE;
+            nuovo_nome.clear();
+            menu_attuale->azzera();
+            menu_attuale->inserisci("Salva livello con nome");
+            menu_attuale->inserisci("", &nuovo_nome, NOME_LIVELLO, false);
+            menu_attuale->inserisci("Salva livello", EL_SALVA_LIVELLO);
+            menu_attuale->inserisci("Torna indierto", TORNA_INDIETRO);
+            menu_attuale->setVoceSelezionata(1);
+            resize();
+            break;
+        case EL_SLCN_SALVA_LIVELLO:
+            if (gestore_giocatori->salvaLivelloConNomeGiocatore(nuovo_nome)) {
+                gioco->setStato(GIOCATORE);
+            }
+            break;
+        case GL_GIOCA_LIVELLO:
+            menu_attuale = &menu_centrale;
+            menu_attuale->tipo = MENU_CENTRALE;
+            menu_attuale->azzera();
+            menu_attuale->inserisci("Open Domino");
+            menu_attuale->inserisci("Salva livello", GL_SALVA_LIVELLO, false);
+            menu_attuale->inserisci("Cambia livello", GL_CAMBIA_LIVELLO);
+            menu_attuale->inserisci("Torna al menu principale", TORNA_INDIETRO);
+            resize();
+            break;
+        case ELP_EDITOR_LIVELLO_PROVA:
+            menu_attuale = &menu_centrale;
+            menu_attuale->tipo = MENU_CENTRALE;
+            menu_attuale->azzera();
+            menu_attuale->inserisci("Open Domino");
+            menu_attuale->inserisci("Torna all'editor", ELP_TORNA_EDITOR);
+            menu_attuale->inserisci("Torna al menu principale", TORNA_INDIETRO);
+            resize();
+            break;
+        case ELP_TORNA_EDITOR:
+            gioco->setStato(GIOCATORE);
+            gioco->setStatoGiocatore(EDITOR_COSTRUISCI);
+            setStatoCambioPosticipato(EL_EDITOR_LIVELLO);
+            break;
+        case PAUSA:
+            menu_attuale = &menu_centrale;
+            menu_attuale->tipo = MENU_CENTRALE;
+            menu_attuale->azzera();
+            menu_attuale->inserisci("Open Domino");
+            menu_attuale->inserisci("Pausa", VUOTA, true, false);
+            resize();
             break;
         case ESCI:
             gioco->gameExit();
@@ -250,6 +414,30 @@ void Menu::setStato(StatoMenu nuovo_stato) {
             cout << "ERRORE DI INDIRIZZAMENTO MENU\n" << flush;
             break;
     }
+    stato = nuovo_stato;
+
+    //        switch (stato_attivo + SECONDO * 10) {
+    //        case EL_PROVA_LIVELLO:
+    //            gioco->setStato(GIOCATORE);
+    //            gioco->setStatoGiocatore(EDITOR_TEST);
+    //            //            setStatoCambioPosticipato(ELP_EDITOR_LIVELLO_PROVA);
+    //            break;
+    //        case EL_SALVA_LIVELLO:
+    //            gestore_giocatori->salvaLivelloGiocatore();
+    //            gioco->setStato(GIOCATORE);
+    //            break;
+    //        case EL_SALVA_LIVELLO_CON_NOME:
+    //            nuovo_nome.clear();
+    //            setStato(EL_SLCN_SALVA_LIVELLO_CON_NOME);
+    //            break;
+    //        case EL_CAMBIA_LIVELLO:
+    //            lista_livelli = gestore_giocatori->listaLivelliGiocatore();
+    //            setStato(EL_CL_CAMBIA_LIVELLO);
+    //            break;
+    //        case EL_TORNA_A_MENU_PRINCIPALE_SENZA_SALVARE:
+    //            setStato(PRINCIPALE);
+    //            break;
+    //    }
 
     //            inizializzaVariabiliMenu(G_GIOCA, voci_menu_gioca);
     //            costruisciCaselleMenuCentrale();
@@ -346,47 +534,9 @@ void Menu::gestisciInput() {
                 switch (evento->key.keysym.sym) {
                     case SDLK_UP:
                         menu_attuale->decrementoSelezione();
-                        //--------------------------------
-                        //                        stato_attivo = (stato_attivo - 1) >= numero_voci_menu_attivo ? (numero_voci_menu_attivo - 1) : (stato_attivo - 1);
-                        //                        if (numero_voci_menu_attivo > voci_visibili) {
-                        //                            switch (stato) {
-                        //                                case GP_EL_ELIMINA_PROFILO:
-                        //                                case GP_CP_CAMBIA_PROFILO:
-                        //                                case G_SL_SCEGLI_LIVELLO:
-                        //                                case GEL_SL_SCEGLI_LIVELLO:
-                        //                                case GEL_EL_ELIMINA_LIVELLO:
-                        //                                case EL_CL_CAMBIA_LIVELLO:
-                        //                                case GL_CL_CAMBIA_LIVELLO:
-                        ////                                    aggiornaStatoAttivoVociMenuLaterale();
-                        ////                                    costruisciCaselleMenuLaterale();
-                        //                                    break;
-                        //                                default:
-                        //                                    break;
-                        //                            }
-                        //                        }
-                        //-------------------------------
                         break;
                     case SDLK_DOWN:
                         menu_attuale->incrementoSelezione();
-                        //--------------------------------
-                        //                        stato_attivo = ((stato_attivo + 1) % numero_voci_menu_attivo);
-                        //                        if (numero_voci_menu_attivo > voci_visibili) {
-                        //                            switch (stato) {
-                        //                                case GP_EL_ELIMINA_PROFILO:
-                        //                                case GP_CP_CAMBIA_PROFILO:
-                        //                                case G_SL_SCEGLI_LIVELLO:
-                        //                                case GEL_SL_SCEGLI_LIVELLO:
-                        //                                case GEL_EL_ELIMINA_LIVELLO:
-                        //                                case EL_CL_CAMBIA_LIVELLO:
-                        //                                case GL_CL_CAMBIA_LIVELLO:
-                        ////                                    aggiornaStatoAttivoVociMenuLaterale();
-                        ////                                    costruisciCaselleMenuLaterale();
-                        //                                    break;
-                        //                                default:
-                        //                                    break;
-                        //                            }
-                        //                        }
-                        //--------------------------------
                         break;
                     case SDLK_RETURN:
                         cambiaVociMenu();
@@ -400,8 +550,7 @@ void Menu::gestisciInput() {
                                     gioco->setStato(GIOCATORE);
                                     break;
                                 default:
-                                    stato_attivo = (stato % (stato / 10 * 10)) - 1;
-                                    cambiaVociMenu();
+                                    setStato(TORNA_INDIETRO);
                                     break;
                             }
                         }
@@ -413,7 +562,7 @@ void Menu::gestisciInput() {
                                 break;
                             case GEL_NUOVO_LIVELLO:
                                 switch (menu_attuale->statoSelezionato()) {
-                                    case GEL_NL_NOME_LIVELLO:
+                                    case NOME_LIVELLO:
                                         if (evento->key.keysym.sym <= SDLK_z && evento->key.keysym.sym >= SDLK_a && nuovo_nome.count() <= 30) {
                                             if (evento->key.keysym.mod & KMOD_SHIFT) {
                                                 nuovo_nome += evento->key.keysym.sym - 32;
@@ -445,20 +594,20 @@ void Menu::gestisciInput() {
                                         break;
                                 }
                                 break;
-                                //                            case GP_NP_NUOVO_PROFILO:
-                                //                            case GP_CPA_COPIA_PROFILO_ATTUALE:
-                                //                            case EL_SLCN_SALVA_LIVELLO_CON_NOME:
-                                //                                if (evento->key.keysym.sym <= SDLK_z && evento->key.keysym.sym >= SDLK_a && nuovo_nome.count() <= 30) {
-                                //                                    if (evento->key.keysym.mod & KMOD_SHIFT) {
-                                //                                        nuovo_nome += evento->key.keysym.sym - 32;
-                                //                                    } else {
-                                //                                        nuovo_nome += evento->key.keysym.sym;
-                                //                                    }
-                                //                                }
-                                //                                if (evento->key.keysym.sym == SDLK_BACKSPACE) {
-                                //                                    nuovo_nome.resize(nuovo_nome.count() - 1);
-                                //                                }
-                                //                                break;
+                            case GP_NUOVO_PROFILO:
+                            case GP_COPIA_PROFILO_ATTUALE:
+                            case EL_SALVA_LIVELLO_CON_NOME:
+                                if (evento->key.keysym.sym <= SDLK_z && evento->key.keysym.sym >= SDLK_a && nuovo_nome.count() <= 30) {
+                                    if (evento->key.keysym.mod & KMOD_SHIFT) {
+                                        nuovo_nome += evento->key.keysym.sym - 32;
+                                    } else {
+                                        nuovo_nome += evento->key.keysym.sym;
+                                    }
+                                }
+                                if (evento->key.keysym.sym == SDLK_BACKSPACE) {
+                                    nuovo_nome.resize(nuovo_nome.count() - 1);
+                                }
+                                break;
                             default:
                                 break;
                         }
@@ -470,25 +619,25 @@ void Menu::gestisciInput() {
             menu_attuale->aggiornaMovimento(evento->motion.x, evento->motion.y);
             menu_attuale->gestisciSelezioneMouse(evento->motion.x, evento->motion.y);
 
-            if (numero_voci_menu_attivo > voci_visibili) {
-                switch (stato) {
-                    case GP_EL_ELIMINA_PROFILO:
-                    case GP_CP_CAMBIA_PROFILO:
-                        //                    case G_SL_SCEGLI_LIVELLO:
-                        //                    case GEL_SL_SCEGLI_LIVELLO:
-                        //                    case GEL_EL_ELIMINA_LIVELLO:
-                    case EL_CL_CAMBIA_LIVELLO:
-                    case GL_CL_CAMBIA_LIVELLO:
-                        //                        aggiornaStatoAttivoVociMenuLateraleMouse();
-                        //                        costruisciCaselleMenuLaterale();
-                        //                        gestisciSelezioneMouseMenuLaterale();
-                        break;
-                    default:
-                        break;
-                }
-            } else {
-                //                gestisciSelezioneMouse();
-            }
+            //            if (numero_voci_menu_attivo > voci_visibili) {
+            //                switch (stato) {
+            //                    case GP_EL_ELIMINA_PROFILO:
+            //                    case GP_CP_CAMBIA_PROFILO:
+            //                        //                    case G_SL_SCEGLI_LIVELLO:
+            //                        //                    case GEL_SL_SCEGLI_LIVELLO:
+            //                        //                    case GEL_EL_ELIMINA_LIVELLO:
+            //                    case EL_CL_CAMBIA_LIVELLO:
+            //                    case GL_CL_CAMBIA_LIVELLO:
+            //                        //                        aggiornaStatoAttivoVociMenuLateraleMouse();
+            //                        //                        costruisciCaselleMenuLaterale();
+            //                        //                        gestisciSelezioneMouseMenuLaterale();
+            //                        break;
+            //                    default:
+            //                        break;
+            //                }
+            //            } else {
+            //                //                gestisciSelezioneMouse();
+            //            }
             break;
         case SDL_MOUSEBUTTONDOWN:
             if (evento->button.button == SDL_BUTTON_LEFT)
@@ -535,370 +684,292 @@ void Menu::stampa() {
 
 void Menu::cambiaVociMenu() {
     setStato(menu_attuale->statoSelezionato());
-    //    switch (menu_attuale->statoSelezionato()) {
-    //            //switch (stato_attivo + PRIMO * 10) {
-    //        case ESCI:
-    //            gioco->gameExit();
-    //            break;
-    //            case CONTINUA_PARTITA:
-    //                gioco->setStato(GIOCATORE);
-    //            break;
-    //        case SCEGLI_LIVELLO:
-    //            lista_livelli = gestore_giocatori->listaLivelliGiocatore();
-    //            break;
-    //            //            break;
-    //            //        case GESTIONE_LIVELLI:
-    //            //            setStato(GEL_GESTIONE_LIVELLI);
-    //            //            break;
-    //            //        case GESTIONE_PROFILI:
-    //            //            setStato(GP_GESTIONE_PROFILI);
-    //            //            break;
-    //        default:
-    //            break;
-    //    }
-    //    switch (stato) {
-    //        case PRINCIPALE:
-    //            cambiaVociMenuPrincipale();
-    //            break;
-    //        case G_GIOCA:
-    //            cambiaVociMenuGioca();
-    //            break;
-    //        case G_SL_SCEGLI_LIVELLO:
-    //            cambiaVociMenuGScegliLivello();
-    //            break;
-    //        case GEL_GESTIONE_LIVELLI:
-    //            cambiaVociMenuGestioneLivelli();
-    //            break;
-    //        case GEL_NL_NUOVO_LIVELLO:
-    //            cambiaVociMenuGeLNuovoLivello();
-    //            break;
-    //        case GEL_SL_SCEGLI_LIVELLO:
-    //            cambiaVociMenuGeLScegliLivello();
-    //            break;
-    //        case GEL_EL_ELIMINA_LIVELLO:
-    //            cambiaVociMenuGeLEliminaLivello();
-    //            break;
-    //        case GP_GESTIONE_PROFILI:
-    //            cambiaVociMenuGestioneProfili();
-    //            break;
-    //        case GP_CP_CAMBIA_PROFILO:
-    //            cambiaVociMenuGPCambiaProfilo();
-    //            break;
-    //        case GP_EL_ELIMINA_PROFILO:
-    //            cambiaVociMenuGPEliminaProfilo();
-    //            break;
-    //        case GP_NP_NUOVO_PROFILO:
-    //            cambiaVociMenuGPNuovoProfilo();
-    //            break;
-    //        case GP_CPA_COPIA_PROFILO_ATTUALE:
-    //            cambiaVociMenuGPCopiaProfiloAttuale();
-    //            break;
-    //        case EL_EDITOR_LIVELLO:
-    //            cambiaVociMenuELEditorLivelli();
-    //            break;
-    //        case EL_SLCN_SALVA_LIVELLO_CON_NOME:
-    //            cambiaVociMenuELSalvaConNome();
-    //            break;
-    //        case EL_CL_CAMBIA_LIVELLO:
-    //            cambiaVociMenuELCambiaLivello();
-    //            break;
-    //        case GL_GIOCA_LIVELLO:
-    //            cambiaVociMenuGLGiocaLivello();
-    //            break;
-    //        case GL_CL_CAMBIA_LIVELLO:
-    //            cambiaVociMenuGLCambiaLivello();
-    //            break;
-    //        case ELP_EDITOR_LIVELLO_PROVA:
-    //            cambiaVociMenuELPEditorLivelloProva();
-    //            break;
-    //        default:
-    //            break;
-    //    }
 }
-
-void Menu::cambiaVociMenuPrincipale() {
-    switch (menu_attuale->statoSelezionato()) {
-            //switch (stato_attivo + PRIMO * 10) {
-        case ESCI:
-            gioco->gameExit();
-            break;
-            //        case GIOCA:
-            //            setStato(G_GIOCA);
-            break;
-        case GESTIONE_LIVELLI:
-            //            setStato(GEL_GESTIONE_LIVELLI);
-            break;
-        case GESTIONE_PROFILI:
-            setStato(GP_GESTIONE_PROFILI);
-            break;
-        default:
-            break;
-    }
-}
-
-void Menu::cambiaVociMenuGioca() {
-    //    switch (stato_attivo + GIOCA * 10) {
-    //        case G_CONTINUA:
-    //            setStatoCambioPosticipato(GL_GIOCA_LIVELLO);
-    //            gioco->setStato(GIOCATORE);
-    //            break;
-    //        case G_SCEGLI_LIVELLO:
-    //            lista_livelli = gestore_giocatori->listaLivelliGiocatore();
-    //            setStato(G_SL_SCEGLI_LIVELLO);
-    //            break;
-    //        case G_TORNA_A_MENU_PRINCIPALE:
-    //            setStato(PRINCIPALE);
-    //            break;
-    //    }
-}
-
-void Menu::cambiaVociMenuGScegliLivello() {
-    //    switch (stato_attivo + G_SCEGLI_LIVELLO * 10) {
-    //        case G_SL_TORNA_INDIETRO:
-    //            setStato(G_GIOCA);
-    //            break;
-    //        default:
-    //            if (gestore_giocatori->cambiaLivelloGiocatore(lista_livelli[stato_attivo - 1], LIVELLO_PARTITA)) {
-    //                setStatoCambioPosticipato(GL_GIOCA_LIVELLO);
-    //                gioco->setStato(GIOCATORE);
-    //            }
-    //            break;
-    //    }
-}
-
-void Menu::cambiaVociMenuGestioneLivelli() {
-    //    switch (stato_attivo + GESTIONE_LIVELLI * 10) {
-    //        case GEL_NUOVO_LIVELLO:
-    //            setStato(GEL_NL_NUOVO_LIVELLO);
-    //            nuovo_nome.clear();
-    //            dim_x_nuovo_livello = "100";
-    //            dim_y_nuovo_livello = "100";
-    //            break;
-    //        case GEL_SCEGLI_LIVELLO:
-    //            lista_livelli = gestore_giocatori->listaLivelliGiocatore();
-    //            setStato(GEL_SL_SCEGLI_LIVELLO);
-    //            break;
-    //        case GEL_ELIMINA_LIVELLO:
-    //            lista_livelli = gestore_giocatori->listaLivelliGiocatore();
-    //            setStato(GEL_EL_ELIMINA_LIVELLO);
-    //            break;
-    //        case GEL_TORNA_A_MENU_PRINCIPALE:
-    //            setStato(PRINCIPALE);
-    //            break;
-    //    }
-}
-
-void Menu::cambiaVociMenuGeLNuovoLivello() {
-    //    switch (stato_attivo + GEL_NUOVO_LIVELLO * 10) {
-    //        case GEL_NL_TORNA_INDIETRO:
-    //            setStato(GEL_GESTIONE_LIVELLI);
-    //            break;
-    //        case GEL_NL_CREA_LIVELLO:
-    //            setStato(GEL_NL_NUOVO_LIVELLO);
-    //            nuovo_nome.clear();
-    //            dim_x_nuovo_livello = "100";
-    //            dim_y_nuovo_livello = "100";
-    //            if (gestore_giocatori->nuovoLivelloGiocatore(nuovo_nome, dim_x_nuovo_livello.toUInt(), dim_y_nuovo_livello.toUInt())) {
-    //                setStatoCambioPosticipato(EL_EDITOR_LIVELLO);
-    //                gioco->setStato(GIOCATORE);
-    //            }
-    //            break;
-    //    }
-}
-
-void Menu::cambiaVociMenuGeLScegliLivello() {
-    //    switch (stato_attivo + GEL_SCEGLI_LIVELLO * 10) {
-    //        case GEL_SL_TORNA_INDIETRO:
-    //            setStato(GEL_GESTIONE_LIVELLI);
-    //            break;
-    //        default:
-    //            if (gestore_giocatori->cambiaLivelloGiocatore(lista_livelli[stato_attivo - 1], LIVELLO_EDITOR)) {
-    //                setStatoCambioPosticipato(EL_EDITOR_LIVELLO);
-    //                gioco->setStato(GIOCATORE);
-    //            }
-    //            break;
-    //    }
-}
-
-void Menu::cambiaVociMenuGeLEliminaLivello() {
-    switch (stato_attivo + GEL_ELIMINA_LIVELLO * 10) {
-            //        case GEL_EL_TORNA_INDIETRO:
-            //            setStato(GEL_GESTIONE_LIVELLI);
-            //            break;
-            //        default:
-            //??????????????????????????
-            //            break;
-    }
-}
-
-void Menu::cambiaVociMenuGestioneProfili() {
-    switch (stato_attivo + GESTIONE_PROFILI * 10) {
-        case GP_NUOVO_PROFILO:
-            setStato(GP_NP_NUOVO_PROFILO);
-            nuovo_nome.clear();
-            break;
-        case GP_CAMBIA_PROFILO:
-            nomi_giocatori = gestore_giocatori->nomiGiocatori();
-            setStato(GP_CP_CAMBIA_PROFILO);
-            break;
-        case GP_COPIA_PROFILO_ATTUALE:
-            setStato(GP_CPA_COPIA_PROFILO_ATTUALE);
-            nuovo_nome.clear();
-            break;
-        case GP_ELIMINA_PROFILO:
-            nomi_giocatori = gestore_giocatori->nomiGiocatori();
-            setStato(GP_EL_ELIMINA_PROFILO);
-            break;
-        case GP_TORNA_A_MENU_PRINCIPALE:
-            setStato(PRINCIPALE);
-            break;
-        default:
-            break;
-    }
-}
-
-void Menu::cambiaVociMenuGPCambiaProfilo() {
-    switch (stato_attivo + GP_CAMBIA_PROFILO * 10) {
-        case GP_CP_TORNA_INDIETRO:
-            setStato(GP_GESTIONE_PROFILI);
-            break;
-        default:
-            if (gestore_giocatori->cambiaGiocatore(nomi_giocatori[stato_attivo - 1])) {
-                setStato(PRINCIPALE);
-            }
-            break;
-    }
-}
-
-void Menu::cambiaVociMenuGPEliminaProfilo() {
-    //aggiungere una schermata dove si dice sicuro di voler eliminare il giocatore comic si no
-    switch (stato_attivo + GP_ELIMINA_PROFILO * 10) {
-        case GP_EL_TORNA_INDIETRO:
-            setStato(GP_GESTIONE_PROFILI);
-            break;
-        default:
-            gestore_giocatori->eliminaGiocatore(nomi_giocatori[stato_attivo - 1]);
-            setStato(GP_GESTIONE_PROFILI);
-            break;
-    }
-}
-
-void Menu::cambiaVociMenuGPNuovoProfilo() {
-    switch (stato_attivo + GP_NUOVO_PROFILO * 10) {
-        case GP_NP_TORNA_INDIETRO:
-            setStato(GP_GESTIONE_PROFILI);
-            break;
-        case GP_NP_CREA_PROFILO:
-            if (gestore_giocatori->nuovoGiocatore(nuovo_nome)) {
-                setStato(PRINCIPALE);
-            }
-            break;
-    }
-}
-
-void Menu::cambiaVociMenuGPCopiaProfiloAttuale() {
-    switch (stato_attivo + GP_COPIA_PROFILO_ATTUALE * 10) {
-        case GP_CPA_TORNA_INDIETRO:
-            setStato(GP_GESTIONE_PROFILI);
-            break;
-        case GP_CPA_CREA_COPIA_PROFILO:
-            if (gestore_giocatori->copiaGiocatoreAttuale(nuovo_nome)) {
-                setStato(GP_GESTIONE_PROFILI);
-            }
-            break;
-    }
-}
-
-void Menu::cambiaVociMenuELEditorLivelli() {
-    switch (stato_attivo + SECONDO * 10) {
-        case EL_PROVA_LIVELLO:
-            gioco->setStato(GIOCATORE);
-            gioco->setStatoGiocatore(EDITOR_TEST);
-            //            setStatoCambioPosticipato(ELP_EDITOR_LIVELLO_PROVA);
-            break;
-        case EL_SALVA_LIVELLO:
-            gestore_giocatori->salvaLivelloGiocatore();
-            gioco->setStato(GIOCATORE);
-            break;
-        case EL_SALVA_LIVELLO_CON_NOME:
-            nuovo_nome.clear();
-            setStato(EL_SLCN_SALVA_LIVELLO_CON_NOME);
-            break;
-        case EL_CAMBIA_LIVELLO:
-            lista_livelli = gestore_giocatori->listaLivelliGiocatore();
-            setStato(EL_CL_CAMBIA_LIVELLO);
-            break;
-        case EL_TORNA_A_MENU_PRINCIPALE_SENZA_SALVARE:
-            setStato(PRINCIPALE);
-            break;
-    }
-}
-
-void Menu::cambiaVociMenuELSalvaConNome() {
-    switch (stato_attivo + EL_SALVA_LIVELLO_CON_NOME * 10) {
-        case EL_SLCN_TORNA_INDIETRO:
-            setStato(EL_EDITOR_LIVELLO);
-            break;
-        case EL_SLCN_SALVA_LIVELLO:
-            if (gestore_giocatori->salvaLivelloConNomeGiocatore(nuovo_nome)) {
-                //                setStatoCambioPosticipato(EL_EDITOR_LIVELLO);
-                gioco->setStato(GIOCATORE);
-            }
-            break;
-    }
-}
-
-void Menu::cambiaVociMenuELCambiaLivello() {
-    switch (stato_attivo + EL_CAMBIA_LIVELLO * 10) {
-        case EL_CL_TORNA_INDIETRO:
-            setStato(GL_GIOCA_LIVELLO);
-            break;
-        default:
-            if (gestore_giocatori->cambiaLivelloGiocatore(lista_livelli[stato_attivo - 1], LIVELLO_EDITOR)) {
-                //                setStatoCambioPosticipato(GL_GIOCA_LIVELLO);
-                gioco->setStato(GIOCATORE);
-            }
-            break;
-    }
-}
-
-void Menu::cambiaVociMenuGLGiocaLivello() {
-    switch (stato_attivo + TERZO * 10) {
-        case GL_SALVA_LIVELLO:
-            //?????????????????
-            break;
-        case GL_CAMBIA_LIVELLO:
-            lista_livelli = gestore_giocatori->listaLivelliGiocatore();
-            setStato(GL_CL_CAMBIA_LIVELLO);
-            break;
-        case GL_TORNA_A_MENU_PRINCIPALE_SENZA_SALVARE:
-            setStato(PRINCIPALE);
-            break;
-    }
-}
-
-void Menu::cambiaVociMenuGLCambiaLivello() {
-    switch (stato_attivo + GL_CAMBIA_LIVELLO * 10) {
-        case GL_CL_TORNA_INDIETRO:
-            setStato(GL_GIOCA_LIVELLO);
-            break;
-        default:
-            if (gestore_giocatori->cambiaLivelloGiocatore(lista_livelli[stato_attivo - 1], LIVELLO_PARTITA)) {
-                //                setStatoCambioPosticipato(GL_GIOCA_LIVELLO);
-                gioco->setStato(GIOCATORE);
-            }
-            break;
-    }
-}
-
-void Menu::cambiaVociMenuELPEditorLivelloProva() {
-    switch (stato_attivo + QUARTO * 10) {
-        case ELP_TORNA_EDITOR:
-            setStato(EL_EDITOR_LIVELLO);
-            gioco->setStatoGiocatore(EDITOR_COSTRUISCI);
-            break;
-        case ELP_TORNA_A_MENU_PRINCIPALE_SENZA_SALVARE:
-            setStato(PRINCIPALE);
-            break;
-    }
-}
+//
+//void Menu::cambiaVociMenuPrincipale() {
+//    switch (menu_attuale->statoSelezionato()) {
+//            //switch (stato_attivo + PRIMO * 10) {
+//        case ESCI:
+//            gioco->gameExit();
+//            break;
+//            //        case GIOCA:
+//            //            setStato(G_GIOCA);
+//            break;
+//        case GESTIONE_LIVELLI:
+//            //            setStato(GEL_GESTIONE_LIVELLI);
+//            break;
+//        case GESTIONE_PROFILI:
+//            //            setStato(GP_GESTIONE_PROFILI);
+//            break;
+//        default:
+//            break;
+//    }
+//}
+//
+//void Menu::cambiaVociMenuGioca() {
+//    //    switch (stato_attivo + GIOCA * 10) {
+//    //        case G_CONTINUA:
+//    //            setStatoCambioPosticipato(GL_GIOCA_LIVELLO);
+//    //            gioco->setStato(GIOCATORE);
+//    //            break;
+//    //        case G_SCEGLI_LIVELLO:
+//    //            lista_livelli = gestore_giocatori->listaLivelliGiocatore();
+//    //            setStato(G_SL_SCEGLI_LIVELLO);
+//    //            break;
+//    //        case G_TORNA_A_MENU_PRINCIPALE:
+//    //            setStato(PRINCIPALE);
+//    //            break;
+//    //    }
+//}
+//
+//void Menu::cambiaVociMenuGScegliLivello() {
+//    //    switch (stato_attivo + G_SCEGLI_LIVELLO * 10) {
+//    //        case G_SL_TORNA_INDIETRO:
+//    //            setStato(G_GIOCA);
+//    //            break;
+//    //        default:
+//    //            if (gestore_giocatori->cambiaLivelloGiocatore(lista_livelli[stato_attivo - 1], LIVELLO_PARTITA)) {
+//    //                setStatoCambioPosticipato(GL_GIOCA_LIVELLO);
+//    //                gioco->setStato(GIOCATORE);
+//    //            }
+//    //            break;
+//    //    }
+//}
+//
+//void Menu::cambiaVociMenuGestioneLivelli() {
+//    //    switch (stato_attivo + GESTIONE_LIVELLI * 10) {
+//    //        case GEL_NUOVO_LIVELLO:
+//    //            setStato(GEL_NL_NUOVO_LIVELLO);
+//    //            nuovo_nome.clear();
+//    //            dim_x_nuovo_livello = "100";
+//    //            dim_y_nuovo_livello = "100";
+//    //            break;
+//    //        case GEL_SCEGLI_LIVELLO:
+//    //            lista_livelli = gestore_giocatori->listaLivelliGiocatore();
+//    //            setStato(GEL_SL_SCEGLI_LIVELLO);
+//    //            break;
+//    //        case GEL_ELIMINA_LIVELLO:
+//    //            lista_livelli = gestore_giocatori->listaLivelliGiocatore();
+//    //            setStato(GEL_EL_ELIMINA_LIVELLO);
+//    //            break;
+//    //        case GEL_TORNA_A_MENU_PRINCIPALE:
+//    //            setStato(PRINCIPALE);
+//    //            break;
+//    //    }
+//}
+//
+//void Menu::cambiaVociMenuGeLNuovoLivello() {
+//    //    switch (stato_attivo + GEL_NUOVO_LIVELLO * 10) {
+//    //        case GEL_NL_TORNA_INDIETRO:
+//    //            setStato(GEL_GESTIONE_LIVELLI);
+//    //            break;
+//    //        case GEL_NL_CREA_LIVELLO:
+//    //            setStato(GEL_NL_NUOVO_LIVELLO);
+//    //            nuovo_nome.clear();
+//    //            dim_x_nuovo_livello = "100";
+//    //            dim_y_nuovo_livello = "100";
+//    //            if (gestore_giocatori->nuovoLivelloGiocatore(nuovo_nome, dim_x_nuovo_livello.toUInt(), dim_y_nuovo_livello.toUInt())) {
+//    //                setStatoCambioPosticipato(EL_EDITOR_LIVELLO);
+//    //                gioco->setStato(GIOCATORE);
+//    //            }
+//    //            break;
+//    //    }
+//}
+//
+//void Menu::cambiaVociMenuGeLScegliLivello() {
+//    //    switch (stato_attivo + GEL_SCEGLI_LIVELLO * 10) {
+//    //        case GEL_SL_TORNA_INDIETRO:
+//    //            setStato(GEL_GESTIONE_LIVELLI);
+//    //            break;
+//    //        default:
+//    //            if (gestore_giocatori->cambiaLivelloGiocatore(lista_livelli[stato_attivo - 1], LIVELLO_EDITOR)) {
+//    //                setStatoCambioPosticipato(EL_EDITOR_LIVELLO);
+//    //                gioco->setStato(GIOCATORE);
+//    //            }
+//    //            break;
+//    //    }
+//}
+//
+//void Menu::cambiaVociMenuGeLEliminaLivello() {
+//    switch (stato_attivo + GEL_ELIMINA_LIVELLO * 10) {
+//            //        case GEL_EL_TORNA_INDIETRO:
+//            //            setStato(GEL_GESTIONE_LIVELLI);
+//            //            break;
+//            //        default:
+//            //??????????????????????????
+//            //            break;
+//    }
+//}
+//
+//void Menu::cambiaVociMenuGestioneProfili() {
+//    //    switch (stato_attivo + GESTIONE_PROFILI * 10) {
+//    //        case GP_NUOVO_PROFILO:
+//    //            setStato(GP_NP_NUOVO_PROFILO);
+//    //            nuovo_nome.clear();
+//    //            break;
+//    //        case GP_CAMBIA_PROFILO:
+//    //            nomi_giocatori = gestore_giocatori->nomiGiocatori();
+//    //            setStato(GP_CP_CAMBIA_PROFILO);
+//    //            break;
+//    //        case GP_COPIA_PROFILO_ATTUALE:
+//    //            setStato(GP_CPA_COPIA_PROFILO_ATTUALE);
+//    //            nuovo_nome.clear();
+//    //            break;
+//    //        case GP_ELIMINA_PROFILO:
+//    //            nomi_giocatori = gestore_giocatori->nomiGiocatori();
+//    //            setStato(GP_EL_ELIMINA_PROFILO);
+//    //            break;
+//    //        case GP_TORNA_A_MENU_PRINCIPALE:
+//    //            setStato(PRINCIPALE);
+//    //            break;
+//    //        default:
+//    //            break;
+//    //    }
+//}
+//
+//void Menu::cambiaVociMenuGPCambiaProfilo() {
+//    //    switch (stato_attivo + GP_CAMBIA_PROFILO * 10) {
+//    //        case GP_CP_TORNA_INDIETRO:
+//    //            setStato(GP_GESTIONE_PROFILI);
+//    //            break;
+//    //        default:
+//    //            if (gestore_giocatori->cambiaGiocatore(nomi_giocatori[stato_attivo - 1])) {
+//    //                setStato(PRINCIPALE);
+//    //            }
+//    //            break;
+//    //    }
+//}
+//
+//void Menu::cambiaVociMenuGPEliminaProfilo() {
+//    //    //aggiungere una schermata dove si dice sicuro di voler eliminare il giocatore comic si no
+//    //    switch (stato_attivo + GP_ELIMINA_PROFILO * 10) {
+//    //        case GP_EL_TORNA_INDIETRO:
+//    //            setStato(GP_GESTIONE_PROFILI);
+//    //            break;
+//    //        default:
+//    //            gestore_giocatori->eliminaGiocatore(nomi_giocatori[stato_attivo - 1]);
+//    //            setStato(GP_GESTIONE_PROFILI);
+//    //            break;
+//    //    }
+//}
+//
+//void Menu::cambiaVociMenuGPNuovoProfilo() {
+//    //    switch (stato_attivo + GP_NUOVO_PROFILO * 10) {
+//    //        case GP_NP_TORNA_INDIETRO:
+//    //            setStato(GP_GESTIONE_PROFILI);
+//    //            break;
+//    //        case GP_NP_CREA_PROFILO:
+//    //            nuovo_nome.clear();
+//    //            if (gestore_giocatori->nuovoGiocatore(nuovo_nome)) {
+//    //                setStato(PRINCIPALE);
+//    //            }
+//    //            break;
+//    //    }
+//}
+//
+//void Menu::cambiaVociMenuGPCopiaProfiloAttuale() {
+//    //    switch (stato_attivo + GP_COPIA_PROFILO_ATTUALE * 10) {
+//    //        case GP_CPA_TORNA_INDIETRO:
+//    //            setStato(GP_GESTIONE_PROFILI);
+//    //            break;
+//    //        case GP_CPA_CREA_COPIA_PROFILO:
+//    //            if (gestore_giocatori->copiaGiocatoreAttuale(nuovo_nome)) {
+//    //                setStato(GP_GESTIONE_PROFILI);
+//    //            }
+//    //            break;
+//    //    }
+//}
+//
+//void Menu::cambiaVociMenuELEditorLivelli() {
+////    switch (stato_attivo + SECONDO * 10) {
+////        case EL_PROVA_LIVELLO:
+////            gioco->setStato(GIOCATORE);
+////            gioco->setStatoGiocatore(EDITOR_TEST);
+////            //            setStatoCambioPosticipato(ELP_EDITOR_LIVELLO_PROVA);
+////            break;
+////        case EL_SALVA_LIVELLO:
+////            gestore_giocatori->salvaLivelloGiocatore();
+////            gioco->setStato(GIOCATORE);
+////            break;
+////        case EL_SALVA_LIVELLO_CON_NOME:
+////            nuovo_nome.clear();
+////            setStato(EL_SLCN_SALVA_LIVELLO_CON_NOME);
+////            break;
+////        case EL_CAMBIA_LIVELLO:
+////            lista_livelli = gestore_giocatori->listaLivelliGiocatore();
+////            setStato(EL_CL_CAMBIA_LIVELLO);
+////            break;
+////        case EL_TORNA_A_MENU_PRINCIPALE_SENZA_SALVARE:
+////            setStato(PRINCIPALE);
+////            break;
+////    }
+//}
+//
+//void Menu::cambiaVociMenuELSalvaConNome() {
+//    switch (stato_attivo + EL_SALVA_LIVELLO_CON_NOME * 10) {
+//        case EL_SLCN_TORNA_INDIETRO:
+//            setStato(EL_EDITOR_LIVELLO);
+//            break;
+//        case EL_SLCN_SALVA_LIVELLO:
+//            if (gestore_giocatori->salvaLivelloConNomeGiocatore(nuovo_nome)) {
+//                //                setStatoCambioPosticipato(EL_EDITOR_LIVELLO);
+//                gioco->setStato(GIOCATORE);
+//            }
+//            break;
+//    }
+//}
+//
+//void Menu::cambiaVociMenuELCambiaLivello() {
+//    switch (stato_attivo + EL_CAMBIA_LIVELLO * 10) {
+//        case EL_CL_TORNA_INDIETRO:
+//            setStato(GL_GIOCA_LIVELLO);
+//            break;
+//        default:
+//            if (gestore_giocatori->cambiaLivelloGiocatore(lista_livelli[stato_attivo - 1], LIVELLO_EDITOR)) {
+//                //                setStatoCambioPosticipato(GL_GIOCA_LIVELLO);
+//                gioco->setStato(GIOCATORE);
+//            }
+//            break;
+//    }
+//}
+//
+//void Menu::cambiaVociMenuGLGiocaLivello() {
+//    switch (stato_attivo + TERZO * 10) {
+//        case GL_SALVA_LIVELLO:
+//            //?????????????????
+//            break;
+//        case GL_CAMBIA_LIVELLO:
+//            lista_livelli = gestore_giocatori->listaLivelliGiocatore();
+//            setStato(GL_CL_CAMBIA_LIVELLO);
+//            break;
+//        case GL_TORNA_A_MENU_PRINCIPALE_SENZA_SALVARE:
+//            setStato(PRINCIPALE);
+//            break;
+//    }
+//}
+//
+//void Menu::cambiaVociMenuGLCambiaLivello() {
+//    switch (stato_attivo + GL_CAMBIA_LIVELLO * 10) {
+//        case GL_CL_TORNA_INDIETRO:
+//            setStato(GL_GIOCA_LIVELLO);
+//            break;
+//        default:
+//            if (gestore_giocatori->cambiaLivelloGiocatore(lista_livelli[stato_attivo - 1], LIVELLO_PARTITA)) {
+//                //                setStatoCambioPosticipato(GL_GIOCA_LIVELLO);
+//                gioco->setStato(GIOCATORE);
+//            }
+//            break;
+//    }
+//}
+//
+//void Menu::cambiaVociMenuELPEditorLivelloProva() {
+//    switch (stato_attivo + QUARTO * 10) {
+//        case ELP_TORNA_EDITOR:
+//            setStato(EL_EDITOR_LIVELLO);
+//            gioco->setStatoGiocatore(EDITOR_COSTRUISCI);
+//            break;
+//        case ELP_TORNA_A_MENU_PRINCIPALE_SENZA_SALVARE:
+//            setStato(PRINCIPALE);
+//            break;
+//    }
+//}

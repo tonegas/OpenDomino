@@ -39,15 +39,23 @@ void MenuCentrale::costruisciCaselle() {
 }
 
 void MenuCentrale::stampa() {
-//    glColor4f(0.7f, 0.7f, 0.7f, 0.5f);
-//    glBegin(GL_QUADS);
-//    {
-//        glVertex2i(sinistra, sopra);
-//        glVertex2i(sinistra, sotto);
-//        glVertex2i(destra, sotto);
-//        glVertex2i(destra, sopra);
-//    }
-//    glEnd();
+    glColor4f(0.6f, 0.6f, 0.6f, 0.7f);
+    glBegin(GL_LINE_LOOP);
+    {
+        glVertex2i(sinistra, sopra);
+        glVertex2i(sinistra, sotto);
+        glVertex2i(destra, sotto);
+        glVertex2i(destra, sopra);
+    }
+    glEnd();
+    glBegin(GL_QUADS);
+    {
+        glVertex2i(sinistra, sopra);
+        glVertex2i(sinistra, sotto);
+        glVertex2i(destra, sotto);
+        glVertex2i(destra, sopra);
+    }
+    glEnd();
     font->FaceSize(dim_voce_principale);
     layout->SetAlignment(FTGL::ALIGN_CENTER);
     layout->SetLineLength(dim_x_fin);
@@ -60,10 +68,10 @@ void MenuCentrale::stampa() {
         glColor4f(0.8, 0.8, 0.8, stato_attivo_voci_menu[i]*0.6);
         glBegin(GL_QUADS);
         {
-            glVertex2d((double)sinistra + (double)dist_da_voce / 4.0, (double)posizioni_caselle_menu_attivo[i].Y() - (double)dist_da_voce / 5.2);
-            glVertex2d((double)sinistra + (double)dist_da_voce / 4.0, (double)posizioni_caselle_menu_attivo[i].Y() + (double)dist_da_voce / 1.8);
-            glVertex2d((double)destra - (double)dist_da_voce / 4.0, (double)posizioni_caselle_menu_attivo[i].Y() + (double)dist_da_voce / 1.8);
-            glVertex2d((double)destra - (double)dist_da_voce / 4.0, (double)posizioni_caselle_menu_attivo[i].Y() - (double)dist_da_voce / 5.2);
+            glVertex2d((double) sinistra + (double) dist_da_voce / 4.0, (double) posizioni_caselle_menu_attivo[i].Y() - (double) dist_da_voce / 5.2);
+            glVertex2d((double) sinistra + (double) dist_da_voce / 4.0, (double) posizioni_caselle_menu_attivo[i].Y() + (double) dist_da_voce / 1.8);
+            glVertex2d((double) destra - (double) dist_da_voce / 4.0, (double) posizioni_caselle_menu_attivo[i].Y() + (double) dist_da_voce / 1.8);
+            glVertex2d((double) destra - (double) dist_da_voce / 4.0, (double) posizioni_caselle_menu_attivo[i].Y() - (double) dist_da_voce / 5.2);
         }
         glEnd();
         if (stati_menu_attivi[i]) {

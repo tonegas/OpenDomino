@@ -92,6 +92,8 @@ Gioco::Gioco() : variabili(this, &evento), menu(LARGHEZZA_FIN, ALTEZZA_FIN) {// 
     //glDepthFunc(GL_LEQUAL);
     glDepthFunc(GL_LESS);
 
+    glLineWidth(5);
+
 
     //glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);

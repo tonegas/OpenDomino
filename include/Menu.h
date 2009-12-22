@@ -28,7 +28,10 @@ class Menu : public Interfaccia {
 
     QStringList nomi_giocatori;
     QStringList lista_livelli;
+    QStringList stringaStatoGiocatore;
 
+    QString livello_da_eliminare;
+    QString profilo_da_eliminare;
     QString nuovo_nome;
     QString dim_x_nuovo_livello;
     QString dim_y_nuovo_livello;
@@ -59,13 +62,7 @@ class Menu : public Interfaccia {
     QVector<FTBBox> caselle_menu_attivo;
     QVector<FTPoint> posizioni_caselle_menu_attivo;
 
-    QStringList voci_menu_principale;
-    //::::::::::::::::::::::::::::::::::
-    QStringList voci_menu_gioca;
-    QStringList voci_menu_g_scegli_livello;
 
-    QStringList voci_menu_gestione_livelli;
-    QStringList voci_menu_gel_nuovo_livello;
     QStringList voci_menu_gel_scegli_livello;
     QStringList voci_menu_gel_elimina_livello;
 
@@ -100,27 +97,27 @@ class Menu : public Interfaccia {
 
     void cambiaVociMenu();
     //:::::::::::::::::::::::::::::::
-    void cambiaVociMenuPrincipale();
-    void cambiaVociMenuGioca();
-    void cambiaVociMenuGScegliLivello();
-    void cambiaVociMenuGestioneLivelli();
-    void cambiaVociMenuGeLNuovoLivello();
-    void cambiaVociMenuGeLScegliLivello();
-    void cambiaVociMenuGeLEliminaLivello();
-    void cambiaVociMenuGestioneProfili();
-    void cambiaVociMenuGPNuovoProfilo();
-    void cambiaVociMenuGPCambiaProfilo();
-    void cambiaVociMenuGPCopiaProfiloAttuale();
-    void cambiaVociMenuGPEliminaProfilo();
-    //:::::::::::::::::::::::::::::::::
-    void cambiaVociMenuELEditorLivelli();
-    void cambiaVociMenuELSalvaConNome();
-    void cambiaVociMenuELCambiaLivello();
-    //:::::::::::::::::::::::::::::::::
-    void cambiaVociMenuGLGiocaLivello();
-    void cambiaVociMenuGLCambiaLivello();
-    //:::::::::::::::::::::::::::::::::
-    void cambiaVociMenuELPEditorLivelloProva();
+//    void cambiaVociMenuPrincipale();
+//    void cambiaVociMenuGioca();
+//    void cambiaVociMenuGScegliLivello();
+//    void cambiaVociMenuGestioneLivelli();
+//    void cambiaVociMenuGeLNuovoLivello();
+//    void cambiaVociMenuGeLScegliLivello();
+//    void cambiaVociMenuGeLEliminaLivello();
+//    void cambiaVociMenuGestioneProfili();
+//    void cambiaVociMenuGPNuovoProfilo();
+//    void cambiaVociMenuGPCambiaProfilo();
+//    void cambiaVociMenuGPCopiaProfiloAttuale();
+//    void cambiaVociMenuGPEliminaProfilo();
+//    //:::::::::::::::::::::::::::::::::
+//    void cambiaVociMenuELEditorLivelli();
+//    void cambiaVociMenuELSalvaConNome();
+//    void cambiaVociMenuELCambiaLivello();
+//    //:::::::::::::::::::::::::::::::::
+//    void cambiaVociMenuGLGiocaLivello();
+//    void cambiaVociMenuGLCambiaLivello();
+//    //:::::::::::::::::::::::::::::::::
+//    void cambiaVociMenuELPEditorLivelloProva();
 
 
 //    bool gestisciSelezioneMouse();
@@ -142,7 +139,7 @@ public:
     Menu(unsigned dim_x_fin_aux, unsigned dim_y_fin_aux);
     ~Menu();
     void setStato(StatoMenu nuovo_stato);
-//    void setStatoCambioPosticipato(StatoMenu nuovo_stato);
+    void setStatoCambioPosticipato(StatoMenu nuovo_stato);
     void resize(unsigned dim_x, unsigned dim_y);
     void resize();
     StatoMenu getStato();

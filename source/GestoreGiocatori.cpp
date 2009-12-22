@@ -337,7 +337,7 @@ void GestoreGiocatori::salvaGiocatore() {
     giocatore_attuale->setTempoDiGiocoApertura();
 }
 
-QString GestoreGiocatori::nomeGiocatoreAttuale() {
+QString GestoreGiocatori::getNomeGiocatoreAttuale() {
     if (giocatore_attuale->getNome() != "__DOMINO__")
         return giocatore_attuale->getNome();
     return "";
@@ -381,6 +381,10 @@ void GestoreGiocatori::salvaLivelloGiocatore() {
     gestore_livelli.salvaLivello(&aux);
 }
 
+bool GestoreGiocatori::eliminaLivello(QString nome_livello){
+    return gestore_livelli.eliminaLivello(nome_livello);
+}
+
 bool GestoreGiocatori::cambiaLivelloGiocatore(QString nome_livello, TipoLivello tipo) {
     StrutturaLivello aux;
     if (gestore_livelli.caricaLivello(nome_livello, &aux)) {
@@ -414,6 +418,10 @@ bool GestoreGiocatori::nuovoLivelloGiocatore(QString nome_livello, unsigned dim_
     } else {
         return false;
     }
+}
+
+QString GestoreGiocatori::getnomeLivelloAttuale(){
+    return giocatore_attuale->getNomeLivello();
 }
 
 QStringList GestoreGiocatori::listaLivelliGiocatore() {

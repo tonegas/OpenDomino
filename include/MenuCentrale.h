@@ -11,10 +11,6 @@
 #include "Domino.h"
 
 class MenuCentrale : public MenuAttivo {
-    unsigned sinistra;
-    unsigned sopra;
-    unsigned destra;
-    unsigned sotto;
 public:
     MenuCentrale();
 

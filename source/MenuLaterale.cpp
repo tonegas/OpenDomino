@@ -24,8 +24,10 @@ void MenuLaterale::resizeAggiuntivo() {
         }
     }
     dist_da_basso_voce_principale = dim_y_fin - dist_da_sinistra * 4 - 2;
+    //    voci_visibili = (dim_y_fin - (dim_y_fin - dist_da_basso_voce_principale)
+    //            - dist_da_voce_principale_voce) / dist_da_voce + 1;
     voci_visibili = (dim_y_fin - (dim_y_fin - dist_da_basso_voce_principale)
-            - dist_da_voce_principale_voce) / dist_da_voce + 1;
+            - dist_da_voce_principale_voce - dist_da_basso_voce_uscita - dist_da_voce) / dist_da_voce + 1;
     voci_visibili = (numero_voci_menu_attivo < voci_visibili) ? numero_voci_menu_attivo : voci_visibili;
 }
 
@@ -52,8 +54,11 @@ void MenuLaterale::costruisciCaselle() {
         caselle_menu_attivo += layout->BBox(voci_menu[i].toStdString().c_str());
     }
     FTPoint aux(dist_da_sinistra, dist_da_basso_voce_uscita);
+    trasparenza_voci_visibili += 1.0f;
     posizioni_caselle_menu_attivo += aux;
     caselle_menu_attivo += layout->BBox(voci_menu[numero_voci_menu_attivo - 1].toStdString().c_str());
+    sinistra = 0;
+    destra = dim_x_fin;
 }
 
 void MenuLaterale::stampa() {
@@ -65,28 +70,35 @@ void MenuLaterale::stampa() {
     layout->Render(titolo.toStdString().c_str());
 
     font->FaceSize(dim_voce);
-    for (unsigned i = 0; i < numero_voci_menu_attivo - 1; i++) {
-        glColor4f(1.0f - stato_attivo_voci_menu[i], 1.0f, 1.0f - stato_attivo_voci_menu[i], trasparenza_voci_visibili[i]);
+    for (unsigned i = 0; i < numero_voci_menu_attivo; i++) {
+        glColor4f(0.8, 0.8, 0.8, stato_attivo_voci_menu[i]*0.6);
+        glBegin(GL_QUADS);
+        {
+            glVertex2d((double) sinistra + (double) dist_da_voce / 8.0, (double) posizioni_caselle_menu_attivo[i].Y() - (double) dist_da_voce / 5.2);
+            glVertex2d((double) sinistra + (double) dist_da_voce / 8.0, (double) posizioni_caselle_menu_attivo[i].Y() + (double) dist_da_voce / 1.8);
+            glVertex2d((double) destra - (double) dist_da_voce / 8.0, (double) posizioni_caselle_menu_attivo[i].Y() + (double) dist_da_voce / 1.8);
+            glVertex2d((double) destra - (double) dist_da_voce / 8.0, (double) posizioni_caselle_menu_attivo[i].Y() - (double) dist_da_voce / 5.2);
+        }
+        glEnd();
+        glColor4f(1.0f, 1.0f, 1.0f, trasparenza_voci_visibili[i]);
         glRasterPos2i(posizioni_caselle_menu_attivo[i].X(), posizioni_caselle_menu_attivo[i].Y());
         layout->Render(voci_menu[i].toStdString().c_str());
     }
-    glColor4f(1.0f - stato_attivo_voci_menu[numero_voci_menu_attivo - 1], 1.0f, 1.0f - stato_attivo_voci_menu[numero_voci_menu_attivo - 1], 1.0f);
-    glRasterPos2i(posizioni_caselle_menu_attivo[numero_voci_menu_attivo - 1].X(), posizioni_caselle_menu_attivo[numero_voci_menu_attivo - 1].Y());
-    layout->Render(voci_menu[numero_voci_menu_attivo - 1].toStdString().c_str());
 }
 
 void MenuLaterale::aggiornaMovimento() {
     if (voce_selezionata != numero_voci_menu_attivo - 1) {
-        posizione_voci_visibili = ((double) voce_selezionata / (double) numero_voci_menu_attivo)* (numero_voci_menu_attivo + 2 - voci_visibili) * dist_da_voce;
+        posizione_voci_visibili = ((double) voce_selezionata / (double) numero_voci_menu_attivo)* (numero_voci_menu_attivo - voci_visibili) * dist_da_voce;
         costruisciCaselle();
     }
 }
 
 void MenuLaterale::aggiornaMovimento(unsigned pos_mouse_x, unsigned pos_mouse_y) {
-    if ((int) dim_y_fin - (int) pos_mouse_y < (int) dist_da_basso_voce_principale && (int) dim_y_fin - (int) pos_mouse_y > (int) dist_da_basso_voce_uscita + dist_da_voce) {
-        posizione_voci_visibili = (double) (dist_da_basso_voce_principale - ((int) dim_y_fin - (int) pos_mouse_y))
-                / (double) (dist_da_basso_voce_principale - dist_da_basso_voce_uscita)
-                * (numero_voci_menu_attivo + 3 - voci_visibili) * dist_da_voce;
+    if ((int) dim_y_fin - (int) pos_mouse_y < ((int) dist_da_basso_voce_principale - dist_da_voce_principale_voce)
+            && (int) dim_y_fin - (int) pos_mouse_y > (int) dist_da_basso_voce_uscita + dist_da_voce) {
+        posizione_voci_visibili = (double) ((int)pos_mouse_y - (int)dist_da_voce_principale_voce - ((int) dim_y_fin - (int)dist_da_basso_voce_principale)) /
+                (double) (dim_y_fin - dist_da_basso_voce_uscita - dist_da_voce - dist_da_voce_principale_voce - ((int) dim_y_fin - (int)dist_da_basso_voce_principale))
+                * (numero_voci_menu_attivo - 1 - voci_visibili) * dist_da_voce;
         costruisciCaselle();
     }
 }

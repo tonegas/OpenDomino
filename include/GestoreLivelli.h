@@ -26,9 +26,9 @@ public:
     ~GestoreLivelli();
     //Non le uso
     //----------------------------------------------
-    bool eliminaLivello(QString nome_livello);
     bool copiaLivello(QString old_nome_livello, QString new_nome_livello);
     //----------------------------------------------
+    bool eliminaLivello(QString nome_livello);
     void salvaLivello(StrutturaLivello* livello_aux);
     bool nuovoLivello(StrutturaLivello* livello_aux);
     bool caricaLivello(QString nome_livello, StrutturaLivello* livello_aux);

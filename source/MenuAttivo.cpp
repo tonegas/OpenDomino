@@ -38,7 +38,7 @@ void MenuAttivo::inserisci(QStringList lista_voci, StatoMenu stato) {
     stati_menu_attivi.fill(true, lista_voci.count());
     voci_dinamiche.fill(NULL, lista_voci.count());
     stati_menu_selezionabili.fill(true, lista_voci.count());
-    stato_attivo_voci_menu.fill(true, lista_voci.count());
+    stato_attivo_voci_menu.fill(false, lista_voci.count());
     numero_voci_menu_attivo = voci_menu.count();
 }
 
@@ -87,10 +87,10 @@ bool MenuAttivo::gestisciSelezioneMouse(unsigned pos_mouse_x, unsigned pos_mouse
     double pos_y = dim_y_fin - (double) pos_mouse_y;
     for (unsigned i = 0; i < numero_voci_menu_attivo; i++) {
         if (stati_menu_selezionabili[i]) {
-            if (pos_x < posizioni_caselle_menu_attivo[i].X() + caselle_menu_attivo[i].Upper().X() &&
-                    pos_x > posizioni_caselle_menu_attivo[i].X() + caselle_menu_attivo[i].Lower().X() &&
-                    pos_y < posizioni_caselle_menu_attivo[i].Y() + caselle_menu_attivo[i].Upper().Y() &&
-                    pos_y > posizioni_caselle_menu_attivo[i].Y() + caselle_menu_attivo[i].Lower().Y()) {
+            if (pos_x < posizioni_caselle_menu_attivo[i].X() + destra &&
+                    pos_x > posizioni_caselle_menu_attivo[i].X() + sinistra &&
+                    pos_y < posizioni_caselle_menu_attivo[i].Y() + (double) dist_da_voce / 1.8 &&
+                    pos_y > posizioni_caselle_menu_attivo[i].Y() - (double) dist_da_voce / 5.2) {
                 voce_selezionata = i;
                 return true;
             }
@@ -104,7 +104,7 @@ void MenuAttivo::aggiorna() {
         if (i == voce_selezionata) {
             stato_attivo_voci_menu[i] = 1.0f;
         } else {
-            stato_attivo_voci_menu[i] = stato_attivo_voci_menu[i] - 0.05 > 0.0 ? stato_attivo_voci_menu[i] - 0.05 : 0.0;
+            stato_attivo_voci_menu[i] = stato_attivo_voci_menu[i] - 0.10 > 0.0 ? stato_attivo_voci_menu[i] - 0.10 : 0.0;
         }
     }
 }

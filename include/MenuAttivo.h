@@ -12,84 +12,57 @@ enum StatoMenu {
     VUOTA,
     PRINCIPALE,
     //:::::::::::::::::::::::::::::::::::::::::::::::::
-    /**/ TORNA_INDIETRO,
     /**/ CONTINUA_PARTITA,
     /**/ SCEGLI_LIVELLO,
-    /*   */ SL_LIVELLO,
+    /*   */ LIVELLO_SCELTO_PARTITA,
     /**/ GESTIONE_LIVELLI,
     /*   */ GEL_NUOVO_LIVELLO,
-    /*      */ GEL_NL_NOME_LIVELLO,
+    /*      */ NOME_LIVELLO,
     /*      */ GEL_NL_DIMX_LIVELLO,
     /*      */ GEL_NL_DIMY_LIVELLO,
     /*      */ GEL_NL_CREA_LIVELLO,
     /*   */ GEL_SCEGLI_LIVELLO,
-    /*      */ GEL_SL_LIVELLO,
+    /*      */ LIVELLO_SCELTO_EDITOR,
     /*   */ GEL_ELIMINA_LIVELLO,
-    //---------------
-
-    OPZIONI = 12,
-
-    GESTIONE_PROFILI = 13,
-    GP_GESTIONE_PROFILI = 135,
-    //---------------
-    GP_NUOVO_PROFILO = 130,
-    GP_NP_NUOVO_PROFILO = 1302, GP_NP_CREA_PROFILO = 1300, GP_NP_TORNA_INDIETRO = 1301,
-
-    GP_CAMBIA_PROFILO = 131,
-    GP_CP_CAMBIA_PROFILO = 1311, GP_CP_TORNA_INDIETRO = 1310,
-
-    GP_COPIA_PROFILO_ATTUALE = 132,
-    GP_CPA_COPIA_PROFILO_ATTUALE = 1322, GP_CPA_CREA_COPIA_PROFILO = 1320, GP_CPA_TORNA_INDIETRO = 1321,
-
-    GP_ELIMINA_PROFILO = 133,
-    GP_EL_ELIMINA_PROFILO = 1331, GP_EL_TORNA_INDIETRO = 1330,
-
-    GP_TORNA_A_MENU_PRINCIPALE = 134,
-    //----------------
-
-    ISTRUZIONI = 14,
-
-    RINGRAZIAMENTI = 15,
-
-    ESCI = 16,
+    /*      */ CONFERMA_ELIMINA_LIVELLO_SCELTO,
+    /*      */ ELIMINA_LIVELLO_SCELTO,
+    /**/ OPZIONI,
+    /**/ GESTIONE_PROFILI,
+    /*   */ GP_NUOVO_PROFILO,
+    /*      */ NOME_PROFILO,
+    /*      */ GP_NP_CREA_PROFILO,
+    /*   */ GP_CAMBIA_PROFILO,
+    /*      */ PROFILO_SCELTO,
+    /*   */ GP_COPIA_PROFILO_ATTUALE,
+    /*      */ GP_CPA_CREA_PROFILO,
+    /*   */ GP_ELIMINA_PROFILO,
+    /*      */ CONFERMA_ELIMINA_PROFILO_SCELTO,
+    /*      */ ELIMINA_PROFILO_SCELTO,
+    /**/ ISTRUZIONI,
+    /**/ RINGRAZIAMENTI,
+    /**/ ESCI,
+    /**/ TORNA_INDIETRO,
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    SECONDO = 2,
-    EL_EDITOR_LIVELLO = 25,
+    EL_EDITOR_LIVELLO,
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    EL_PROVA_LIVELLO = 20,
-
-    EL_SALVA_LIVELLO = 21,
-
-    EL_SALVA_LIVELLO_CON_NOME = 22,
-    EL_SLCN_SALVA_LIVELLO_CON_NOME = 222, EL_SLCN_SALVA_LIVELLO = 220, EL_SLCN_TORNA_INDIETRO = 221,
-
-    EL_CAMBIA_LIVELLO = 23,
-    EL_CL_CAMBIA_LIVELLO = 231, EL_CL_TORNA_INDIETRO = 230,
-
-    EL_TORNA_A_MENU_PRINCIPALE_SENZA_SALVARE = 24,
+    /**/ EL_PROVA_LIVELLO,
+    /**/ EL_SALVA_LIVELLO,
+    /**/ EL_SALVA_LIVELLO_CON_NOME,
+    /*   */ EL_SLCN_SALVA_LIVELLO,
+    /*   */ EL_SLCN_TORNA_INDIETRO,
+    /**/ EL_CAMBIA_LIVELLO,
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-    TERZO = 3,
-    GL_GIOCA_LIVELLO = 33,
+    GL_GIOCA_LIVELLO,
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    GL_SALVA_LIVELLO = 30,
-
-    GL_CAMBIA_LIVELLO = 31,
-    GL_CL_CAMBIA_LIVELLO = 311, GL_CL_TORNA_INDIETRO = 310,
-
-    GL_TORNA_A_MENU_PRINCIPALE_SENZA_SALVARE = 32,
+    /**/ GL_SALVA_LIVELLO,
+    /**/ GL_CAMBIA_LIVELLO,
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-    QUARTO = 4,
-    ELP_EDITOR_LIVELLO_PROVA = 42,
+    ELP_EDITOR_LIVELLO_PROVA,
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    ELP_TORNA_EDITOR = 40,
-
-    ELP_TORNA_A_MENU_PRINCIPALE_SENZA_SALVARE = 41,
+    /**/ ELP_TORNA_EDITOR,
+    /**/ ELP_TORNA_A_MENU_PRINCIPALE_SENZA_SALVARE,
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-    QUINTO = 5,
-    PAUSA = 51
+    PAUSA
 };
 
 enum TipoMenu {
@@ -106,6 +79,11 @@ protected:
     FTSimpleLayout *layout;
 
     unsigned dim_x_fin, dim_y_fin;
+
+    unsigned sinistra;
+    unsigned sopra;
+    unsigned destra;
+    unsigned sotto;
 
     unsigned numero_voci_menu_attivo;
     unsigned voce_selezionata;
@@ -134,7 +112,7 @@ public:
 
     void setCarattere(FTPixmapFont *font_aux, FTSimpleLayout *layout_aux);
 
-    void inserisci(QString voce, StatoMenu stato, bool attivo = true, bool selezionabile = true);
+    void inserisci(QString voce, StatoMenu stato = VUOTA, bool attivo = true, bool selezionabile = true);
 
     void inserisci(QStringList lista_voci, StatoMenu stato);
 

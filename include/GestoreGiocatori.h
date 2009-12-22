@@ -43,12 +43,14 @@ public:
     void salvaGiocatore();
 
     bool salvaLivelloConNomeGiocatore(QString nome_livello);
+    bool eliminaLivello(QString nome_livello);
     bool nuovoLivelloGiocatore(QString nome_livello, unsigned dim_x_livello, unsigned dim_y_livello);
     void salvaLivelloGiocatore();
     bool cambiaLivelloGiocatore(QString nome_livello, TipoLivello tipo);
     QStringList listaLivelliGiocatore();
 
-    QString nomeGiocatoreAttuale();
+    QString getNomeGiocatoreAttuale();
+    QString getnomeLivelloAttuale();
     QStringList nomiGiocatori();
 };
 
