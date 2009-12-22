@@ -22,6 +22,8 @@
 #include <FTGL/FTPoint.h>
 #include <QFile>
 
+#define PARAMETRO_NON_USATO(x) (void)x
+
 using namespace std;
 
 #include "Textures.h"

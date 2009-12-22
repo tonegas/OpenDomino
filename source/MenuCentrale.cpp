@@ -4,9 +4,6 @@
  * 
  * Created on 14 dicembre 2009, 18.35
  */
-
-#include <FTGL/FTBBox.h>
-
 #include "../include/Domino.h"
 
 MenuCentrale::MenuCentrale() {

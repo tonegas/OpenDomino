@@ -11,6 +11,7 @@ MenuAttivo::MenuAttivo() {
 }
 
 void MenuAttivo::aggiornaMovimento(unsigned pos_mouse_x, unsigned pos_mouse_y) {
+    PARAMETRO_NON_USATO(pos_mouse_x),PARAMETRO_NON_USATO(pos_mouse_y);
 }
 
 void MenuAttivo::setCarattere(FTPixmapFont *font_aux, FTSimpleLayout *layout_aux) {

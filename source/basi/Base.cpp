@@ -20,9 +20,11 @@ Elemento* Base::costruttore() {
 }
 
 void Base::aggiornaStato(Griglia &griglia) {
+    PARAMETRO_NON_USATO(griglia);
 }
 
 void Base::setStato(void *stato) {
+    PARAMETRO_NON_USATO(stato);
 }
 
 void Base::stampaSelezione(unsigned x, unsigned y, GLfloat attivo) {

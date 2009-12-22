@@ -94,6 +94,7 @@ void MenuLaterale::aggiornaMovimento() {
 }
 
 void MenuLaterale::aggiornaMovimento(unsigned pos_mouse_x, unsigned pos_mouse_y) {
+    PARAMETRO_NON_USATO(pos_mouse_x);
     if ((int) dim_y_fin - (int) pos_mouse_y < ((int) dist_da_basso_voce_principale - dist_da_voce_principale_voce)
             && (int) dim_y_fin - (int) pos_mouse_y > (int) dist_da_basso_voce_uscita + dist_da_voce) {
         posizione_voci_visibili = (double) ((int)pos_mouse_y - (int)dist_da_voce_principale_voce - ((int) dim_y_fin - (int)dist_da_basso_voce_principale)) /
@@ -104,6 +105,7 @@ void MenuLaterale::aggiornaMovimento(unsigned pos_mouse_x, unsigned pos_mouse_y)
 }
 
 bool MenuLaterale::gestisciSelezioneMouse(unsigned pos_mouse_x, unsigned pos_mouse_y) {
+    PARAMETRO_NON_USATO(pos_mouse_x);
     double pos_y = dim_y_fin - (double) pos_mouse_y;
     for (unsigned i = 0; i < numero_voci_menu_attivo; i++) {
         if (stati_menu_selezionabili[i]) {

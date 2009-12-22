@@ -33,7 +33,7 @@ public:
     Pezzo(unsigned x_aux,unsigned y_aux);
     Pezzo(const Pezzo& orig);
     Elemento* costruttore();
-    void setStato(void* stato);
+    void setStato(void *stato);
     StatoPezzo getStato();
     void aggiornaStato(Griglia &griglia);
     void stampa();

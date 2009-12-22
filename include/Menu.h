@@ -20,121 +20,44 @@ class MenuVociDinamiche;
 #include "Domino.h"
 
 class Menu : public Interfaccia {
+    //puntatore al gestore di giocatori
     GestoreGiocatori *gestore_giocatori;
+
+    //tipologie menu
     MenuAttivo* menu_attuale;
     MenuCentrale menu_centrale;
     MenuLaterale menu_laterale;
     MenuVociDinamiche menu_voci_dinamiche;
 
+    //voci dinamiche menu
     QStringList nomi_giocatori;
     QStringList lista_livelli;
-    QStringList stringaStatoGiocatore;
-
+    QStringList stringa_stato_giocatore;
     QString livello_da_eliminare;
     QString profilo_da_eliminare;
     QString nuovo_nome;
     QString dim_x_nuovo_livello;
     QString dim_y_nuovo_livello;
 
+    //informazioni di stato
+    int dist_da_destra_nome, dist_da_alto_nome, dim_nome;
+
     //variabili per scrivere
     FTPixmapFont *font;
     FTSimpleLayout layout;
 
+    //dimensione finestra
     unsigned dim_x_fin, dim_y_fin;
-
-    int dim_nome, dist_da_destra_nome, dist_da_alto_nome;
-
-    unsigned prima_voce_visibile;
-    unsigned voci_visibili;
-    int posizione_voci_visibili;
-
 
     //variabili di stato
     StatoMenu stato;
     StatoMenu stato_cambio_posticipato;
-    //unsigned numero_max_voci_visibili;
-
-    unsigned stato_attivo;
-    QVector<float> stato_attivo_voci_menu;
-    QVector<float> trasparenza_voci_visibili;
-    unsigned numero_voci_menu_attivo;
-    QStringList voci_menu_attivo;
-    QVector<FTBBox> caselle_menu_attivo;
-    QVector<FTPoint> posizioni_caselle_menu_attivo;
-
-
-    QStringList voci_menu_gel_scegli_livello;
-    QStringList voci_menu_gel_elimina_livello;
-
-    QStringList voci_menu_gestione_profili;
-    QStringList voci_menu_gp_nuovo_profilo;
-    QStringList voci_menu_gp_cambia_profilo;
-    QStringList voci_menu_gp_copia_profilo_attuale;
-    QStringList voci_menu_gp_elimina_profilo;
-    //::::::::::::::::::::::::::::::::::
-
-    QStringList voci_menu_el_editor_livello;
-    //::::::::::::::::::::::::::::::::::
-    QStringList voci_menu_el_salva_con_nome;
-    QStringList voci_menu_el_cambia_livello;
-    //::::::::::::::::::::::::::::::::::
-
-    QStringList voci_menu_gl_gioca_livello;
-    //::::::::::::::::::::::::::::::::::
-    QStringList voci_menu_gl_cambia_livello;
-    //::::::::::::::::::::::::::::::::::
-
-    QStringList voci_menu_elp_editor_livello_prova;
-
-    QStringList pausa;
-
-//    void inizializzaVariabiliMenu(StatoMenu nuovo_stato, QStringList nuove_voci_menu);
-//    void inizializzaVariabiliMenu(StatoMenu nuovo_stato, QStringList nuove_voci_menu, unsigned numero_voci_in_piu);
-
-//    void costruisciCaselleMenuCentrale();
-//    void costruisciCaselleMenuLaterale();
-//    void costruisciCaselleMenuCrea();
 
     void cambiaVociMenu();
-    //:::::::::::::::::::::::::::::::
-//    void cambiaVociMenuPrincipale();
-//    void cambiaVociMenuGioca();
-//    void cambiaVociMenuGScegliLivello();
-//    void cambiaVociMenuGestioneLivelli();
-//    void cambiaVociMenuGeLNuovoLivello();
-//    void cambiaVociMenuGeLScegliLivello();
-//    void cambiaVociMenuGeLEliminaLivello();
-//    void cambiaVociMenuGestioneProfili();
-//    void cambiaVociMenuGPNuovoProfilo();
-//    void cambiaVociMenuGPCambiaProfilo();
-//    void cambiaVociMenuGPCopiaProfiloAttuale();
-//    void cambiaVociMenuGPEliminaProfilo();
-//    //:::::::::::::::::::::::::::::::::
-//    void cambiaVociMenuELEditorLivelli();
-//    void cambiaVociMenuELSalvaConNome();
-//    void cambiaVociMenuELCambiaLivello();
-//    //:::::::::::::::::::::::::::::::::
-//    void cambiaVociMenuGLGiocaLivello();
-//    void cambiaVociMenuGLCambiaLivello();
-//    //:::::::::::::::::::::::::::::::::
-//    void cambiaVociMenuELPEditorLivelloProva();
-
-
-//    bool gestisciSelezioneMouse();
-//    bool gestisciSelezioneMouseMenuLaterale();
     void gestisciInput();
 
     void stampa();
     void stampaGiocatoreAttuale();
-//    void stampaMenuCentrale();
-//    void stampaMenuLaterale();
-//    void stampaMenuCreaLivello();
-//    void stampaMenuInserisciParola();
-
-//    void aggiornaStatoAttivoVociMenu();
-//    void aggiornaStatoAttivoVociMenuLaterale();
-//    void aggiornaStatoAttivoVociMenuLateraleMouse();
-
 public:
     Menu(unsigned dim_x_fin_aux, unsigned dim_y_fin_aux);
     ~Menu();

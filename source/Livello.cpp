@@ -38,7 +38,7 @@ Livello::Livello(int num_x_colonne_aux, int num_y_righe_aux, TipoLivello tipo) {
     entrambi = false;
 }
 
-Livello::Livello(const Livello& orig) {
+Livello::Livello(const Livello& orig):Interfaccia((Interfaccia)orig) {
     griglia_livello = new Griglia(*orig.griglia_livello);
     tele_assio = new TelecameraAssionometrica(*orig.tele_assio);
     tele_prosp = new TelecameraProspettica(*orig.tele_prosp);
