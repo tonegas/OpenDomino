@@ -190,6 +190,9 @@ void GestoreGiocatori::caricaFileGiocatore() {
                     QString nome_livello = livello.attribute("nome", "");
                     TipoLivello tipo = (TipoLivello) livello.attribute("tipo", 0).toUInt();
                     if (gestore_livelli.caricaLivello(nome_livello, &aux)) {
+                        if (tipo == LIVELLO_EDITOR) {
+                            giocatore_attuale->setStato(EDITOR_COSTRUISCI);
+                        }
                         giocatore_attuale->setStrutturaLivello(&aux, tipo);
                     } else {
                         if (gestore_livelli.caricaLivello("Intro", &aux)) {
@@ -381,7 +384,7 @@ void GestoreGiocatori::salvaLivelloGiocatore() {
     gestore_livelli.salvaLivello(&aux);
 }
 
-bool GestoreGiocatori::eliminaLivello(QString nome_livello){
+bool GestoreGiocatori::eliminaLivello(QString nome_livello) {
     return gestore_livelli.eliminaLivello(nome_livello);
 }
 
@@ -420,7 +423,7 @@ bool GestoreGiocatori::nuovoLivelloGiocatore(QString nome_livello, unsigned dim_
     }
 }
 
-QString GestoreGiocatori::getnomeLivelloAttuale(){
+QString GestoreGiocatori::getnomeLivelloAttuale() {
     return giocatore_attuale->getNomeLivello();
 }
 

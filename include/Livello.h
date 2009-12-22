@@ -23,10 +23,6 @@ enum TipoLivello{
     LIVELLO_PARTITA, LIVELLO_EDITOR, LIVELLO_PRESENTAZIONE
 };
 
-//enum TipologiaLivello{
-//    LIVELLO_EDITOR,LIVELLO_PARTITA
-//};
-
 class Gioco;
 
 #include "Domino.h"
@@ -72,7 +68,6 @@ protected:
     bool entrambi;
     unsigned x_pezzo_selezionato, y_pezzo_selezionato;
     unsigned x_base_selezionata, y_base_selezionata;
-    //---------------------------
 
     void gestisciInput();
 

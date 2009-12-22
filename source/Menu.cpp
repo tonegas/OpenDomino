@@ -94,6 +94,17 @@ void Menu::setStato(StatoMenu nuovo_stato) {
             break;
         case CONTINUA_PARTITA:
             gioco->setStato(GIOCATORE);
+            switch (gioco->getStatoGiocatore()) {
+                case PARTITA:
+                    setStatoCambioPosticipato(GL_GIOCA_LIVELLO);
+                    break;
+                case EDITOR_COSTRUISCI:
+                    setStatoCambioPosticipato(EL_EDITOR_LIVELLO);
+                    break;
+                case EDITOR_TEST:
+                    setStatoCambioPosticipato(ELP_EDITOR_LIVELLO_PROVA);
+                    break;
+            }
             break;
         case SCEGLI_LIVELLO:
         case GL_CAMBIA_LIVELLO:

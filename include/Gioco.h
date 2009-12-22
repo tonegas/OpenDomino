@@ -8,7 +8,7 @@
 #ifndef _GIOCO_H
 #define	_GIOCO_H
 
-#define FRAMERATE   50                  //frame per secondo massimi
+#define FRAMERATE   30                  //frame per secondo massimi
 #define FRAMEMS     1000/FRAMERATE      //millisecondi per frame
 
 #define LARGHEZZA_FIN 1000
@@ -18,9 +18,6 @@
 enum Stato {
     MENU,
     GIOCATORE
-    //    PARTITA,
-    //    EDITOR_COSTRUISCI,
-    //    EDITOR_TEST
 };
 
 class Editor;

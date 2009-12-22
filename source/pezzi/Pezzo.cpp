@@ -55,7 +55,7 @@ void Pezzo::aggiornaStato(Griglia &griglia) {
             break;
         case CADE_GIU:
             dy -= (GLdouble) ALTEZZA_PEZZO / 8.0;
-            if (dy<-((GLdouble) ALTEZZA_PEZZO / 2.0)) {
+            if (dy <= -((GLdouble) ALTEZZA_PEZZO / 2.0)) {
                 griglia.spostaElementoAttivo(x, y, x, y - 1);
                 dy = -dy;
             }

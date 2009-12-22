@@ -12,15 +12,21 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_opengl.h>
 #include <stdlib.h>
+#include <time.h>
 #include <string>
 #include <vector>
 #include <fstream>
 #include <iostream>
 #include <math.h>
 #include <FTGL/ftgl.h>
-#include <FTGL/FTBBox.h>
-#include <FTGL/FTPoint.h>
+//#include <FTGL/FTBBox.h>
+//#include <FTGL/FTPoint.h>
 #include <QFile>
+#include <QtXml>
+#include <QFile>
+#include <QDir>
+#include <QTextStream>
+#include <QVector>
 
 #define PARAMETRO_NON_USATO(x) (void)x
 

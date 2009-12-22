@@ -45,8 +45,8 @@ void TelecameraAssionometrica::configuraVisuale() {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(
-            ASSIONOMETRICA_X_TELECAMERA, ASSIONOMETRICA_Y_TELECAMERA, ASSIONOMETRICA_Z_TELECAMERA, /* eye  */
-            ASSIONOMETRICA_X_TELECAMERA, ASSIONOMETRICA_Y_TELECAMERA, 0.0, /* center  */
+            -matrice_view[2]/2-ASSIONOMETRICA_X_TELECAMERA, -matrice_view[3]/2-ASSIONOMETRICA_Y_TELECAMERA, ASSIONOMETRICA_Z_TELECAMERA, /* eye  */
+            -matrice_view[2]/2-ASSIONOMETRICA_X_TELECAMERA, -matrice_view[3]/2-ASSIONOMETRICA_Y_TELECAMERA, 0.0, /* center  */
             0.0, 1.0, 0.0); /* up is in positive Y direction */
 }
 

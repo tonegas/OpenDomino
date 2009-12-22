@@ -14,7 +14,7 @@ Giocatore::Giocatore() {
 Giocatore::Giocatore(QString nome_aux) {
     nome = nome_aux;
     tempo_di_gioco = 0;
-    stato = EDITOR_COSTRUISCI;
+    stato = PARTITA;
     cambia_stato = false;
     nome_livello_attuale = "";
     tempo_di_gioco_apertura = time(NULL);
@@ -58,7 +58,7 @@ Giocatore::Giocatore(QString nome_aux, time_t tempo_di_gioco_aux, time_t data_di
     nome = nome_aux;
     tempo_di_gioco = tempo_di_gioco_aux;
     nome_livello_attuale = "";
-    stato = EDITOR_COSTRUISCI;
+    stato = PARTITA;
     cambia_stato = false;
     tempo_di_gioco_apertura = time(NULL);
     data_di_creazione = data_di_creazione_aux;

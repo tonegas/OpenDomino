@@ -8,21 +8,7 @@
 #ifndef _GIOCATORE_H
 #define	_GIOCATORE_H
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_opengl.h>
-#include <stdlib.h>
-#include <iostream>
-#include <time.h>
-
-#include <QtXml>
-#include <QFile>
-#include <QDir>
-#include <QTextStream>
-#include <QVector>
-
-#include <FTGL/ftgl.h>
-
-#include "Livello.h"
+#include "Domino.h"
 
 using namespace std;
 class Interfaccia;
