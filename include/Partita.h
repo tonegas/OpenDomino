@@ -13,6 +13,7 @@ class Livello;
 #include "Domino.h"
 
 class Partita : public Livello {
+    bool pezzo_preso;
 protected:
     void mouseButtonDown();
     void mouseMotion();

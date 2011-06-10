@@ -126,6 +126,7 @@ Gioco::Gioco() : variabili(this, &evento), menu(LARGHEZZA_FIN, ALTEZZA_FIN) {// 
 
     giocatore_attuale = gestore_giocatori.getGiocatoreAttuale();
     (*giocatore_attuale)->inizializzaVideo();
+    menu.setStato(PRINCIPALE);
 }
 
 Gioco::~Gioco() {
@@ -236,8 +237,8 @@ int Gioco::getFrames() const {
 
 void Gioco::resize(unsigned dim_x, unsigned dim_y) {
     setWindowLA(dim_x, dim_y);
-    menu.resize(dim_x, dim_y);
     (*giocatore_attuale)->resize(dim_x, dim_y);
+    menu.resize(dim_x, dim_y);
 }
 
 void Gioco::setWindowLA(int larghezza_finestra_aux, int altezza_finestra_aux) {

@@ -23,8 +23,6 @@ Menu::Menu(unsigned dim_x_fin_aux, unsigned dim_y_fin_aux) {
     menu_centrale.setCarattere(font, &layout);
     menu_laterale.setCarattere(font, &layout);
     menu_voci_dinamiche.setCarattere(font, &layout);
-
-    setStato(PRINCIPALE);
 }
 
 void Menu::resize() {
@@ -186,6 +184,7 @@ void Menu::setStato(StatoMenu nuovo_stato) {
             menu_attuale->inserisci(livello_da_eliminare, VUOTA, true, false);
             menu_attuale->inserisci("Conferma eliminazione", ELIMINA_LIVELLO_SCELTO);
             menu_attuale->inserisci("Torna al menu", TORNA_INDIETRO);
+            menu_attuale->setVoceSelezionata(1);
             resize();
             break;
         case ELIMINA_LIVELLO_SCELTO:
@@ -328,9 +327,10 @@ void Menu::setStato(StatoMenu nuovo_stato) {
             menu_attuale->tipo = MENU_CENTRALE;
             menu_attuale->azzera();
             menu_attuale->inserisci("Open Domino");
-            menu_attuale->inserisci("Salva livello", GL_SALVA_LIVELLO, false);
+            menu_attuale->inserisci("Salva livello", GL_SALVA_LIVELLO, false, false);
             menu_attuale->inserisci("Cambia livello", GL_CAMBIA_LIVELLO);
             menu_attuale->inserisci("Torna al menu principale", TORNA_INDIETRO);
+            menu_attuale->setVoceSelezionata(1);
             resize();
             break;
         case ELP_EDITOR_LIVELLO_PROVA:

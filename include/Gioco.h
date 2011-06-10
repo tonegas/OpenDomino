@@ -52,6 +52,11 @@ class Gioco {
     //variabile per la modifica della velocità di gioco
     int frame_ms;
 
+    //indica se il gioco deve smettere di ciclare
+    bool alive;
+
+    void setWindowLA(int larghezza_finestra_aux, int altezza_finestra_aux);
+
     //questa voce deve stare prima delle altre altrimenti non inizializza variabili statiche servono al giocatore
     //---------------
     Interfaccia variabili;
@@ -60,12 +65,6 @@ class Gioco {
     Menu menu;
     Giocatore **giocatore_attuale;
     //   Interfaccia *video;
-
-    //indica se il gioco deve smettere di ciclare
-    bool alive;
-
-    void setWindowLA(int larghezza_finestra_aux, int altezza_finestra_aux);
-
 public:
 
 

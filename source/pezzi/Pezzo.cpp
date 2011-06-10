@@ -94,6 +94,11 @@ void Pezzo::aggiornaStato(Griglia &griglia) {
     }
 }
 
+void Pezzo::setDxDy(GLdouble dx_aux, GLdouble dy_aux) {
+    dx = dx_aux;
+    dy = dy_aux;
+}
+
 void Pezzo::stampaSelezione(unsigned x, unsigned y, GLfloat attivo) {
     static GLfloat xf, yf, sposto_x, sposto_y, grandezza;
 

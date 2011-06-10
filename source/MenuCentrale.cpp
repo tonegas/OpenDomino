@@ -7,6 +7,7 @@
 #include "../include/Domino.h"
 
 MenuCentrale::MenuCentrale() {
+
 }
 
 void MenuCentrale::costruisciCaselle() {
@@ -33,6 +34,44 @@ void MenuCentrale::costruisciCaselle() {
     sotto = caselle_menu_attivo[numero_voci_menu_attivo - 1].Lower().Y() + posizioni_caselle_menu_attivo[numero_voci_menu_attivo - 1].Y() - dist_da_voce / 2;
     destra += dist_da_voce / 2;
     sinistra -= dist_da_voce / 2;
+
+    glDeleteLists(lista_menu, 1);
+    lista_menu = glGenLists(1);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glEnable(GL_BLEND);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, dim_x_fin, 0, dim_y_fin);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    glNewList(lista_menu, GL_COMPILE_AND_EXECUTE);
+    font->FaceSize(dim_voce_principale);
+    layout->SetAlignment(FTGL::ALIGN_CENTER);
+    layout->SetLineLength(dim_x_fin);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    glRasterPos2i(0, dist_da_basso_voce_principale);
+    layout->Render(titolo.toStdString().c_str());
+    font->FaceSize(dim_voce);
+    for (unsigned i = 0; i < numero_voci_menu_attivo; i++) {
+        if (stati_menu_attivi[i]) {
+            glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        } else {
+            glColor4f(1.0f, 1.0f, 1.0f, 0.25f);
+        }
+        glRasterPos2i(0, posizioni_caselle_menu_attivo[i].Y());
+        layout->Render(voci_menu[i].toStdString().c_str());
+    }
+    glEndList();
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glDisable(GL_BLEND);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void MenuCentrale::stampa() {
@@ -53,14 +92,6 @@ void MenuCentrale::stampa() {
         glVertex2i(destra, sopra);
     }
     glEnd();
-    font->FaceSize(dim_voce_principale);
-    layout->SetAlignment(FTGL::ALIGN_CENTER);
-    layout->SetLineLength(dim_x_fin);
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    glRasterPos2i(0, dist_da_basso_voce_principale);
-    layout->Render(titolo.toStdString().c_str());
-
-    font->FaceSize(dim_voce);
     for (unsigned i = 0; i < numero_voci_menu_attivo; i++) {
         glColor4f(0.8, 0.8, 0.8, stato_attivo_voci_menu[i]*0.6);
         glBegin(GL_QUADS);
@@ -71,12 +102,51 @@ void MenuCentrale::stampa() {
             glVertex2d((double) destra - (double) dist_da_voce / 4.0, (double) posizioni_caselle_menu_attivo[i].Y() - (double) dist_da_voce / 5.2);
         }
         glEnd();
-        if (stati_menu_attivi[i]) {
-            glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        } else {
-            glColor4f(1.0f, 1.0f, 1.0f, 0.3f);
-        }
-        glRasterPos2i(0, posizioni_caselle_menu_attivo[i].Y());
-        layout->Render(voci_menu[i].toStdString().c_str());
     }
+    glCallList(lista_menu);
+
+
+    //    glColor4f(0.6f, 0.6f, 0.6f, 0.7f);
+    //    glBegin(GL_LINE_LOOP);
+    //    {
+    //        glVertex2i(sinistra, sopra);
+    //        glVertex2i(sinistra, sotto);
+    //        glVertex2i(destra, sotto);
+    //        glVertex2i(destra, sopra);
+    //    }
+    //    glEnd();
+    //    glBegin(GL_QUADS);
+    //    {
+    //        glVertex2i(sinistra, sopra);
+    //        glVertex2i(sinistra, sotto);
+    //        glVertex2i(destra, sotto);
+    //        glVertex2i(destra, sopra);
+    //    }
+    //    glEnd();
+    //    font->FaceSize(dim_voce_principale);
+    //    layout->SetAlignment(FTGL::ALIGN_CENTER);
+    //    layout->SetLineLength(dim_x_fin);
+    //    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    //    glRasterPos2i(0, dist_da_basso_voce_principale);
+    //    layout->Render(titolo.toStdString().c_str());
+    //
+    //    font->FaceSize(dim_voce);
+    //    for (unsigned i = 0; i < numero_voci_menu_attivo; i++) {
+    //        glColor4f(0.8, 0.8, 0.8, stato_attivo_voci_menu[i]*0.6);
+    //        glBegin(GL_QUADS);
+    //        {
+    //            glVertex2d((double) sinistra + (double) dist_da_voce / 4.0, (double) posizioni_caselle_menu_attivo[i].Y() - (double) dist_da_voce / 5.2);
+    //            glVertex2d((double) sinistra + (double) dist_da_voce / 4.0, (double) posizioni_caselle_menu_attivo[i].Y() + (double) dist_da_voce / 1.8);
+    //            glVertex2d((double) destra - (double) dist_da_voce / 4.0, (double) posizioni_caselle_menu_attivo[i].Y() + (double) dist_da_voce / 1.8);
+    //            glVertex2d((double) destra - (double) dist_da_voce / 4.0, (double) posizioni_caselle_menu_attivo[i].Y() - (double) dist_da_voce / 5.2);
+    //        }
+    //        glEnd();
+    //        if (stati_menu_attivi[i]) {
+    //            glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    //        } else {
+    //            glColor4f(1.0f, 1.0f, 1.0f, 0.3f);
+    //        }
+    //        glRasterPos2i(0, posizioni_caselle_menu_attivo[i].Y());
+    //        layout->Render(voci_menu[i].toStdString().c_str());
+    //    }
 }

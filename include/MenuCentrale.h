@@ -11,6 +11,7 @@
 #include "Domino.h"
 
 class MenuCentrale : public MenuAttivo {
+    GLuint lista_menu;
 public:
     MenuCentrale();
 

@@ -28,9 +28,10 @@ void Partita::mouseButtonDown() {
     if (evento->button.button == SDL_BUTTON_LEFT && telecamera_attuale->indice_griglia_ok) {
         telecamera_attuale->mouseSelezione(this,griglia_livello);
         if (caratteristiche_selezione == DAVANTI_PEZZO || entrambi) {
-            if (griglia_livello->getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
-                griglia_livello->setStato(x_pezzo_selezionato, y_pezzo_selezionato, CADE_DESTRA);
-            }
+            pezzo_preso = true;
+//            if (griglia_livello->getOccupato(x_pezzo_selezionato, y_pezzo_selezionato)) {
+//                griglia_livello->setStato(x_pezzo_selezionato, y_pezzo_selezionato, CADE_DESTRA);
+//            }
         }
     }
 

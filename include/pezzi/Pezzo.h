@@ -36,6 +36,7 @@ public:
     void setStato(void *stato);
     StatoPezzo getStato();
     void aggiornaStato(Griglia &griglia);
+    void setDxDy(GLdouble dx_aux,GLdouble dy_aux);
     void stampa();
     static void stampaPezzoCollisione(unsigned x, unsigned y);
     static void stampaSelezione(unsigned x, unsigned y, GLfloat attivo);

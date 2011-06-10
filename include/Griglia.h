@@ -13,7 +13,7 @@
 class Griglia {
     friend class Pezzo;
 
-public:
+
     bool in_partita;
     ElementoAttivo *testa_elementi;
     ElementoAttivo* **matrice_elementi;
@@ -23,7 +23,7 @@ public:
     ElementoAttivo* creaElementoAttivo(unsigned x, unsigned y);
     void eliminaElementoAttivo(ElementoAttivo* tokill);
 
-//public:
+public:
 
     Griglia(unsigned num_x_colonne_aux, unsigned num_y_righe_aux);
 
