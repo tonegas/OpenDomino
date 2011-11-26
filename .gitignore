@@ -2,3 +2,4 @@ build/
 dist/
 Giocatori/
 Livelli/
+!Livelli/Intro.xml

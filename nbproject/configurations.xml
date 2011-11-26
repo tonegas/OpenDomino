@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="62">
+<configurationDescriptor version="69">
   <logicalFolder name="root" displayName="root" projectFiles="true">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -12,29 +12,29 @@
       <logicalFolder name="pezzi" displayName="pezzi" projectFiles="true">
         <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/pezzi/Pezzo.h</itemPath>
       </logicalFolder>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Domino.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Editor.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Elemento.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/ElementoAttivo.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/GestoreGiocatori.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/GestoreLivelli.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Giocatore.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Gioco.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Griglia.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Interfaccia.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Livello.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Menu.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/MenuAttivo.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/MenuCentrale.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/MenuLaterale.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/MenuVociDinamiche.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Partita.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/PosTelecamere.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Presentazione.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Telecamera.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/TelecameraAssionometrica.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/TelecameraProspettica.h</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/Textures.h</itemPath>
+      <itemPath>./include/Domino.h</itemPath>
+      <itemPath>./include/Editor.h</itemPath>
+      <itemPath>./include/Elemento.h</itemPath>
+      <itemPath>./include/ElementoAttivo.h</itemPath>
+      <itemPath>./include/GestoreGiocatori.h</itemPath>
+      <itemPath>./include/GestoreLivelli.h</itemPath>
+      <itemPath>./include/Giocatore.h</itemPath>
+      <itemPath>./include/Gioco.h</itemPath>
+      <itemPath>./include/Griglia.h</itemPath>
+      <itemPath>./include/Interfaccia.h</itemPath>
+      <itemPath>./include/Livello.h</itemPath>
+      <itemPath>./include/Menu.h</itemPath>
+      <itemPath>./include/MenuAttivo.h</itemPath>
+      <itemPath>./include/MenuCentrale.h</itemPath>
+      <itemPath>./include/MenuLaterale.h</itemPath>
+      <itemPath>./include/MenuVociDinamiche.h</itemPath>
+      <itemPath>./include/Partita.h</itemPath>
+      <itemPath>./include/PosTelecamere.h</itemPath>
+      <itemPath>./include/Presentazione.h</itemPath>
+      <itemPath>./include/Telecamera.h</itemPath>
+      <itemPath>./include/TelecameraAssionometrica.h</itemPath>
+      <itemPath>./include/TelecameraProspettica.h</itemPath>
+      <itemPath>./include/Textures.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -42,33 +42,33 @@
     </logicalFolder>
     <logicalFolder name="source" displayName="source" projectFiles="true">
       <logicalFolder name="basi" displayName="basi" projectFiles="true">
-        <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/basi/Base.cpp</itemPath>
+        <itemPath>./source/basi/Base.cpp</itemPath>
       </logicalFolder>
       <logicalFolder name="pezzi" displayName="pezzi" projectFiles="true">
-        <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/pezzi/Pezzo.cpp</itemPath>
+        <itemPath>./source/pezzi/Pezzo.cpp</itemPath>
       </logicalFolder>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Editor.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Elemento.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/ElementoAttivo.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/GestoreGiocatori.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/GestoreLivelli.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Giocatore.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Gioco.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Griglia.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Interfaccia.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Livello.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Menu.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/MenuAttivo.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/MenuCentrale.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/MenuLaterale.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/MenuVociDinamiche.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Partita.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/PosTelecamere.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Presentazione.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Telecamera.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/TelecameraAssionometrica.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/TelecameraProspettica.cpp</itemPath>
-      <itemPath>/home/tonegas/workspace/Domino/OpenDomino/source/Textures.cpp</itemPath>
+      <itemPath>./source/Editor.cpp</itemPath>
+      <itemPath>./source/Elemento.cpp</itemPath>
+      <itemPath>./source/ElementoAttivo.cpp</itemPath>
+      <itemPath>./source/GestoreGiocatori.cpp</itemPath>
+      <itemPath>./source/GestoreLivelli.cpp</itemPath>
+      <itemPath>./source/Giocatore.cpp</itemPath>
+      <itemPath>./source/Gioco.cpp</itemPath>
+      <itemPath>./source/Griglia.cpp</itemPath>
+      <itemPath>./source/Interfaccia.cpp</itemPath>
+      <itemPath>./source/Livello.cpp</itemPath>
+      <itemPath>./source/Menu.cpp</itemPath>
+      <itemPath>./source/MenuAttivo.cpp</itemPath>
+      <itemPath>./source/MenuCentrale.cpp</itemPath>
+      <itemPath>./source/MenuLaterale.cpp</itemPath>
+      <itemPath>./source/MenuVociDinamiche.cpp</itemPath>
+      <itemPath>./source/Partita.cpp</itemPath>
+      <itemPath>./source/PosTelecamere.cpp</itemPath>
+      <itemPath>./source/Presentazione.cpp</itemPath>
+      <itemPath>./source/Telecamera.cpp</itemPath>
+      <itemPath>./source/TelecameraAssionometrica.cpp</itemPath>
+      <itemPath>./source/TelecameraProspettica.cpp</itemPath>
+      <itemPath>./source/Textures.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
@@ -82,8 +82,8 @@
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
-    <Elem>/home/tonegas/workspace/Domino/OpenDomino/source</Elem>
-    <Elem>/home/tonegas/workspace/Domino/OpenDomino/include</Elem>
+    <Elem>./source</Elem>
+    <Elem>./include</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -94,6 +94,7 @@
         <platform>2</platform>
       </toolsSet>
       <qt>
+        <destdir>.</destdir>
         <modules>core xml</modules>
         <defs>
           <Elem>LIBS+=`pkg-config --libs ftgl --libs sdl` -lGL -lGLU</Elem>
@@ -108,8 +109,6 @@
           <commandLine>`pkg-config --cflags sdl`</commandLine>
         </ccTool>
         <linkerTool>
-          <linkerLibItems>
-          </linkerLibItems>
           <commandLine>`pkg-config --libs sdl` -lGL -lGLU</commandLine>
         </linkerTool>
       </compileType>
@@ -130,10 +129,6 @@
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
         </fortranCompilerTool>
-        <linkerTool>
-          <linkerLibItems>
-          </linkerLibItems>
-        </linkerTool>
       </compileType>
     </conf>
   </confs>
