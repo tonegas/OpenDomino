@@ -45,9 +45,9 @@ OBJECTFILES= \
 	${OBJECTDIR}/source/Editor.o \
 	${OBJECTDIR}/source/Gioco.o \
 	${OBJECTDIR}/source/pezzi/Pezzo.o \
+	${OBJECTDIR}/source/MenuCentrale.o \
 	${OBJECTDIR}/source/Menu.o \
 	${OBJECTDIR}/source/TelecameraAssionometrica.o \
-	${OBJECTDIR}/source/MenuCentrale.o \
 	${OBJECTDIR}/source/Interfaccia.o \
 	${OBJECTDIR}/source/GestoreLivelli.o \
 	${OBJECTDIR}/source/GestoreGiocatori.o \
@@ -144,6 +144,11 @@ ${OBJECTDIR}/source/pezzi/Pezzo.o: ./source/pezzi/Pezzo.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/source/pezzi/Pezzo.o source/pezzi/Pezzo.cpp
 
+${OBJECTDIR}/source/MenuCentrale.o: ./source/MenuCentrale.cpp 
+	${MKDIR} -p ${OBJECTDIR}/source
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/source/MenuCentrale.o source/MenuCentrale.cpp
+
 ${OBJECTDIR}/source/Menu.o: ./source/Menu.cpp 
 	${MKDIR} -p ${OBJECTDIR}/source
 	${RM} $@.d
@@ -153,11 +158,6 @@ ${OBJECTDIR}/source/TelecameraAssionometrica.o: ./source/TelecameraAssionometric
 	${MKDIR} -p ${OBJECTDIR}/source
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/source/TelecameraAssionometrica.o source/TelecameraAssionometrica.cpp
-
-${OBJECTDIR}/source/MenuCentrale.o: ./source/MenuCentrale.cpp 
-	${MKDIR} -p ${OBJECTDIR}/source
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/source/MenuCentrale.o source/MenuCentrale.cpp
 
 ${OBJECTDIR}/source/Interfaccia.o: ./source/Interfaccia.cpp 
 	${MKDIR} -p ${OBJECTDIR}/source

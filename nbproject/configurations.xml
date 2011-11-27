@@ -7,10 +7,10 @@
     </logicalFolder>
     <logicalFolder name="include" displayName="include" projectFiles="true">
       <logicalFolder name="basi" displayName="basi" projectFiles="true">
-        <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/basi/Base.h</itemPath>
+        <itemPath>./include/basi/Base.h</itemPath>
       </logicalFolder>
       <logicalFolder name="pezzi" displayName="pezzi" projectFiles="true">
-        <itemPath>/home/tonegas/workspace/Domino/OpenDomino/include/pezzi/Pezzo.h</itemPath>
+        <itemPath>./include/pezzi/Pezzo.h</itemPath>
       </logicalFolder>
       <itemPath>./include/Domino.h</itemPath>
       <itemPath>./include/Editor.h</itemPath>
